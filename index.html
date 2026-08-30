@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<!-- Token Monitor Web. MIT License: Copyright (c) 2026 Agathon; Copyright (c) 2026 Javis (Token Monitor). See LICENSE. Independent client, not official. -->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#eef0f3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Token Monitor</title>
+  <style>
+    :root {
+      --bg: #eef0f3;
+      --ink: #1c1f24;
+      --muted: #8b919a;
+      --faint: #a8adb4;
+      --line: #e1e4e8;
+      --pill: #ffffff;
+      --pill-on: #dfe3e8;
+      --track: #e4e7eb;
+      --blue: #6ea8f0;
+      --blue-deep: #4d8ee6;
+      --live: #3b82f6;
+      --card: #f4f5f7;
+      --font: "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --num: "Segoe UI", "DIN Alternate", "Helvetica Neue", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; min-height: 100%; background: #d9dde3; color: var(--ink); font-family: var(--font); }
+    body { padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    .shell {
+      width: min(430px, 100%);
+      min-height: 100dvh;
+      margin: 0 auto;
+      background: var(--bg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (min-width: 520px) {
+      body { padding: 24px 0; }
+      .shell {
+        min-height: min(860px, calc(100dvh - 48px));
+        border-radius: 22px;
+        box-shadow: 0 18px 50px rgb(20 24 30 / 18%);
+        overflow: hidden;
+      }
+    }
+
+    .gate { flex: 1; display: grid; place-items: center; padding: 28px 22px; }
+    .gate-card { width: 100%; }
+    .gate-card h1 { margin: 0 0 6px; font-size: 20px; }
+    .gate-card p { margin: 0 0 18px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    label { display: block; font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+    input[type="text"], input[type="password"] {
+      width: 100%; border: 0; background: #fff; border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 12px; outline: none;
+    }
+    .err { color: #c4543a; font-size: 13px; min-height: 1.2em; margin: 0 0 10px; }
+    .btn {
+      border: 0; background: var(--ink); color: #fff; border-radius: 12px;
+      padding: 12px 16px; font-weight: 600; min-height: 44px; width: 100%;
+    }
+    .hint { font-size: 12px; color: var(--faint); margin: -4px 0 14px; }
+
+    .top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px 6px;
+    }
+    .brand { display: flex; align-items: center; gap: 7px; font-size: 22px; font-weight: 500; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+    .dot.on { background: var(--live); }
+    .dot.bad { background: #c4543a; }
+    .seg {
+      display: flex; background: var(--pill); border-radius: 999px; padding: 3px;
+      box-shadow: 0 0 0 1px rgb(0 0 0 / 4%);
+    }
+    .seg button {
+      border: 0; background: transparent; color: var(--muted);
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      padding: 6px 11px; border-radius: 999px; min-height: 28px;
+    }
+    .seg button.on { background: var(--pill-on); color: var(--ink); }
+
+    .hero { padding: 10px 22px 6px; }
+    .k {
+      font-size: 11px; letter-spacing: 0.14em; color: var(--muted);
+      font-weight: 600;
+    }
+    .hero .big {
+      margin: 8px 0 0; font-size: clamp(34px, 9vw, 42px); font-weight: 650;
+      letter-spacing: -0.04em; line-height: 1.05; font-family: var(--num);
+    }
+    .hero .cost { margin: 6px 0 0; color: var(--muted); font-size: 18px; font-weight: 500; }
+
+    .scroll { flex: 1; overflow: auto; padding: 4px 20px 96px; }
+    .sec { margin-top: 18px; }
+    .sec-h {
+      display: flex; align-items: baseline; justify-content: space-between;
+      font-size: 13px; font-weight: 650; margin: 0 0 10px; color: #3a3f46;
+    }
+    .sec-h span { color: var(--muted); font-weight: 500; font-size: 12px; }
+
+    .prov { padding: 12px 0 14px; border-bottom: 1px solid var(--line); }
+    .prov:last-child { border-bottom: 0; }
+    .prov-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .prov-name { display: flex; align-items: center; gap: 8px; font-weight: 650; font-size: 15px; }
+    .plan { color: var(--muted); font-size: 13px; font-weight: 500; }
+    .sub { color: var(--muted); font-size: 12px; margin: 3px 0 10px 26px; }
+    .wins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+    .wins.one { grid-template-columns: 1fr; }
+    .win .lab { display: flex; justify-content: space-between; font-size: 12px; color: #5b616a; margin-bottom: 6px; }
+    .bar { height: 7px; background: var(--track); border-radius: 99px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; border-radius: 99px; width: 0; }
+    .reset { font-size: 11px; color: var(--faint); margin-top: 5px; }
+
+    .row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 0; border-bottom: 1px solid var(--line);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row .nm { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; }
+    .row .nm small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; }
+    .row .vals { text-align: right; }
+    .row .tok { font-size: 13px; font-weight: 650; }
+    .row .cst { font-size: 12px; color: var(--muted); }
+    .row .pct { width: 36px; text-align: right; font-size: 12px; color: var(--muted); }
+    .row-bar { height: 6px; background: var(--track); border-radius: 99px; margin-top: 8px; overflow: hidden; }
+    .row-bar > i { display: block; height: 100%; border-radius: 99px; }
+
+    .heat { margin-top: 4px; }
+    .heat-grid { display: grid; grid-template-rows: repeat(7, 9px); grid-auto-flow: column; grid-auto-columns: 9px; gap: 3px; justify-content: end; }
+    .heat-grid b { width: 9px; height: 9px; border-radius: 2px; background: #e3e6ea; display: block; }
+    .heat-grid b.i1 { background: #c5daf7; }
+    .heat-grid b.i2 { background: #9dc2f3; }
+    .heat-grid b.i3 { background: #6ea8f0; }
+    .heat-grid b.i4 { background: #4d8ee6; }
+    .heat-months { display: flex; justify-content: space-between; color: var(--faint); font-size: 11px; margin-top: 8px; }
+    .heat-peak { text-align: right; color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    .chart {
+      background: #e7eaee; border-radius: 16px; height: 210px; padding: 16px 12px 8px;
+      display: flex; align-items: flex-end; gap: 4px;
+    }
+    .chart span {
+      flex: 1; background: #b7d4f7; border-radius: 3px 3px 0 0; min-height: 2px;
+    }
+    .chart span.on { background: var(--blue-deep); }
+    .chart-x { display: flex; justify-content: space-between; color: var(--faint); font-size: 12px; margin-top: 8px; }
+    .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .tile {
+      background: #e7eaee; border-radius: 14px; padding: 14px 14px 12px;
+    }
+    .tile .v { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+    .tile .l { margin-top: 4px; font-size: 12px; color: var(--muted); }
+
+    .ico {
+      width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center;
+      font-size: 11px; font-weight: 800; color: #fff; flex: 0 0 18px;
+    }
+
+    .dock {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+      pointer-events: none;
+    }
+    .dock > * { pointer-events: auto; }
+    .picker, .gear {
+      background: #fff; border: 0; border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(20 24 30 / 12%);
+      min-height: 44px;
+    }
+    .picker {
+      display: flex; align-items: stretch; overflow: hidden; padding: 0;
+    }
+    .picker .cur {
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 12px; font-weight: 650; font-size: 14px; border: 0; background: transparent;
+      min-height: 44px;
+    }
+    .picker .chev {
+      border: 0; background: #f3f4f6; padding: 0 12px; color: var(--muted); min-height: 44px;
+    }
+    .gear { width: 44px; height: 44px; display: grid; place-items: center; font-size: 18px; color: #5b616a; }
+    .menu {
+      position: absolute; left: 16px; bottom: 70px;
+      background: #fff; border-radius: 16px; padding: 8px;
+      box-shadow: 0 16px 40px rgb(20 24 30 / 18%);
+      min-width: 168px; z-index: 5;
+    }
+    .menu button {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      border: 0; background: transparent; text-align: left;
+      padding: 10px 12px; border-radius: 10px; font-size: 15px; min-height: 42px;
+    }
+    .menu button.on { background: #e8f0fe; color: #1a4fbf; font-weight: 650; }
+
+    dialog {
+      border: 0; border-radius: 18px; padding: 22px; width: min(400px, calc(100vw - 32px));
+      background: var(--bg); color: var(--ink);
+    }
+    dialog::backdrop { background: rgb(20 24 30 / 0.35); }
+    .actions { display: flex; gap: 8px; margin-top: 8px; }
+    .actions .btn { width: auto; flex: 1; }
+    .ghost { background: #fff; color: var(--ink); }
+    .empty { color: var(--muted); font-size: 13px; padding: 12px 0; }
+    .banner { color: #c4543a; font-size: 12px; padding: 0 22px 8px; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div id="gate" class="gate" hidden>
+      <form class="gate-card" id="gate-form">
+        <h1>连接 Hub</h1>
+        <p>与桌面 Token Monitor 同一把密钥。只存在这台浏览器里。</p>
+        <div class="err" id="gate-err"></div>
+        <label for="hub">Hub URL</label>
+        <input id="hub" type="text" required placeholder="https://token-monitor-hub.xxx.workers.dev" inputmode="url">
+        <label for="secret">TOKEN_MONITOR_SECRET</label>
+        <input id="secret" type="password" required autocomplete="off">
+        <p class="hint">不要加 /api/stats。</p>
+        <button class="btn" type="submit" id="btn-connect">连接</button>
+      </form>
+    </div>
+
+    <div id="app" hidden style="display:flex;flex-direction:column;min-height:100%;flex:1;">
+      <header class="top">
+        <div class="brand">Σ <i class="dot" id="live"></i></div>
+        <div class="seg" id="seg">
+          <button type="button" data-p="today">DAY</button>
+          <button type="button" data-p="month" class="on">MONTH</button>
+          <button type="button" data-p="allTime">TOTAL</button>
+        </div>
+      </header>
+      <div class="hero">
+        <div class="k">TOTAL TOKENS</div>
+        <div class="big" id="hero-n">—</div>
+        <div class="cost" id="hero-c">—</div>
+      </div>
+      <div class="banner" id="banner"></div>
+      <div class="scroll" id="main"></div>
+      <div class="dock">
+        <div class="picker">
+          <button class="cur" type="button" id="btn-view"></button>
+          <button class="chev" type="button" id="btn-menu">▾</button>
+        </div>
+        <button class="gear" type="button" id="btn-settings" title="设置">⚙</button>
+      </div>
+      <div class="menu" id="menu" hidden></div>
+    </div>
+  </div>
+
+  <dialog id="dlg">
+    <form id="dlg-form">
+      <h1 style="margin:0 0 14px;font-size:18px;">设置</h1>
+      <div class="err" id="dlg-err"></div>
+      <label for="d-hub">Hub URL</label>
+      <input id="d-hub" type="text" required inputmode="url">
+      <label for="d-secret">密钥</label>
+      <input id="d-secret" type="password" required autocomplete="off">
+      <div class="actions">
+        <button class="btn ghost" type="button" id="btn-forget">清除</button>
+        <button class="btn" type="submit">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+<script>
+const KEY = "tm-dash-v1";
+const VIEWS = [
+  { id: "home", label: "主页", icon: "⌂" },
+  { id: "tools", label: "工具", icon: "☰" },
+  { id: "limits", label: "额度", icon: "◔" },
+  { id: "models", label: "模型", icon: "✣" },
+  { id: "trends", label: "趋势", icon: "↗" }
+];
+const META = {
+  codex: { name: "Codex", color: "#4aa3ad", mark: "∞" },
+  claude: { name: "Claude", color: "#c17a62", mark: "✶" },
+  grok: { name: "Grok", color: "#222", mark: "⊘" },
+  hermes: { name: "Hermes Agent", color: "#c9a227", mark: "⚕" },
+  antigravity: { name: "Antigravity", color: "#4d7cff", mark: "A" },
+  workbuddy: { name: "WorkBuddy", color: "#2ec27e", mark: "W" },
+  pi: { name: "Pi", color: "#222", mark: "π" },
+  kimi: { name: "Kimi", color: "#5b6cff", mark: "K" },
+  zai: { name: "GLM", color: "#111", mark: "Z" },
+  zcode: { name: "GLM", color: "#111", mark: "Z" },
+  glm: { name: "GLM", color: "#111", mark: "Z" },
+  cursor: { name: "Cursor", color: "#888", mark: "I" },
+  copilot: { name: "Copilot", color: "#6e40c9", mark: "C" },
+  opencode: { name: "OpenCode", color: "#f59e0b", mark: "O" },
+  openclaw: { name: "OpenClaw", color: "#0ea5e9", mark: "C" },
+  qwen: { name: "Qwen", color: "#6366f1", mark: "Q" },
+  deepseek: { name: "DeepSeek", color: "#4d7cff", mark: "✧" },
+  dsh: { name: "DeepSeek", color: "#4d7cff", mark: "✧" },
+  minimax: { name: "MiniMax", color: "#ef4444", mark: "M" },
+  thirdparty: { name: "Third-party APIs", color: "#444", mark: "◎" },
+  newapi: { name: "Third-party APIs", color: "#444", mark: "◎" }
+};
+const WIN_LAB = {
+  session: "Session", weekly: "Weekly", daily: "Daily",
+  "5-hour": "5-hour", five_hour: "5-hour", credits: "Credits",
+  billing: "Billing", balance: "Balance"
+};
+
+const $ = (id) => document.getElementById(id);
+const state = { cfg: null, stats: null, history: null, period: "month", view: "home", error: "", timer: null };
+
+function loadCfg() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } }
+function saveCfg(cfg) { localStorage.setItem(KEY, JSON.stringify(cfg)); }
+function normalizeHub(raw) {
+  let hub = String(raw || "").trim();
+  if (hub && !/^https?:\/\//i.test(hub)) hub = "https://" + hub;
+  return hub.replace(/\/+$/, "").replace(/\/api\/.*$/i, "");
+}
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function meta(id) {
+  const k = String(id || "").toLowerCase();
+  return META[k] || { name: id, color: "#6b7280", mark: (String(id || "?").slice(0, 1) || "?").toUpperCase() };
+}
+function ico(id) {
+  const m = meta(id);
+  return `<span class="ico" style="background:${m.color}">${esc(m.mark)}</span>`;
+}
+function fmtFull(n) { return Math.round(Number(n) || 0).toLocaleString("en-US"); }
+function fmtCompact(n) {
+  n = Number(n) || 0;
+  if (n >= 1e9) return (n / 1e9).toFixed(n >= 1e10 ? 1 : 1) + "B";
+  if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e8 ? 0 : 1).replace(/\.0$/, "") + "M";
+  if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e5 ? 0 : 1).replace(/\.0$/, "") + "K";
+  return String(Math.round(n));
+}
+function fmtCost(n) {
+  n = Number(n) || 0;
+  if (n >= 100) return "$" + n.toFixed(2);
+  if (n >= 10) return "$" + n.toFixed(2);
+  return "$" + n.toFixed(4);
+}
+function periodOf(stats, key) {
+  return (stats && stats.periods && stats.periods[key]) || { totalTokens: 0, costUsd: 0, clients: {}, clientCosts: {}, models: {}, modelCosts: {} };
+}
+function entries(map, costMap) {
+  const o = map || {};
+  const c = costMap || {};
+  const total = Object.values(o).reduce((s, v) => s + (Number(v) || 0), 0) || 1;
+  return Object.keys(o).map((k) => ({
+    id: k, tokens: Number(o[k]) || 0, cost: Number(c[k]) || 0, pct: (Number(o[k]) || 0) / total
+  })).sort((a, b) => b.tokens - a.tokens);
+}
+function relReset(iso) {
+  if (!iso) return "";
+  const s = Math.round((new Date(iso).getTime() - Date.now()) / 1000);
+  const abs = Math.abs(s);
+  const d = Math.floor(abs / 86400);
+  const h = Math.floor((abs % 86400) / 3600);
+  const m = Math.floor((abs % 3600) / 60);
+  if (d > 0) return `Reset ${d}d ${h}h`;
+  if (h > 0) return `Reset ${h}h ${m}m`;
+  return `Reset ${m}m`;
+}
+function relAgo(iso) {
+  if (!iso) return "";
+  const s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+  if (s < 45) return "just now";
+  if (s < 3600) return Math.round(s / 60) + "m ago";
+  if (s < 86400) return Math.round(s / 3600) + "h ago";
+  return Math.round(s / 86400) + "d ago";
+}
+function fmtDur(ms) {
+  ms = Number(ms) || 0;
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+function authLabel(p) {
+  const s = String(p.authType || p.source || p.channel || p.login || "").toLowerCase();
+  if (/oauth/.test(s)) return "OAuth";
+  if (/web/.test(s)) return "Web";
+  if (/rpc/.test(s)) return "RPC";
+  if (/api/.test(s)) return "API";
+  return p.authType || p.source || "";
+}
+function planLabel(p) {
+  return p.planName || p.plan || p.planLabel || p.accountLabel || p.label || "";
+}
+
+function renderLimits(full) {
+  const list = (state.stats.limits && state.stats.limits.providers) || [];
+  if (!list.length) return `<p class="empty">暂无额度。电脑端打开额度采集后会出现。</p>`;
+  const show = full ? list : list.slice(0, 3);
+  return show.map((p) => {
+    const m = meta(p.provider);
+    const wins = p.windows || [];
+    const compact = !full;
+    const use = compact ? wins.slice(0, 2) : wins;
+    const cols = use.length <= 1 ? "one" : "";
+    const subBits = [];
+    const ago = relAgo(p.updatedAt || (state.stats.limits && state.stats.limits.updatedAt));
+    if (ago) subBits.push("Updated " + ago);
+    const auth = authLabel(p);
+    if (auth) subBits.push(auth);
+    const winHtml = use.map((w) => {
+      const left = w.remainingPercent != null ? Number(w.remainingPercent) : (100 - (Number(w.usedPercent) || 0));
+      const lab = WIN_LAB[w.kind] || w.kind || "Window";
+      if (String(w.kind).toLowerCase() === "balance" || lab === "Balance") {
+        return `<div class="win"><div class="lab"><span>Balance</span><span>${fmtCost(w.remaining ?? w.amount ?? left)}</span></div></div>`;
+      }
+      return `<div class="win">
+        <div class="lab"><span>${esc(lab)}</span><span>${Math.round(left)}% left</span></div>
+        ${full ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>` : ""}
+        <div class="reset">${esc(relReset(w.resetsAt))}</div>
+      </div>`;
+    }).join("");
+    return `<article class="prov">
+      <div class="prov-h">
+        <div class="prov-name">${ico(p.provider)} ${esc(m.name)}</div>
+        <div class="plan">${esc(full ? planLabel(p) : "")}</div>
+      </div>
+      ${full && subBits.length ? `<div class="sub">${esc(subBits.join(" · "))}</div>` : ""}
+      <div class="wins ${cols}">${winHtml}</div>
+    </article>`;
+  }).join("");
+}
+
+function renderBars(list, compact) {
+  if (!list.length) return `<p class="empty">暂无数据</p>`;
+  const max = Math.max(...list.map((x) => x.tokens), 1);
+  return list.map((x) => {
+    const m = meta(x.id);
+    const label = m.name === x.id ? x.id : (VIEWS ? m.name : m.name);
+    const name = compact ? x.id : (META[String(x.id).toLowerCase()] ? m.name : x.id);
+    return `<div class="row" style="flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        ${ico(x.id)}
+        <div class="nm">${esc(name)}</div>
+        <div class="vals">
+          <div class="tok">${compact ? fmtCompact(x.tokens) : fmtFull(x.tokens)}</div>
+          <div class="cst">${fmtCost(x.cost)}</div>
+        </div>
+        ${compact ? `<div class="pct">${Math.round(x.pct * 100)}%</div>` : ""}
+      </div>
+      ${compact ? "" : `<div class="row-bar" style="width:100%"><i style="width:${Math.max(2, (x.tokens / max) * 100)}%;background:${m.color}"></i></div>`}
+    </div>`;
+  }).join("");
+}
+
+function dailyList() {
+  const h = state.history || (state.stats && state.stats.historyPreview) || {};
+  return Array.isArray(h.daily) ? h.daily : [];
+}
+
+function heatmapHtml() {
+  const days = dailyList();
+  const by = new Map(days.map((d) => [String(d.date).slice(0, 10), Number(d.tokens) || 0]));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const end = new Date(today);
+  const start = new Date(today);
+  start.setDate(start.getDate() - 26 * 7 + (6 - start.getDay() + 7) % 7);
+  // align to Sunday
+  start.setDate(start.getDate() - start.getDay());
+  const cells = [];
+  const cursor = new Date(start);
+  let max = 1;
+  const vals = [];
+  while (cursor <= end) {
+    const key = cursor.toISOString().slice(0, 10);
+    const v = by.get(key) || 0;
+    vals.push({ key, v });
+    if (v > max) max = v;
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  const months = [];
+  const seen = new Set();
+  for (const x of vals) {
+    const m = Number(x.key.slice(5, 7));
+    if (!seen.has(m) && x.key.slice(8, 10) <= "07") { seen.add(m); months.push(m + "月"); }
+  }
+  const html = vals.map((x) => {
+    let i = 0;
+    if (x.v > 0) i = x.v / max >= 0.75 ? 4 : x.v / max >= 0.5 ? 3 : x.v / max >= 0.25 ? 2 : 1;
+    return `<b class="i${i}"></b>`;
+  }).join("");
+  const active = days.filter((d) => Number(d.tokens) > 0).length;
+  const peak = days.reduce((m, d) => Math.max(m, Number(d.tokens) || 0), 0);
+  return `<div class="heat">
+    <div class="heat-grid">${html}</div>
+    <div class="heat-months">${months.slice(-4).map(esc).join("&nbsp;&nbsp;&nbsp;&nbsp;") || ""}</div>
+    <div class="heat-peak">峰值 ${fmtCompact(peak)}</div>
+  </div>`;
+}
+
+function streakAndTime() {
+  const days = dailyList();
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const active = new Set(days.filter((d) => Number(d.tokens) > 0).map((d) => String(d.date).slice(0, 10)));
+  let streak = 0;
+  const cur = new Date();
+  for (;;) {
+    const key = cur.toISOString().slice(0, 10);
+    if (!active.has(key)) break;
+    streak += 1;
+    cur.setDate(cur.getDate() - 1);
+  }
+  const activeDays = active.size;
+  const peak = days.reduce((m, d) => Math.max(m, Number(d.tokens) || 0), 0);
+  const ms = days.reduce((s, d) => s + (Number(d.activeTimeMs) || 0), 0);
+  const sum = (state.history && state.history.summary) || (state.stats && state.stats.historyPreview && state.stats.historyPreview.summary) || {};
+  return {
+    activeDays: sum.activeDays || activeDays,
+    streak: sum.currentStreak || streak,
+    peak: sum.peakTokens || peak,
+    ms: sum.totalActiveTimeMs || ms
+  };
+}
+
+function monthBars() {
+  const days = dailyList();
+  const now = new Date();
+  const ym = now.toISOString().slice(0, 7);
+  let rows = days.filter((d) => String(d.date).startsWith(ym));
+  if (rows.length < 8) rows = days.slice(-24);
+  const max = Math.max(...rows.map((d) => Number(d.tokens) || 0), 1);
+  const today = now.toISOString().slice(0, 10);
+  const bars = rows.map((d) => {
+    const h = Math.max(2, Math.round((Number(d.tokens) / max) * 170));
+    const on = String(d.date).slice(0, 10) === today ? "on" : "";
+    return `<span class="${on}" style="height:${h}px"></span>`;
+  }).join("");
+  const first = rows[0] ? String(rows[0].date).slice(5).replace("-", "/") : "";
+  const last = rows[rows.length - 1] ? String(rows[rows.length - 1].date).slice(5).replace("-", "/") : "";
+  return { bars, first, last };
+}
+
+function renderMain() {
+  const p = periodOf(state.stats, state.period);
+  const tools = entries(p.clients, p.clientCosts);
+  const models = entries(p.models, p.modelCosts);
+  if (state.view === "limits") return renderLimits(true);
+  if (state.view === "tools") return renderBars(tools, false);
+  if (state.view === "models") return renderBars(models, false);
+  if (state.view === "trends") {
+    const t = streakAndTime();
+    const b = monthBars();
+    return `<div class="sec-h">本月每日</div>
+      <div class="chart">${b.bars || ""}</div>
+      <div class="chart-x"><span>${esc(b.first)}</span><span>${esc(b.last)}</span></div>
+      <div class="tiles">
+        <div class="tile"><div class="v">${t.activeDays}</div><div class="l">活跃天数</div></div>
+        <div class="tile"><div class="v">${t.streak}</div><div class="l">连续天数</div></div>
+        <div class="tile"><div class="v">${fmtDur(t.ms)}</div><div class="l">活跃时间</div></div>
+        <div class="tile"><div class="v">${fmtCompact(t.peak)}</div><div class="l">峰值单日</div></div>
+      </div>`;
+  }
+  const t = streakAndTime();
+  return `<div class="sec"><div class="sec-h">额度 <span>◔</span></div>${renderLimits(false)}</div>
+    <div class="sec"><div class="sec-h">模型 <span>✣</span></div>${models.slice(0, 5).map((x) => `
+      <div class="row">
+        ${ico(x.id)}
+        <div class="nm">${esc(x.id)}</div>
+        <div class="tok">${fmtCompact(x.tokens)}</div>
+        <div class="pct">${Math.round(x.pct * 100)}%</div>
+      </div>`).join("") || '<p class="empty">暂无模型</p>'}</div>
+    <div class="sec"><div class="sec-h">活动 <span>活跃 ${t.activeDays} 天 ↗</span></div>${heatmapHtml()}</div>`;
+}
+
+function paint() {
+  if (!state.stats) {
+    $("hero-n").textContent = "—";
+    $("hero-c").textContent = "—";
+    $("main").innerHTML = `<p class="empty">${esc(state.error || "等待数据")}</p>`;
+    return;
+  }
+  const p = periodOf(state.stats, state.period);
+  $("hero-n").textContent = fmtFull(p.totalTokens);
+  $("hero-c").textContent = fmtCost(p.costUsd);
+  $("main").innerHTML = renderMain();
+  $("banner").textContent = state.error || "";
+  const v = VIEWS.find((x) => x.id === state.view) || VIEWS[0];
+  $("btn-view").innerHTML = `${v.icon}　${v.label}`;
+  $("menu").innerHTML = VIEWS.map((x) =>
+    `<button type="button" data-v="${x.id}" class="${x.id === state.view ? "on" : ""}">${x.icon}　${x.label}</button>`
+  ).join("");
+  for (const b of $("seg").querySelectorAll("button")) b.classList.toggle("on", b.dataset.p === state.period);
+  $("live").className = "dot " + (state.error ? "bad" : "on");
+}
+
+async function api(path) {
+  const hub = String(state.cfg.hub || "").replace(/\/+$/, "");
+  const res = await fetch(hub + path, {
+    headers: { authorization: "Bearer " + state.cfg.secret },
+    cache: "no-store"
+  });
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch { /* ignore */ }
+  if (res.status === 401) throw new Error("unauthorized：密钥不一致");
+  if (res.status === 503) throw new Error("Hub 尚未设置 TOKEN_MONITOR_SECRET");
+  if (!res.ok) throw new Error((data && (data.error || data.message)) || ("HTTP " + res.status));
+  return data;
+}
+
+async function pull() {
+  if (!state.cfg) return false;
+  try {
+    const stats = await api("/api/stats");
+    if (!stats || !stats.periods) throw new Error("返回不是 stats JSON");
+    state.stats = stats;
+    try { state.history = await api("/api/history"); }
+    catch { state.history = stats.historyPreview || null; }
+    state.error = "";
+    paint();
+    return true;
+  } catch (e) {
+    let msg = e.message || String(e);
+    if (/failed to fetch|networkerror|load failed/i.test(msg)) {
+      msg = "无法连上 Hub。检查 URL 是否为 https://token-monitor-hub.<子域>.workers.dev";
+    }
+    state.error = msg;
+    paint();
+    return false;
+  }
+}
+
+function showGate(err) {
+  $("app").hidden = true;
+  $("gate").hidden = false;
+  $("gate-err").textContent = err || "";
+  const cfg = loadCfg() || {};
+  $("hub").value = cfg.hub || "";
+  $("secret").value = cfg.secret || "";
+}
+function showApp() {
+  $("gate").hidden = true;
+  $("app").hidden = false;
+  paint();
+  if (state.timer) clearInterval(state.timer);
+  state.timer = setInterval(pull, 60000);
+}
+
+async function connectFromForm(hubRaw, secret) {
+  const hub = normalizeHub(hubRaw);
+  if (!/^https?:\/\//i.test(hub)) throw new Error("Hub URL 需要 https://token-monitor-hub.<子域>.workers.dev");
+  if (!secret) throw new Error("请填写密钥");
+  state.cfg = { hub, secret };
+  saveCfg(state.cfg);
+  const ok = await pull();
+  if (!ok) throw new Error(state.error || "连接失败");
+  showApp();
+}
+
+$("gate-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("gate-err").textContent = "正在连接…";
+  $("btn-connect").disabled = true;
+  try { await connectFromForm($("hub").value, $("secret").value); $("gate-err").textContent = ""; }
+  catch (err) { $("gate-err").textContent = err.message || String(err); }
+  finally { $("btn-connect").disabled = false; }
+});
+$("seg").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-p]");
+  if (!b) return;
+  state.period = b.dataset.p;
+  paint();
+});
+function toggleMenu() {
+  $("menu").hidden = !$("menu").hidden;
+}
+$("btn-view").addEventListener("click", toggleMenu);
+$("btn-menu").addEventListener("click", toggleMenu);
+$("menu").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-v]");
+  if (!b) return;
+  state.view = b.dataset.v;
+  $("menu").hidden = true;
+  paint();
+});
+document.addEventListener("click", (e) => {
+  if (!$("menu").hidden && !e.target.closest(".picker") && !e.target.closest("#menu")) $("menu").hidden = true;
+});
+$("btn-settings").addEventListener("click", () => {
+  const cfg = state.cfg || loadCfg() || {};
+  $("d-hub").value = cfg.hub || "";
+  $("d-secret").value = cfg.secret || "";
+  $("dlg-err").textContent = "";
+  $("dlg").showModal();
+});
+$("dlg-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    await connectFromForm($("d-hub").value, $("d-secret").value);
+    $("dlg").close();
+  } catch (err) { $("dlg-err").textContent = err.message || String(err); }
+});
+$("btn-forget").addEventListener("click", () => {
+  localStorage.removeItem(KEY);
+  $("dlg").close();
+  state.cfg = null; state.stats = null;
+  if (state.timer) clearInterval(state.timer);
+  showGate();
+});
+
+(function boot() {
+  const cfg = loadCfg();
+  if (!cfg || !cfg.hub || !cfg.secret) { showGate(); return; }
+  state.cfg = cfg;
+  showApp();
+  pull();
+})();
+</script>
+</body>
+</html>
