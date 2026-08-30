@@ -27,12 +27,12 @@
     }
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
-    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); }
+    html, body { margin: 0; min-height: 100%; background: #d9dde3; color: var(--ink); font-family: var(--font); }
     body { padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
     button, input, select { font: inherit; color: inherit; }
     button { cursor: pointer; }
     .shell {
-      width: 100%;
+      width: min(430px, 100%);
       min-height: 100dvh;
       margin: 0 auto;
       background: var(--bg);
@@ -40,87 +40,14 @@
       display: flex;
       flex-direction: column;
     }
-    .top {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
-      padding: 12px 16px 6px;
-    }
-    .brand { display: flex; align-items: center; gap: 7px; font-size: 18px; font-weight: 500; }
-    .brand-name { font-size: 14px; font-weight: 600; }
-    .top-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-    .tabs {
-      display: flex; align-items: center; gap: 2px; flex: 1 1 100%;
-      min-width: 0; overflow-x: auto;
-    }
-    .tabs button {
-      border: 0; background: transparent; color: var(--muted);
-      font-size: 14px; padding: 8px 11px; border-radius: 8px; min-height: 36px;
-      white-space: nowrap;
-    }
-    .tabs button.on { background: #e8f0fe; color: #1a4fbf; font-weight: 650; }
-    .lang-btn, .gear-top {
-      height: 36px; border: 0; background: #fff; border-radius: 8px;
-      box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
-      color: #5b616a; font-size: 12px; font-weight: 650;
-    }
-    .lang-btn { padding: 0 10px; min-width: 40px; }
-    .gear-top { width: 36px; display: grid; place-items: center; font-size: 16px; }
-    .dock, .menu { display: none !important; }
-    .home-kpis { display: none; }
-    .home-kpis .asof { padding: 10px 0 0; }
-    .gate-card .lang-btn { float: right; margin: 0 0 8px; }
-    .home-kpis .big {
-      margin: 8px 0 0; font-size: clamp(34px, 8vw, 48px); font-weight: 650;
-      letter-spacing: -0.04em; line-height: 1.05; font-family: var(--num);
-    }
-    .home-kpis .cost { margin: 6px 0 0; color: var(--muted); font-size: 18px; font-weight: 500; }
-    .list-wrap, .limits-grid { min-width: 0; }
-    .asof { font-size: 12px; color: var(--muted); padding: 0 16px 4px; }
-    .sort { display: flex; gap: 4px; flex-wrap: wrap; margin: 0 0 10px; }
-    .sort button {
-      border: 0; background: #fff; color: var(--muted); border-radius: 8px;
-      box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
-      font-size: 12px; padding: 6px 10px; min-height: 32px;
-    }
-    .sort button.on { background: #e8f0fe; color: #1a4fbf; font-weight: 650; }
-
-    @media (min-width: 860px) {
-      .shell { width: min(1120px, 100%); }
-      .top { padding: 18px 28px 8px; flex-wrap: nowrap; }
-      .tabs { flex: 1 1 auto; overflow: visible; }
-      .hero { padding: 8px 28px 4px; }
-      .hero .big { font-size: clamp(36px, 3.2vw, 48px); }
-      .banner, .asof { padding-left: 28px; padding-right: 28px; }
-      .scroll { padding: 8px 28px 36px; }
-      .gate { padding: 48px 28px; }
-      .gate-card { max-width: 400px; }
-      #app.view-home .hero, #app.view-home .asof-hero { display: none; }
-      .home-kpis { display: block; }
-      .home-grid {
-        display: grid;
-        grid-template-columns: minmax(240px, 320px) 1fr;
-        grid-template-areas:
-          "kpis heat"
-          "limits models";
-        gap: 8px 40px;
-        align-items: start;
+    @media (min-width: 520px) {
+      body { padding: 24px 0; }
+      .shell {
+        min-height: min(860px, calc(100dvh - 48px));
+        border-radius: 22px;
+        box-shadow: 0 18px 50px rgb(20 24 30 / 18%);
+        overflow: hidden;
       }
-      .home-kpis { grid-area: kpis; padding-top: 8px; }
-      .home-heat { grid-area: heat; margin-top: 0; }
-      .home-limits { grid-area: limits; }
-      .home-models { grid-area: models; }
-      .heat-grid {
-        grid-template-rows: repeat(7, 11px);
-        grid-auto-columns: 11px;
-        gap: 4px;
-        justify-content: start;
-      }
-      .limits-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 40px;
-      }
-      .list-wrap { max-width: 760px; }
-      .tiles { grid-template-columns: repeat(4, 1fr); }
     }
 
     .gate { flex: 1; display: grid; place-items: center; padding: 28px 22px; }
@@ -139,6 +66,11 @@
     }
     .hint { font-size: 12px; color: var(--faint); margin: -4px 0 14px; }
 
+    .top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px 6px;
+    }
+    .brand { display: flex; align-items: center; gap: 7px; font-size: 22px; font-weight: 500; }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
     .dot.on { background: var(--live); }
     .dot.bad { background: #c4543a; }
@@ -164,7 +96,7 @@
     }
     .hero .cost { margin: 6px 0 0; color: var(--muted); font-size: 18px; font-weight: 500; }
 
-    .scroll { flex: 1; overflow: auto; padding: 4px 16px 24px; }
+    .scroll { flex: 1; overflow: auto; padding: 4px 20px 96px; }
     .sec { margin-top: 18px; }
     .sec-h {
       display: flex; align-items: baseline; justify-content: space-between;
@@ -276,38 +208,32 @@
     .actions .btn { width: auto; flex: 1; }
     .ghost { background: #fff; color: var(--ink); }
     .empty { color: var(--muted); font-size: 13px; padding: 12px 0; }
-    .banner { color: #c4543a; font-size: 12px; padding: 0 16px 8px; }
+    .banner { color: #c4543a; font-size: 12px; padding: 0 22px 8px; }
   </style>
 </head>
 <body>
   <div class="shell">
     <div id="gate" class="gate" hidden>
       <form class="gate-card" id="gate-form">
-        <button class="lang-btn" type="button" id="btn-lang-gate">EN</button>
-        <h1 id="gate-title">连接 Hub</h1>
-        <p id="gate-lead">独立网页客户端，不是官方应用。与桌面端同一把密钥，只存在这台浏览器里。</p>
+        <h1>连接 Hub</h1>
+        <p>独立网页客户端，不是官方应用。与桌面端同一把密钥，只存在这台浏览器里。</p>
         <div class="err" id="gate-err"></div>
-        <label for="hub" id="lab-hub">Hub URL</label>
+        <label for="hub">Hub URL</label>
         <input id="hub" type="text" required placeholder="https://token-monitor-hub.xxx.workers.dev" inputmode="url">
-        <label for="secret" id="lab-secret">TOKEN_MONITOR_SECRET</label>
+        <label for="secret">TOKEN_MONITOR_SECRET</label>
         <input id="secret" type="password" required autocomplete="off">
-        <p class="hint" id="gate-hint">不要加 /api/stats。</p>
+        <p class="hint">不要加 /api/stats。</p>
         <button class="btn" type="submit" id="btn-connect">连接</button>
       </form>
     </div>
 
     <div id="app" hidden style="display:flex;flex-direction:column;min-height:100%;flex:1;">
       <header class="top">
-        <div class="brand">Σ <i class="dot" id="live"></i><span class="brand-name">Token Monitor Web</span></div>
-        <nav class="tabs" id="tabs"></nav>
-        <div class="top-right">
-          <div class="seg" id="seg">
-            <button type="button" data-p="today">DAY</button>
-            <button type="button" data-p="month" class="on">MONTH</button>
-            <button type="button" data-p="allTime">TOTAL</button>
-          </div>
-          <button class="lang-btn" type="button" id="btn-lang" title="Language">EN</button>
-          <button class="gear-top" type="button" id="btn-settings-top" title="设置">⚙</button>
+        <div class="brand">Σ <i class="dot" id="live"></i></div>
+        <div class="seg" id="seg">
+          <button type="button" data-p="today">DAY</button>
+          <button type="button" data-p="month" class="on">MONTH</button>
+          <button type="button" data-p="allTime">TOTAL</button>
         </div>
       </header>
       <div class="hero">
@@ -315,7 +241,6 @@
         <div class="big" id="hero-n">—</div>
         <div class="cost" id="hero-c">—</div>
       </div>
-      <div class="asof asof-hero" id="asof"></div>
       <div class="banner" id="banner"></div>
       <div class="scroll" id="main"></div>
       <div class="dock">
@@ -331,146 +256,29 @@
 
   <dialog id="dlg">
     <form id="dlg-form">
-      <h1 id="dlg-title" style="margin:0 0 14px;font-size:18px;">设置</h1>
+      <h1 style="margin:0 0 14px;font-size:18px;">设置</h1>
       <div class="err" id="dlg-err"></div>
-      <label for="d-hub" id="lab-d-hub">Hub URL</label>
+      <label for="d-hub">Hub URL</label>
       <input id="d-hub" type="text" required inputmode="url">
-      <label for="d-secret" id="lab-d-secret">密钥</label>
+      <label for="d-secret">密钥</label>
       <input id="d-secret" type="password" required autocomplete="off">
       <div class="actions">
         <button class="btn ghost" type="button" id="btn-forget">清除</button>
-        <button class="btn" type="submit" id="btn-save">保存</button>
+        <button class="btn" type="submit">保存</button>
       </div>
     </form>
   </dialog>
 
 <script>
 const KEY = "tm-dash-v1";
-const LANG_KEY = "tm-dash-lang";
-const WIDE_MQ = window.matchMedia("(min-width: 860px)");
-function isWide() { return WIDE_MQ.matches; }
-const I18N = {
-  zh: {
-    "gate.title": "连接 Hub",
-    "gate.lead": "独立网页客户端，不是官方应用。与桌面端同一把密钥，只存在这台浏览器里。",
-    "gate.hub": "Hub URL",
-    "gate.secret": "TOKEN_MONITOR_SECRET",
-    "gate.hint": "不要加 /api/stats。",
-    "gate.connect": "连接",
-    "gate.connecting": "正在连接…",
-    "settings": "设置",
-    "save": "保存",
-    "clear": "清除",
-    "secret": "密钥",
-    "view.home": "主页",
-    "view.tools": "工具",
-    "view.limits": "额度",
-    "view.models": "模型",
-    "view.devices": "设备",
-    "view.trends": "趋势",
-    "sec.limits": "额度",
-    "sec.models": "模型",
-    "sec.activity": "活动",
-    "sec.month": "本月每日",
-    "tile.activeDays": "活跃天数",
-    "tile.streak": "连续天数",
-    "tile.activeTime": "活跃时间",
-    "tile.peak": "峰值单日",
-    "sort.tokens": "用量",
-    "sort.cost": "成本",
-    "sort.name": "名称",
-    "sort.sync": "同步",
-    "sort.left": "剩余",
-    "empty.limits": "暂无额度。电脑端打开额度采集后会出现。",
-    "empty.data": "暂无数据",
-    "empty.models": "暂无模型",
-    "empty.devices": "暂无设备。桌面端打开多设备同步后会出现。",
-    "empty.wait": "等待数据",
-    "asof": "数据截至 {time}（{ago}）",
-    "asof.unknown": "尚无同步时间",
-    "stale": "已过期",
-    "peak": "峰值",
-    "activeDays": "活跃 {n} 天",
-    "err.unauthorized": "unauthorized：密钥不一致",
-    "err.secretRequired": "Hub 尚未设置 TOKEN_MONITOR_SECRET",
-    "err.notStats": "返回不是 stats JSON",
-    "err.fetch": "无法连上 Hub。检查 URL 是否为 https://token-monitor-hub.<子域>.workers.dev",
-    "err.hub": "Hub URL 需要 https://token-monitor-hub.<子域>.workers.dev",
-    "err.secret": "请填写密钥",
-    "err.connect": "连接失败",
-    "justNow": "刚刚",
-    "ago.m": "{n} 分钟前",
-    "ago.h": "{n} 小时前",
-    "ago.d": "{n} 天前"
-  },
-  en: {
-    "gate.title": "Connect hub",
-    "gate.lead": "Independent web client, not official. Same secret as the desktop widget; stored only in this browser.",
-    "gate.hub": "Hub URL",
-    "gate.secret": "TOKEN_MONITOR_SECRET",
-    "gate.hint": "Do not append /api/stats.",
-    "gate.connect": "Connect",
-    "gate.connecting": "Connecting…",
-    "settings": "Settings",
-    "save": "Save",
-    "clear": "Clear",
-    "secret": "Secret",
-    "view.home": "Home",
-    "view.tools": "Tools",
-    "view.limits": "Limits",
-    "view.models": "Models",
-    "view.devices": "Devices",
-    "view.trends": "Trends",
-    "sec.limits": "Limits",
-    "sec.models": "Models",
-    "sec.activity": "Activity",
-    "sec.month": "This month",
-    "tile.activeDays": "Active days",
-    "tile.streak": "Streak",
-    "tile.activeTime": "Active time",
-    "tile.peak": "Peak day",
-    "sort.tokens": "Tokens",
-    "sort.cost": "Cost",
-    "sort.name": "Name",
-    "sort.sync": "Sync",
-    "sort.left": "Left",
-    "empty.limits": "No limits yet. Enable limits collection on the desktop app.",
-    "empty.data": "No data",
-    "empty.models": "No models",
-    "empty.devices": "No devices. Turn on multi-device sync in the desktop app.",
-    "empty.wait": "Waiting for data",
-    "asof": "As of {time} ({ago})",
-    "asof.unknown": "No sync time yet",
-    "stale": "stale",
-    "peak": "Peak",
-    "activeDays": "{n} active days",
-    "err.unauthorized": "unauthorized: secret mismatch",
-    "err.secretRequired": "Hub has not set TOKEN_MONITOR_SECRET",
-    "err.notStats": "Response is not stats JSON",
-    "err.fetch": "Cannot reach the hub. Check the URL is https://token-monitor-hub.<subdomain>.workers.dev",
-    "err.hub": "Hub URL must be https://token-monitor-hub.<subdomain>.workers.dev",
-    "err.secret": "Enter the secret",
-    "err.connect": "Connection failed",
-    "justNow": "just now",
-    "ago.m": "{n}m ago",
-    "ago.h": "{n}h ago",
-    "ago.d": "{n}d ago"
-  }
-};
-function t(key, vars) {
-  let s = (I18N[state.lang] && I18N[state.lang][key]) || I18N.zh[key] || key;
-  if (vars) Object.keys(vars).forEach((k) => { s = s.split("{" + k + "}").join(String(vars[k])); });
-  return s;
-}
-const VIEW_DEFS = [
-  { id: "home", icon: "⌂", key: "view.home" },
-  { id: "tools", icon: "☰", key: "view.tools" },
-  { id: "limits", icon: "◔", key: "view.limits" },
-  { id: "models", icon: "✣", key: "view.models" },
-  { id: "devices", icon: "▣", key: "view.devices" },
-  { id: "trends", icon: "↗", key: "view.trends" }
+const VIEWS = [
+  { id: "home", label: "主页", icon: "⌂" },
+  { id: "tools", label: "工具", icon: "☰" },
+  { id: "limits", label: "额度", icon: "◔" },
+  { id: "models", label: "模型", icon: "✣" },
+  { id: "devices", label: "设备", icon: "▣" },
+  { id: "trends", label: "趋势", icon: "↗" }
 ];
-function views() { return VIEW_DEFS.map((v) => ({ id: v.id, icon: v.icon, label: t(v.key) })); }
 const META = {
   codex: { name: "Codex", color: "#4aa3ad", mark: "∞" },
   claude: { name: "Claude", color: "#c17a62", mark: "✶" },
@@ -521,18 +329,9 @@ const WIN_LAB = {
 };
 
 const $ = (id) => document.getElementById(id);
-const state = { cfg: null, stats: null, history: null, period: "month", view: "home", error: "", timer: null, lang: "zh", sort: {
-  tools: { key: "tokens", dir: "desc" },
-  models: { key: "tokens", dir: "desc" },
-  devices: { key: "tokens", dir: "desc" },
-  limits: { key: "left", dir: "asc" }
-} };
+const state = { cfg: null, stats: null, history: null, period: "month", view: "home", error: "", timer: null };
 
 function loadCfg() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } }
-function loadLang() {
-  const v = localStorage.getItem(LANG_KEY);
-  return v === "en" || v === "zh" ? v : "zh";
-}
 function saveCfg(cfg) { localStorage.setItem(KEY, JSON.stringify(cfg)); }
 function normalizeHub(raw) {
   let hub = String(raw || "").trim();
@@ -573,31 +372,7 @@ function entries(map, costMap) {
   const total = Object.values(o).reduce((s, v) => s + (Number(v) || 0), 0) || 1;
   return Object.keys(o).map((k) => ({
     id: k, tokens: Number(o[k]) || 0, cost: Number(c[k]) || 0, pct: (Number(o[k]) || 0) / total
-  }));
-}
-function sortSpec(view) {
-  return state.sort[view] || { key: "tokens", dir: "desc" };
-}
-function cmp(a, b, dir) {
-  if (a < b) return dir === "asc" ? -1 : 1;
-  if (a > b) return dir === "asc" ? 1 : -1;
-  return 0;
-}
-function sortEntries(list, view) {
-  const { key, dir } = sortSpec(view);
-  return list.slice().sort((a, b) => {
-    if (key === "name") return cmp(String(meta(a.id).name).toLowerCase(), String(meta(b.id).name).toLowerCase(), dir);
-    if (key === "cost") return cmp(a.cost, b.cost, dir);
-    return cmp(a.tokens, b.tokens, dir);
-  });
-}
-function sortBar(view, keys) {
-  const cur = sortSpec(view);
-  return `<div class="sort" data-sort="${view}">${keys.map((k) => {
-    const on = cur.key === k ? "on" : "";
-    const arrow = cur.key === k ? (cur.dir === "desc" ? " ↓" : " ↑") : "";
-    return `<button type="button" data-k="${k}" class="${on}">${esc(t("sort." + k))}${arrow}</button>`;
-  }).join("")}</div>`;
+  })).sort((a, b) => b.tokens - a.tokens);
 }
 function relReset(iso) {
   if (!iso) return "";
@@ -613,10 +388,10 @@ function relReset(iso) {
 function relAgo(iso) {
   if (!iso) return "";
   const s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
-  if (s < 45) return t("justNow");
-  if (s < 3600) return t("ago.m", { n: Math.round(s / 60) });
-  if (s < 86400) return t("ago.h", { n: Math.round(s / 3600) });
-  return t("ago.d", { n: Math.round(s / 86400) });
+  if (s < 45) return "just now";
+  if (s < 3600) return Math.round(s / 60) + "m ago";
+  if (s < 86400) return Math.round(s / 3600) + "h ago";
+  return Math.round(s / 86400) + "d ago";
 }
 function fmtDur(ms) {
   ms = Number(ms) || 0;
@@ -657,56 +432,10 @@ function isMoneyWindow(w) {
   const metric = String(w.metric || "").toLowerCase();
   return metric === "credits" || metric === "spend" || kind === "credits" || kind === "balance";
 }
-function limitLeft(p) {
-  const nums = (p.windows || []).map((w) => w.remainingPercent != null ? Number(w.remainingPercent) : 100 - (Number(w.usedPercent) || 0));
-  const ok = nums.filter((n) => Number.isFinite(n));
-  return ok.length ? Math.min(...ok) : 999;
-}
-function sortLimits(list) {
-  const { key, dir } = sortSpec("limits");
-  return list.slice().sort((a, b) => {
-    if (key === "name") return cmp(String(meta(a.provider).name).toLowerCase(), String(meta(b.provider).name).toLowerCase(), dir);
-    return cmp(limitLeft(a), limitLeft(b), dir);
-  });
-}
-function sortDevices(list) {
-  const { key, dir } = sortSpec("devices");
-  return list.slice().sort((a, b) => {
-    const pa = (a.periods && a.periods[state.period]) || {};
-    const pb = (b.periods && b.periods[state.period]) || {};
-    if (key === "name") return cmp(String(a.hostname || a.deviceId || "").toLowerCase(), String(b.hostname || b.deviceId || "").toLowerCase(), dir);
-    if (key === "sync") return cmp(new Date(a.receivedAt || a.updatedAt || 0).getTime(), new Date(b.receivedAt || b.updatedAt || 0).getTime(), dir);
-    if (key === "cost") return cmp(Number(pa.costUsd) || 0, Number(pb.costUsd) || 0, dir);
-    return cmp(Number(pa.totalTokens) || 0, Number(pb.totalTokens) || 0, dir);
-  });
-}
-function statsStamp() {
-  const s = state.stats || {};
-  const times = [s.updatedAt, s.limits && s.limits.updatedAt];
-  for (const d of s.devices || []) times.push(d.receivedAt, d.updatedAt);
-  const ms = times.map((x) => (x ? new Date(x).getTime() : 0)).filter((n) => n > 0);
-  return ms.length ? Math.max(...ms) : null;
-}
-function fmtStamp(ms) {
-  try {
-    return new Intl.DateTimeFormat(state.lang === "zh" ? "zh-CN" : "en-GB", {
-      timeZone: tzName(), year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", hour12: false
-    }).format(new Date(ms));
-  } catch {
-    return new Date(ms).toISOString().slice(0, 16).replace("T", " ");
-  }
-}
-function asofText() {
-  const ms = statsStamp();
-  if (!ms) return t("asof.unknown");
-  return t("asof", { time: fmtStamp(ms), ago: relAgo(new Date(ms).toISOString()) });
-}
 function renderLimits(full) {
-  const raw = (state.stats.limits && state.stats.limits.providers) || [];
-  if (!raw.length) return `<p class="empty">${esc(t("empty.limits"))}</p>`;
-  const list = full ? sortLimits(raw) : raw.slice(0, 3);
-  const show = list;
+  const list = (state.stats.limits && state.stats.limits.providers) || [];
+  if (!list.length) return `<p class="empty">暂无额度。电脑端打开额度采集后会出现。</p>`;
+  const show = full ? list : list.slice(0, 3);
   return show.map((p) => {
     const m = meta(p.provider);
     const wins = (p.windows || []).filter((w) => full || !w.additional);
@@ -745,10 +474,11 @@ function renderLimits(full) {
 }
 
 function renderBars(list, compact) {
-  if (!list.length) return `<p class="empty">${esc(t("empty.data"))}</p>`;
+  if (!list.length) return `<p class="empty">暂无数据</p>`;
   const max = Math.max(...list.map((x) => x.tokens), 1);
   return list.map((x) => {
     const m = meta(x.id);
+    const label = m.name === x.id ? x.id : (VIEWS ? m.name : m.name);
     const name = compact ? x.id : (META[String(x.id).toLowerCase()] ? m.name : x.id);
     return `<div class="row" style="flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:10px;width:100%">
@@ -809,7 +539,7 @@ function heatmapHtml() {
   const days = dailyList();
   const by = new Map(days.map((d) => [String(d.date).slice(0, 10), Number(d.tokens) || 0]));
   const today = civilYmd();
-  const weeks = isWide() ? 46 : 26;
+  const weeks = 26;
   let start = addCivilDays(today, -(weeks * 7 - 1));
   start = addCivilDays(start, -weekdaySun0(start));
   const vals = [];
@@ -823,10 +553,7 @@ function heatmapHtml() {
   const seen = new Set();
   for (const x of vals) {
     const m = Number(x.key.slice(5, 7));
-    if (!seen.has(m) && x.key.slice(8, 10) <= "07") {
-      seen.add(m);
-      months.push(state.lang === "zh" ? (m + "月") : ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m - 1]);
-    }
+    if (!seen.has(m) && x.key.slice(8, 10) <= "07") { seen.add(m); months.push(m + "月"); }
   }
   const html = vals.map((x) => {
     let i = 0;
@@ -836,8 +563,8 @@ function heatmapHtml() {
   const peak = days.reduce((m, d) => Math.max(m, Number(d.tokens) || 0), 0);
   return `<div class="heat">
     <div class="heat-grid">${html}</div>
-    <div class="heat-months">${months.slice(isWide() ? -8 : -4).map(esc).join("&nbsp;&nbsp;&nbsp;&nbsp;") || ""}</div>
-    <div class="heat-peak">${esc(t("peak"))} ${fmtCompact(peak)}</div>
+    <div class="heat-months">${months.slice(-4).map(esc).join("&nbsp;&nbsp;&nbsp;&nbsp;") || ""}</div>
+    <div class="heat-peak">峰值 ${fmtCompact(peak)}</div>
   </div>`;
 }
 
@@ -877,8 +604,8 @@ function monthBars() {
 
 function renderDevices() {
   const list = (state.stats && state.stats.devices) || [];
-  if (!list.length) return `<p class="empty">${esc(t("empty.devices"))}</p>`;
-  const ordered = sortDevices(list);
+  if (!list.length) return `<p class="empty">暂无设备。桌面端打开多设备同步后会出现。</p>`;
+  const ordered = list.slice().sort((a, b) => Number(!!a.stale) - Number(!!b.stale) || String(a.hostname || a.deviceId).localeCompare(String(b.hostname || b.deviceId)));
   return ordered.map((d) => {
     const per = (d.periods && d.periods[state.period]) || {};
     const name = d.hostname || d.deviceId || "device";
@@ -886,7 +613,7 @@ function renderDevices() {
     const bits = [
       d.deviceId && d.deviceId !== name ? d.deviceId : "",
       d.osName || d.platform || "",
-      d.stale ? t("stale") : ago
+      d.stale ? "stale" : ago
     ].filter(Boolean);
     return `<div class="row" style="flex-wrap:wrap;${d.stale ? "opacity:.55" : ""}">
       <div style="display:flex;align-items:center;gap:10px;width:100%">
@@ -903,93 +630,56 @@ function renderDevices() {
 
 function renderMain() {
   const p = periodOf(state.stats, state.period);
-  const tools = sortEntries(entries(p.clients, p.clientCosts), "tools");
-  const models = sortEntries(entries(p.models, p.modelCosts), "models");
-  if (state.view === "limits") return `${sortBar("limits", ["left", "name"])}<div class="limits-grid">${renderLimits(true)}</div>`;
-  if (state.view === "tools") return `${sortBar("tools", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(tools, false)}</div>`;
-  if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(models, false)}</div>`;
-  if (state.view === "devices") return `${sortBar("devices", ["tokens", "cost", "sync", "name"])}<div class="list-wrap">${renderDevices()}</div>`;
+  const tools = entries(p.clients, p.clientCosts);
+  const models = entries(p.models, p.modelCosts);
+  if (state.view === "limits") return renderLimits(true);
+  if (state.view === "tools") return renderBars(tools, false);
+  if (state.view === "models") return renderBars(models, false);
+  if (state.view === "devices") return renderDevices();
   if (state.view === "trends") {
-    const tstat = streakAndTime();
+    const t = streakAndTime();
     const b = monthBars();
-    return `<div class="sec-h">${esc(t("sec.month"))}</div>
+    return `<div class="sec-h">本月每日</div>
       <div class="chart">${b.bars || ""}</div>
       <div class="chart-x"><span>${esc(b.first)}</span><span>${esc(b.last)}</span></div>
       <div class="tiles">
-        <div class="tile"><div class="v">${tstat.activeDays}</div><div class="l">${esc(t("tile.activeDays"))}</div></div>
-        <div class="tile"><div class="v">${tstat.streak}</div><div class="l">${esc(t("tile.streak"))}</div></div>
-        <div class="tile"><div class="v">${fmtDur(tstat.ms)}</div><div class="l">${esc(t("tile.activeTime"))}</div></div>
-        <div class="tile"><div class="v">${fmtCompact(tstat.peak)}</div><div class="l">${esc(t("tile.peak"))}</div></div>
+        <div class="tile"><div class="v">${t.activeDays}</div><div class="l">活跃天数</div></div>
+        <div class="tile"><div class="v">${t.streak}</div><div class="l">连续天数</div></div>
+        <div class="tile"><div class="v">${fmtDur(t.ms)}</div><div class="l">活跃时间</div></div>
+        <div class="tile"><div class="v">${fmtCompact(t.peak)}</div><div class="l">峰值单日</div></div>
       </div>`;
   }
-  const tstat = streakAndTime();
-  const modelRows = models.slice(0, 5).map((x) => `
+  const t = streakAndTime();
+  return `<div class="sec"><div class="sec-h">额度 <span>◔</span></div>${renderLimits(false)}</div>
+    <div class="sec"><div class="sec-h">模型 <span>✣</span></div>${models.slice(0, 5).map((x) => `
       <div class="row">
         ${ico(x.id)}
         <div class="nm">${esc(x.id)}</div>
         <div class="tok">${fmtCompact(x.tokens)}</div>
         <div class="pct">${Math.round(x.pct * 100)}%</div>
-      </div>`).join("") || `<p class="empty">${esc(t("empty.models"))}</p>`;
-  return `<div class="home-grid">
-    <div class="home-kpis">
-      <div class="k">TOTAL TOKENS</div>
-      <div class="big">${fmtFull(p.totalTokens)}</div>
-      <div class="cost">${fmtCost(p.costUsd)}</div>
-      <div class="asof">${esc(asofText())}</div>
-    </div>
-    <div class="sec home-limits"><div class="sec-h">${esc(t("sec.limits"))} <span>◔</span></div>${renderLimits(false)}</div>
-    <div class="sec home-models"><div class="sec-h">${esc(t("sec.models"))} <span>✣</span></div>${sortBar("models", ["tokens", "cost", "name"])}${modelRows}</div>
-    <div class="sec home-heat"><div class="sec-h">${esc(t("sec.activity"))} <span>${esc(t("activeDays", { n: tstat.activeDays }))} ↗</span></div>${heatmapHtml()}</div>
-  </div>`;
+      </div>`).join("") || '<p class="empty">暂无模型</p>'}</div>
+    <div class="sec"><div class="sec-h">活动 <span>活跃 ${t.activeDays} 天 ↗</span></div>${heatmapHtml()}</div>`;
 }
 
-function applyStaticLang() {
-  document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
-  const set = (id, text) => { const el = $(id); if (el) el.textContent = text; };
-  set("gate-title", t("gate.title"));
-  set("gate-lead", t("gate.lead"));
-  set("lab-hub", t("gate.hub"));
-  set("lab-secret", t("gate.secret"));
-  set("gate-hint", t("gate.hint"));
-  set("btn-connect", t("gate.connect"));
-  set("dlg-title", t("settings"));
-  set("lab-d-hub", t("gate.hub"));
-  set("lab-d-secret", t("secret"));
-  set("btn-forget", t("clear"));
-  set("btn-save", t("save"));
-  const next = state.lang === "zh" ? "EN" : "中";
-  set("btn-lang", next);
-  set("btn-lang-gate", next);
-  const gear = $("btn-settings-top");
-  if (gear) gear.title = t("settings");
-}
 function paint() {
-  applyStaticLang();
-  $("app").classList.toggle("view-home", state.view === "home");
   if (!state.stats) {
     $("hero-n").textContent = "—";
     $("hero-c").textContent = "—";
-    $("asof").textContent = "";
-    $("main").innerHTML = `<p class="empty">${esc(state.error || t("empty.wait"))}</p>`;
-  } else {
-    const p = periodOf(state.stats, state.period);
-    $("hero-n").textContent = fmtFull(p.totalTokens);
-    $("hero-c").textContent = fmtCost(p.costUsd);
-    $("asof").textContent = asofText();
-    $("main").innerHTML = renderMain();
-    $("banner").textContent = state.error || "";
+    $("main").innerHTML = `<p class="empty">${esc(state.error || "等待数据")}</p>`;
+    return;
   }
-  const vlist = views();
-  const v = vlist.find((x) => x.id === state.view) || vlist[0];
+  const p = periodOf(state.stats, state.period);
+  $("hero-n").textContent = fmtFull(p.totalTokens);
+  $("hero-c").textContent = fmtCost(p.costUsd);
+  $("main").innerHTML = renderMain();
+  $("banner").textContent = state.error || "";
+  const v = VIEWS.find((x) => x.id === state.view) || VIEWS[0];
   $("btn-view").innerHTML = `${v.icon}　${v.label}`;
-  $("menu").innerHTML = vlist.map((x) =>
+  $("menu").innerHTML = VIEWS.map((x) =>
     `<button type="button" data-v="${x.id}" class="${x.id === state.view ? "on" : ""}">${x.icon}　${x.label}</button>`
   ).join("");
-  $("tabs").innerHTML = vlist.map((x) =>
-    `<button type="button" data-v="${x.id}" class="${x.id === state.view ? "on" : ""}">${esc(x.label)}</button>`
-  ).join("");
   for (const b of $("seg").querySelectorAll("button")) b.classList.toggle("on", b.dataset.p === state.period);
-  $("live").className = "dot " + (state.error ? "bad" : state.stats ? "on" : "");
+  $("live").className = "dot " + (state.error ? "bad" : "on");
 }
 
 async function api(path) {
@@ -1001,8 +691,8 @@ async function api(path) {
   const text = await res.text();
   let data = null;
   try { data = JSON.parse(text); } catch { /* ignore */ }
-  if (res.status === 401) throw new Error(t("err.unauthorized"));
-  if (res.status === 503) throw new Error(t("err.secretRequired"));
+  if (res.status === 401) throw new Error("unauthorized：密钥不一致");
+  if (res.status === 503) throw new Error("Hub 尚未设置 TOKEN_MONITOR_SECRET");
   if (!res.ok) throw new Error((data && (data.error || data.message)) || ("HTTP " + res.status));
   return data;
 }
@@ -1011,7 +701,7 @@ async function pull() {
   if (!state.cfg) return false;
   try {
     const stats = await api("/api/stats");
-    if (!stats || !stats.periods) throw new Error(t("err.notStats"));
+    if (!stats || !stats.periods) throw new Error("返回不是 stats JSON");
     state.stats = stats;
     try { state.history = await api("/api/history"); }
     catch { state.history = stats.historyPreview || null; }
@@ -1021,7 +711,7 @@ async function pull() {
   } catch (e) {
     let msg = e.message || String(e);
     if (/failed to fetch|networkerror|load failed/i.test(msg)) {
-      msg = t("err.fetch");
+      msg = "无法连上 Hub。检查 URL 是否为 https://token-monitor-hub.<子域>.workers.dev";
     }
     state.error = msg;
     paint();
@@ -1032,7 +722,6 @@ async function pull() {
 function showGate(err) {
   $("app").hidden = true;
   $("gate").hidden = false;
-  applyStaticLang();
   $("gate-err").textContent = err || "";
   const cfg = loadCfg() || {};
   $("hub").value = cfg.hub || "";
@@ -1048,18 +737,18 @@ function showApp() {
 
 async function connectFromForm(hubRaw, secret) {
   const hub = normalizeHub(hubRaw);
-  if (!/^https?:\/\//i.test(hub)) throw new Error(t("err.hub"));
-  if (!secret) throw new Error(t("err.secret"));
+  if (!/^https?:\/\//i.test(hub)) throw new Error("Hub URL 需要 https://token-monitor-hub.<子域>.workers.dev");
+  if (!secret) throw new Error("请填写密钥");
   state.cfg = { hub, secret };
   saveCfg(state.cfg);
   const ok = await pull();
-  if (!ok) throw new Error(state.error || t("err.connect"));
+  if (!ok) throw new Error(state.error || "连接失败");
   showApp();
 }
 
 $("gate-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  $("gate-err").textContent = t("gate.connecting");
+  $("gate-err").textContent = "正在连接…";
   $("btn-connect").disabled = true;
   try { await connectFromForm($("hub").value, $("secret").value); $("gate-err").textContent = ""; }
   catch (err) { $("gate-err").textContent = err.message || String(err); }
@@ -1086,43 +775,13 @@ $("menu").addEventListener("click", (e) => {
 document.addEventListener("click", (e) => {
   if (!$("menu").hidden && !e.target.closest(".picker") && !e.target.closest("#menu")) $("menu").hidden = true;
 });
-$("tabs").addEventListener("click", (e) => {
-  const b = e.target.closest("button[data-v]");
-  if (!b) return;
-  state.view = b.dataset.v;
-  $("menu").hidden = true;
-  paint();
-});
-$("main").addEventListener("click", (e) => {
-  const b = e.target.closest(".sort button[data-k]");
-  if (!b) return;
-  const box = b.closest(".sort");
-  if (!box) return;
-  const view = box.dataset.sort;
-  const key = b.dataset.k;
-  const cur = sortSpec(view);
-  if (cur.key === key) cur.dir = cur.dir === "desc" ? "asc" : "desc";
-  else { cur.key = key; cur.dir = (key === "name" || key === "left") ? "asc" : "desc"; }
-  state.sort[view] = { key: cur.key, dir: cur.dir };
-  paint();
-});
-function toggleLang() {
-  state.lang = state.lang === "zh" ? "en" : "zh";
-  localStorage.setItem(LANG_KEY, state.lang);
-  if (!$("app").hidden) paint();
-  else applyStaticLang();
-}
-$("btn-lang").addEventListener("click", toggleLang);
-$("btn-lang-gate").addEventListener("click", toggleLang);
-function openSettings() {
+$("btn-settings").addEventListener("click", () => {
   const cfg = state.cfg || loadCfg() || {};
   $("d-hub").value = cfg.hub || "";
   $("d-secret").value = cfg.secret || "";
   $("dlg-err").textContent = "";
   $("dlg").showModal();
-}
-$("btn-settings").addEventListener("click", openSettings);
-$("btn-settings-top").addEventListener("click", openSettings);
+});
 $("dlg-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
@@ -1139,11 +798,6 @@ $("btn-forget").addEventListener("click", () => {
 });
 
 (function boot() {
-  state.lang = loadLang();
-  applyStaticLang();
-  const onWide = () => { if (!$("app").hidden) paint(); };
-  if (WIDE_MQ.addEventListener) WIDE_MQ.addEventListener("change", onWide);
-  else WIDE_MQ.addListener(onWide);
   const cfg = loadCfg();
   if (!cfg || !cfg.hub || !cfg.secret) { showGate(); return; }
   state.cfg = cfg;

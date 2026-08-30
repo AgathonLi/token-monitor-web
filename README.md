@@ -48,7 +48,7 @@ On a phone, host `index.html` on any static HTTPS origin (for example Cloudflare
 
 ## Views
 
-The layout follows the desktop widget (light theme, centered column on large screens):
+The layout is the same on phone and desktop (light, no floating phone card). Below 860px the header wraps and tabs scroll; from 860px it uses a two-column home. Use EN/中 in the header. List views sort by tokens, cost, or name. The time under the totals is the latest hub `updatedAt` / device `receivedAt`.
 
 | Control | What it shows |
 |---|---|
