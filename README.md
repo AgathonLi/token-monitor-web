@@ -44,7 +44,7 @@ Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/). Enter:
 
 The secret is stored only in this browser’s `localStorage`. Requests use `Authorization: Bearer <secret>`. After you change the page, use Ctrl+F5 if it looks stale.
 
-On a phone, host `index.html` on any static HTTPS origin (for example Cloudflare Pages) and use “Add to Home Screen”.
+A hosted copy is at [https://agathonli.github.io/token-monitor-web/](https://agathonli.github.io/token-monitor-web/) (GitHub Pages, `main` / repository root). Enter the Hub URL and secret there; they stay in that browser’s `localStorage` and are not in this repo. On a phone, open that HTTPS page and use “Add to Home Screen”. You can also host `index.html` on any other static HTTPS origin.
 
 ## Views
 

@@ -44,7 +44,7 @@ python -m http.server 8765
 
 密钥只存在这台浏览器的 `localStorage`。请求使用 `Authorization: Bearer <密钥>`。改完页面后若看到旧稿，请 Ctrl+F5。
 
-手机上：把 `index.html` 放到任意静态 HTTPS 托管（例如 Cloudflare Pages），再用「添加到主屏幕」。
+线上副本：[https://agathonli.github.io/token-monitor-web/](https://agathonli.github.io/token-monitor-web/)（GitHub Pages，`main` 仓库根目录）。在页面里填 Hub 地址和密钥，只存在该浏览器的 `localStorage`，不会进仓库。手机打开该 HTTPS 页后可「添加到主屏幕」。也可以把 `index.html` 放到其他静态 HTTPS 托管。
 
 ## 界面
 
