@@ -4,10 +4,15 @@
 
 ## 接手时必读（按顺序）
 
-1. `README.md`
+1. `README.md`（给人看的英文说明）与 `README.zh-CN.md`（简体）
 2. `LICENSE`
 3. `logs/` 里日期最新的一篇
 4. 重新核对目录内实际文件，不要只信交接文本
+
+人类 README 不要写本机绝对路径、不要写「红线」清单。那些只放在本文件：
+
+- 大改 `index.html` 前先复制到 `versions/`（或打 git tag），并在 `logs/` 记一笔
+- `logs/`、`versions/` 是给维护者的，不是给终端用户的入门步骤
 
 ## 刚性红线
 
