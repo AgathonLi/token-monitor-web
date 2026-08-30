@@ -22,7 +22,7 @@
 - 不要修改 `AgathonLi/token-monitor` fork 的 `main` 来迁就本看板
 - 改 Cloudflare / Hub / 桌面 Token Monitor 配置须先确认
 - 大改 `index.html` 前先复制到 `versions/`（或打 git tag），并在 `logs/` 记一笔
-- 可以、也预期会使用 git；推送默认 **public**。未确认不要 `git init` / `push`（由用户在对话里点头后再做）
+- 可以、也预期会使用 git；远程默认 **public**。未确认不要 `push`、force-push、改 remote，或开 GitHub / Cloudflare Pages
 
 ## 冲突处理
 

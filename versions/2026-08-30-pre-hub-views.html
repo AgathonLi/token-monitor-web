@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#eef0f3">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>Token Monitor Web</title>
+  <title>Token Monitor</title>
   <style>
     :root {
       --bg: #eef0f3;
@@ -216,7 +216,7 @@
     <div id="gate" class="gate" hidden>
       <form class="gate-card" id="gate-form">
         <h1>连接 Hub</h1>
-        <p>独立网页客户端，不是官方应用。与桌面端同一把密钥，只存在这台浏览器里。</p>
+        <p>与桌面 Token Monitor 同一把密钥。只存在这台浏览器里。</p>
         <div class="err" id="gate-err"></div>
         <label for="hub">Hub URL</label>
         <input id="hub" type="text" required placeholder="https://token-monitor-hub.xxx.workers.dev" inputmode="url">
@@ -276,14 +276,12 @@ const VIEWS = [
   { id: "tools", label: "工具", icon: "☰" },
   { id: "limits", label: "额度", icon: "◔" },
   { id: "models", label: "模型", icon: "✣" },
-  { id: "devices", label: "设备", icon: "▣" },
   { id: "trends", label: "趋势", icon: "↗" }
 ];
 const META = {
   codex: { name: "Codex", color: "#4aa3ad", mark: "∞" },
   claude: { name: "Claude", color: "#c17a62", mark: "✶" },
   grok: { name: "Grok", color: "#222", mark: "⊘" },
-  xai: { name: "Grok", color: "#222", mark: "⊘" },
   hermes: { name: "Hermes Agent", color: "#c9a227", mark: "⚕" },
   antigravity: { name: "Antigravity", color: "#4d7cff", mark: "A" },
   workbuddy: { name: "WorkBuddy", color: "#2ec27e", mark: "W" },
@@ -301,26 +299,7 @@ const META = {
   dsh: { name: "DeepSeek", color: "#4d7cff", mark: "✧" },
   minimax: { name: "MiniMax", color: "#ef4444", mark: "M" },
   thirdparty: { name: "Third-party APIs", color: "#444", mark: "◎" },
-  newapi: { name: "Third-party APIs", color: "#444", mark: "◎" },
-  cline: { name: "Cline", color: "#e8a838", mark: "C" },
-  zed: { name: "Zed", color: "#1a1a1a", mark: "Z" },
-  kilocode: { name: "Kilo Code", color: "#f59e0b", mark: "K" },
-  commandcode: { name: "Command Code", color: "#0f766e", mark: ">" },
-  mimo: { name: "MiMo Code", color: "#2563eb", mark: "M" },
-  mimocode: { name: "MiMo Code", color: "#2563eb", mark: "M" },
-  kiro: { name: "Kiro", color: "#7c3aed", mark: "K" },
-  codebuddy: { name: "CodeBuddy", color: "#0284c7", mark: "B" },
-  proma: { name: "Proma", color: "#db2777", mark: "P" },
-  qoder: { name: "Qoder", color: "#334155", mark: "Q" },
-  qodercn: { name: "Qoder CN", color: "#334155", mark: "Q" },
-  reasonix: { name: "Reasonix", color: "#4338ca", mark: "R" },
-  cherrystudio: { name: "Cherry Studio", color: "#e11d48", mark: "C" },
-  cherry: { name: "Cherry Studio", color: "#e11d48", mark: "C" },
-  lmstudio: { name: "LM Studio", color: "#475569", mark: "L" },
-  openrouter: { name: "OpenRouter", color: "#88a0b8", mark: "R" },
-  volcengine: { name: "Volcengine", color: "#f97316", mark: "V" },
-  ollama: { name: "Ollama", color: "#111827", mark: "O" },
-  trae: { name: "Trae CN", color: "#0ea5e9", mark: "T" }
+  newapi: { name: "Third-party APIs", color: "#444", mark: "◎" }
 };
 const WIN_LAB = {
   session: "Session", weekly: "Weekly", daily: "Daily",
@@ -402,13 +381,9 @@ function fmtDur(ms) {
 }
 function authLabel(p) {
   const s = String(p.authType || p.source || p.channel || p.login || "").toLowerCase();
-  const map = { oauth: "OAuth", cli: "CLI", web: "Web", rpc: "RPC", local: "Local", api: "API" };
-  if (map[s]) return map[s];
   if (/oauth/.test(s)) return "OAuth";
   if (/web/.test(s)) return "Web";
   if (/rpc/.test(s)) return "RPC";
-  if (/cli/.test(s)) return "CLI";
-  if (/local/.test(s)) return "Local";
   if (/api/.test(s)) return "API";
   return p.authType || p.source || "";
 }
@@ -416,29 +391,13 @@ function planLabel(p) {
   return p.planName || p.plan || p.planLabel || p.accountLabel || p.label || "";
 }
 
-function fmtMoney(amount, currency) {
-  const n = Number(amount);
-  if (!Number.isFinite(n)) return "";
-  const cur = String(currency || "").toUpperCase();
-  if (!cur || cur === "USD") return fmtCost(n);
-  if (cur === "CNY" || cur === "RMB") return "¥" + n.toFixed(2);
-  if (cur === "HKD") return "HK$" + n.toFixed(2);
-  if (cur === "TWD") return "NT$" + n.toFixed(2);
-  if (cur === "CREDITS") return n.toFixed(2) + " cr";
-  return n.toFixed(2) + " " + cur;
-}
-function isMoneyWindow(w) {
-  const kind = String(w.kind || "").toLowerCase();
-  const metric = String(w.metric || "").toLowerCase();
-  return metric === "credits" || metric === "spend" || kind === "credits" || kind === "balance";
-}
 function renderLimits(full) {
   const list = (state.stats.limits && state.stats.limits.providers) || [];
   if (!list.length) return `<p class="empty">暂无额度。电脑端打开额度采集后会出现。</p>`;
   const show = full ? list : list.slice(0, 3);
   return show.map((p) => {
     const m = meta(p.provider);
-    const wins = (p.windows || []).filter((w) => full || !w.additional);
+    const wins = p.windows || [];
     const compact = !full;
     const use = compact ? wins.slice(0, 2) : wins;
     const cols = use.length <= 1 ? "one" : "";
@@ -448,24 +407,21 @@ function renderLimits(full) {
     const auth = authLabel(p);
     if (auth) subBits.push(auth);
     const winHtml = use.map((w) => {
-      const lab = WIN_LAB[w.kind] || w.kind || "Window";
-      if (isMoneyWindow(w)) {
-        const amt = w.remaining ?? w.amount ?? w.used;
-        const money = fmtMoney(amt, w.currency || (p.balance && p.balance.currency));
-        return `<div class="win"><div class="lab"><span>${esc(lab)}</span><span>${esc(money)}</span></div></div>`;
-      }
       const left = w.remainingPercent != null ? Number(w.remainingPercent) : (100 - (Number(w.usedPercent) || 0));
+      const lab = WIN_LAB[w.kind] || w.kind || "Window";
+      if (String(w.kind).toLowerCase() === "balance" || lab === "Balance") {
+        return `<div class="win"><div class="lab"><span>Balance</span><span>${fmtCost(w.remaining ?? w.amount ?? left)}</span></div></div>`;
+      }
       return `<div class="win">
         <div class="lab"><span>${esc(lab)}</span><span>${Math.round(left)}% left</span></div>
         ${full ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>` : ""}
         <div class="reset">${esc(relReset(w.resetsAt))}</div>
       </div>`;
     }).join("");
-    const plan = planLabel(p);
     return `<article class="prov">
       <div class="prov-h">
         <div class="prov-name">${ico(p.provider)} ${esc(m.name)}</div>
-        <div class="plan">${esc(plan)}</div>
+        <div class="plan">${esc(full ? planLabel(p) : "")}</div>
       </div>
       ${full && subBits.length ? `<div class="sub">${esc(subBits.join(" · "))}</div>` : ""}
       <div class="wins ${cols}">${winHtml}</div>
@@ -499,55 +455,27 @@ function dailyList() {
   const h = state.history || (state.stats && state.stats.historyPreview) || {};
   return Array.isArray(h.daily) ? h.daily : [];
 }
-function tzName() {
-  const s = state.stats || {};
-  const h = state.history || {};
-  const d0 = Array.isArray(s.devices) ? s.devices[0] : null;
-  return (s.periodWindows && s.periodWindows.timeZone)
-    || h.timeZone
-    || (h.summary && h.summary.timeZone)
-    || (d0 && d0.periodWindows && d0.periodWindows.timeZone)
-    || (typeof Intl !== "undefined" && Intl.DateTimeFormat().resolvedOptions().timeZone)
-    || "UTC";
-}
-function civilYmd(date) {
-  const dt = date || new Date();
-  try {
-    const parts = new Intl.DateTimeFormat("en-US", {
-      timeZone: tzName(), year: "numeric", month: "2-digit", day: "2-digit"
-    }).formatToParts(dt);
-    const g = (t) => parts.find((p) => p.type === t).value;
-    return `${g("year")}-${g("month")}-${g("day")}`;
-  } catch {
-    const y = dt.getFullYear();
-    const m = String(dt.getMonth() + 1).padStart(2, "0");
-    const d = String(dt.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
-  }
-}
-function addCivilDays(ymd, delta) {
-  const [y, m, d] = String(ymd).split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d + delta));
-  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
-}
-function weekdaySun0(ymd) {
-  const [y, m, d] = String(ymd).split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-}
 
 function heatmapHtml() {
   const days = dailyList();
   const by = new Map(days.map((d) => [String(d.date).slice(0, 10), Number(d.tokens) || 0]));
-  const today = civilYmd();
-  const weeks = 26;
-  let start = addCivilDays(today, -(weeks * 7 - 1));
-  start = addCivilDays(start, -weekdaySun0(start));
-  const vals = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const end = new Date(today);
+  const start = new Date(today);
+  start.setDate(start.getDate() - 26 * 7 + (6 - start.getDay() + 7) % 7);
+  // align to Sunday
+  start.setDate(start.getDate() - start.getDay());
+  const cells = [];
+  const cursor = new Date(start);
   let max = 1;
-  for (let cur = start; cur <= today; cur = addCivilDays(cur, 1)) {
-    const v = by.get(cur) || 0;
-    vals.push({ key: cur, v });
+  const vals = [];
+  while (cursor <= end) {
+    const key = cursor.toISOString().slice(0, 10);
+    const v = by.get(key) || 0;
+    vals.push({ key, v });
     if (v > max) max = v;
+    cursor.setDate(cursor.getDate() + 1);
   }
   const months = [];
   const seen = new Set();
@@ -560,6 +488,7 @@ function heatmapHtml() {
     if (x.v > 0) i = x.v / max >= 0.75 ? 4 : x.v / max >= 0.5 ? 3 : x.v / max >= 0.25 ? 2 : 1;
     return `<b class="i${i}"></b>`;
   }).join("");
+  const active = days.filter((d) => Number(d.tokens) > 0).length;
   const peak = days.reduce((m, d) => Math.max(m, Number(d.tokens) || 0), 0);
   return `<div class="heat">
     <div class="heat-grid">${html}</div>
@@ -570,9 +499,16 @@ function heatmapHtml() {
 
 function streakAndTime() {
   const days = dailyList();
+  const todayKey = new Date().toISOString().slice(0, 10);
   const active = new Set(days.filter((d) => Number(d.tokens) > 0).map((d) => String(d.date).slice(0, 10)));
   let streak = 0;
-  for (let key = civilYmd(); active.has(key); key = addCivilDays(key, -1)) streak += 1;
+  const cur = new Date();
+  for (;;) {
+    const key = cur.toISOString().slice(0, 10);
+    if (!active.has(key)) break;
+    streak += 1;
+    cur.setDate(cur.getDate() - 1);
+  }
   const activeDays = active.size;
   const peak = days.reduce((m, d) => Math.max(m, Number(d.tokens) || 0), 0);
   const ms = days.reduce((s, d) => s + (Number(d.activeTimeMs) || 0), 0);
@@ -587,11 +523,12 @@ function streakAndTime() {
 
 function monthBars() {
   const days = dailyList();
-  const today = civilYmd();
-  const ym = today.slice(0, 7);
+  const now = new Date();
+  const ym = now.toISOString().slice(0, 7);
   let rows = days.filter((d) => String(d.date).startsWith(ym));
   if (rows.length < 8) rows = days.slice(-24);
   const max = Math.max(...rows.map((d) => Number(d.tokens) || 0), 1);
+  const today = now.toISOString().slice(0, 10);
   const bars = rows.map((d) => {
     const h = Math.max(2, Math.round((Number(d.tokens) / max) * 170));
     const on = String(d.date).slice(0, 10) === today ? "on" : "";
@@ -602,32 +539,6 @@ function monthBars() {
   return { bars, first, last };
 }
 
-function renderDevices() {
-  const list = (state.stats && state.stats.devices) || [];
-  if (!list.length) return `<p class="empty">暂无设备。桌面端打开多设备同步后会出现。</p>`;
-  const ordered = list.slice().sort((a, b) => Number(!!a.stale) - Number(!!b.stale) || String(a.hostname || a.deviceId).localeCompare(String(b.hostname || b.deviceId)));
-  return ordered.map((d) => {
-    const per = (d.periods && d.periods[state.period]) || {};
-    const name = d.hostname || d.deviceId || "device";
-    const ago = relAgo(d.receivedAt || d.updatedAt);
-    const bits = [
-      d.deviceId && d.deviceId !== name ? d.deviceId : "",
-      d.osName || d.platform || "",
-      d.stale ? "stale" : ago
-    ].filter(Boolean);
-    return `<div class="row" style="flex-wrap:wrap;${d.stale ? "opacity:.55" : ""}">
-      <div style="display:flex;align-items:center;gap:10px;width:100%">
-        <span class="dot ${d.stale ? "bad" : "on"}"></span>
-        <div class="nm">${esc(name)}<small>${esc(bits.join(" · "))}</small></div>
-        <div class="vals">
-          <div class="tok">${fmtFull(per.totalTokens)}</div>
-          <div class="cst">${fmtCost(per.costUsd)}</div>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
-}
-
 function renderMain() {
   const p = periodOf(state.stats, state.period);
   const tools = entries(p.clients, p.clientCosts);
@@ -635,7 +546,6 @@ function renderMain() {
   if (state.view === "limits") return renderLimits(true);
   if (state.view === "tools") return renderBars(tools, false);
   if (state.view === "models") return renderBars(models, false);
-  if (state.view === "devices") return renderDevices();
   if (state.view === "trends") {
     const t = streakAndTime();
     const b = monthBars();

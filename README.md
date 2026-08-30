@@ -42,7 +42,7 @@ Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/). Enter:
 - **Hub URL** — `https://token-monitor-hub.<your-subdomain>.workers.dev` (no `/api/...` path)
 - **Secret** — the same string as the desktop widget
 
-The secret is stored only in this browser’s `localStorage`. Requests use `Authorization: Bearer`. After a Ctrl+F5 if the page looks stale.
+The secret is stored only in this browser’s `localStorage`. Requests use `Authorization: Bearer <secret>`. After you change the page, use Ctrl+F5 if it looks stale.
 
 On a phone, host `index.html` on any static HTTPS origin (for example Cloudflare Pages) and use “Add to Home Screen”.
 
@@ -57,6 +57,7 @@ The layout follows the desktop widget (light theme, centered column on large scr
 | **Tools** | Per-client tokens, cost, and share |
 | **Limits** | Provider quota windows (session / weekly / …) |
 | **Models** | Per-model tokens, cost, and share |
+| **Devices** | Per-machine tokens, cost, and live/stale sync |
 | **Trends** | Daily bars plus active days, streak, active time, peak day |
 
 Fields the hub JSON does not send (plan labels such as Plus/Pro, OAuth vs Web, and so on) stay blank. Session-by-session transcripts never leave the desktop app.

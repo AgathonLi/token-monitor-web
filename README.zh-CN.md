@@ -42,7 +42,7 @@ python -m http.server 8765
 - **Hub URL** — `https://token-monitor-hub.<你的子域>.workers.dev`（不要加 `/api/...`）
 - **密钥** — 与桌面小部件同一串
 
-密钥只存在这台浏览器的 `localStorage`。请求使用 `Authorization: Bearer`。页面看起来像缓存时请 Ctrl+F5。
+密钥只存在这台浏览器的 `localStorage`。请求使用 `Authorization: Bearer <密钥>`。改完页面后若看到旧稿，请 Ctrl+F5。
 
 手机上：把 `index.html` 放到任意静态 HTTPS 托管（例如 Cloudflare Pages），再用「添加到主屏幕」。
 
@@ -57,6 +57,7 @@ python -m http.server 8765
 | **工具** | 按客户端的 tokens、成本与占比 |
 | **额度** | 各提供方配额窗口（session / weekly / …） |
 | **模型** | 按模型的 tokens、成本与占比 |
+| **设备** | 各设备 tokens、成本与同步是否过期 |
 | **趋势** | 每日柱状图，以及活跃天数、连续、活跃时间、峰值日 |
 
 Hub JSON 未提供的字段（如 Plus/Pro 计划名、OAuth 与 Web 等）会留空。逐条 session 的原文不会离开桌面应用。
