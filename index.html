@@ -681,9 +681,8 @@ function sortDevices(list) {
   });
 }
 function statsStamp() {
-  const s = state.stats || {};
-  const times = [s.updatedAt, s.limits && s.limits.updatedAt];
-  for (const d of s.devices || []) times.push(d.receivedAt, d.updatedAt);
+  const times = [];
+  for (const d of (state.stats && state.stats.devices) || []) times.push(d.receivedAt || d.updatedAt);
   const ms = times.map((x) => (x ? new Date(x).getTime() : 0)).filter((n) => n > 0);
   return ms.length ? Math.max(...ms) : null;
 }

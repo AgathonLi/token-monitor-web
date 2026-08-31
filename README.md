@@ -48,7 +48,7 @@ A hosted copy is at [https://agathonli.github.io/token-monitor-web/](https://aga
 
 ## Views
 
-The layout is the same on phone and desktop (light, no floating phone card). Below 860px the header wraps and tabs scroll; from 860px it uses a two-column home. Use EN/中 in the header. List views sort by tokens, cost, or name. The time under the totals is the latest hub `updatedAt` / device `receivedAt`.
+The layout is the same on phone and desktop (light, no floating phone card). Below 860px the header wraps and tabs scroll; from 860px it uses a two-column home. Use EN/中 in the header. List views sort by tokens, cost, or name. The time under the totals is the latest device `receivedAt` (last ingest to the hub), not the page fetch.
 
 | Control | What it shows |
 |---|---|
