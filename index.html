@@ -235,6 +235,8 @@
       width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center;
       font-size: 11px; font-weight: 800; color: #fff; flex: 0 0 18px;
     }
+    .ico-svg { background: transparent; color: inherit; }
+    .ico-svg svg { width: 16px; height: 16px; display: block; }
 
     .dock {
       position: absolute; left: 0; right: 0; bottom: 0;
@@ -492,7 +494,7 @@ const META = {
   glm: { name: "GLM", color: "#111", mark: "Z" },
   cursor: { name: "Cursor", color: "#888", mark: "I" },
   copilot: { name: "Copilot", color: "#6e40c9", mark: "C" },
-  opencode: { name: "OpenCode", color: "#f59e0b", mark: "O" },
+  opencode: { name: "OpenCode", color: "#000000", mark: "O" },
   openclaw: { name: "OpenClaw", color: "#0ea5e9", mark: "C" },
   qwen: { name: "Qwen", color: "#6366f1", mark: "Q" },
   deepseek: { name: "DeepSeek", color: "#4d7cff", mark: "✧" },
@@ -552,8 +554,13 @@ function meta(id) {
   const k = String(id || "").toLowerCase();
   return META[k] || { name: id, color: "#6b7280", mark: (String(id || "?").slice(0, 1) || "?").toUpperCase() };
 }
+const ICO_SVG = {
+  opencode: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M16 6H8v12h8V6zm4 16H4V2h16v20z"/></svg>'
+};
 function ico(id) {
   const m = meta(id);
+  const svg = ICO_SVG[String(id || "").toLowerCase()];
+  if (svg) return `<span class="ico ico-svg" style="color:${m.color}">${svg}</span>`;
   return `<span class="ico" style="background:${m.color}">${esc(m.mark)}</span>`;
 }
 function fmtFull(n) { return Math.round(Number(n) || 0).toLocaleString("en-US"); }
