@@ -180,16 +180,10 @@
     .sub { color: var(--muted); font-size: 12px; margin: 3px 0 10px 26px; }
     .wins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
     .wins.one { grid-template-columns: 1fr; }
-    .win.wide { grid-column: 1 / -1; }
     .win .lab { display: flex; justify-content: space-between; font-size: 12px; color: #5b616a; margin-bottom: 6px; }
     .bar { height: 7px; background: var(--track); border-radius: 99px; overflow: hidden; }
     .bar > i { display: block; height: 100%; border-radius: 99px; width: 0; }
     .reset { font-size: 11px; color: var(--faint); margin-top: 5px; }
-    .credits {
-      display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
-      font-size: 12px; color: #5b616a;
-    }
-    .credits .times { color: var(--faint); font-size: 11px; text-align: right; }
 
     .row {
       display: flex; align-items: center; gap: 10px;
@@ -523,7 +517,7 @@ const META = {
 const WIN_LAB = {
   session: "Session", weekly: "Weekly", daily: "Daily",
   "5-hour": "5-hour", five_hour: "5-hour", credits: "Credits",
-  billing: "Monthly", monthly: "Monthly", balance: "Balance"
+  billing: "Billing", balance: "Balance"
 };
 
 const $ = (id) => document.getElementById(id);
@@ -633,11 +627,6 @@ function fmtDur(ms) {
 }
 function authLabel(p) {
   const s = String(p.authType || p.source || p.channel || p.login || "").toLowerCase();
-  const detail = String(p.sourceDetail || "").toLowerCase();
-  if (String(p.provider || "").toLowerCase() === "codex" && s === "rpc") {
-    const rpc = { app: "App", cli: "CLI", managed: "Managed", unknown: "RPC" };
-    if (rpc[detail]) return rpc[detail];
-  }
   const map = { oauth: "OAuth", cli: "CLI", web: "Web", rpc: "RPC", local: "Local", api: "API" };
   if (map[s]) return map[s];
   if (/oauth/.test(s)) return "OAuth";
@@ -650,93 +639,6 @@ function authLabel(p) {
 }
 function planLabel(p) {
   return p.planName || p.plan || p.planLabel || p.accountLabel || p.label || "";
-}
-function winKind(w) {
-  return String((w && w.kind) || "").trim().toLowerCase();
-}
-function isAdditionalWin(w) {
-  return Boolean(w && w.additional === true);
-}
-function additionalQuotaName(label) {
-  const name = String(label || "").trim();
-  return name.toLowerCase().replace(/[_\s]+/g, "-") === "gpt-reserve" ? "Luna Reserve" : name;
-}
-function additionalPeriodLabel(w) {
-  const minutes = Number(w && w.windowMinutes);
-  if (Number.isFinite(minutes) && minutes > 0 && Number.isInteger(minutes)) {
-    if (minutes === 30 * 24 * 60) return "Monthly";
-    if (minutes % (7 * 24 * 60) === 0) {
-      const weeks = minutes / (7 * 24 * 60);
-      return weeks === 1 ? "Weekly" : weeks + "-week";
-    }
-    if (minutes % (24 * 60) === 0) {
-      const days = minutes / (24 * 60);
-      return days === 1 ? "Daily" : days + "-day";
-    }
-    if (minutes % 60 === 0) return (minutes / 60) + "-hour";
-    return minutes + "-minute";
-  }
-  const k = winKind(w);
-  if (k === "daily") return "Daily";
-  if (k === "weekly") return "Weekly";
-  if (k === "billing" || k === "monthly") return "Monthly";
-  if (k === "session") return "Session";
-  return "";
-}
-function windowLabel(w, siblings) {
-  if (isAdditionalWin(w)) {
-    const name = String(w.label || "").trim();
-    const period = additionalPeriodLabel(w);
-    if (!name) return period || "Additional limit";
-    const key = name.toLowerCase();
-    const n = (siblings || []).filter((c) => String(c.label || "").trim().toLowerCase() === key).length;
-    const display = additionalQuotaName(name);
-    return n > 1 && period ? display + " · " + period : display;
-  }
-  const k = winKind(w);
-  if (k === "billing" || k === "monthly") return "Monthly";
-  return WIN_LAB[k] || WIN_LAB[w && w.kind] || (w && w.label) || (w && w.kind) || "Window";
-}
-function windowWide(w, wins) {
-  if (isAdditionalWin(w)) return true;
-  const k = winKind(w);
-  if (k === "billing" || k === "monthly") return true;
-  const has = (kind) => (wins || []).some((x) => !isAdditionalWin(x) && winKind(x) === kind);
-  if (k === "session") return !has("weekly") && !has("billing") && !has("monthly");
-  if (k === "weekly") return !has("session") && !has("billing") && !has("monthly");
-  return false;
-}
-function remainShort(iso) {
-  if (!iso) return "";
-  const ms = new Date(iso).getTime() - Date.now();
-  if (!Number.isFinite(ms)) return "";
-  if (ms <= 0) return "now";
-  const totalMinutes = Math.max(0, Math.round(ms / 60000));
-  const d = Math.floor(totalMinutes / 1440);
-  const h = Math.floor((totalMinutes % 1440) / 60);
-  const m = totalMinutes % 60;
-  if (d > 0) return d + "d " + h + "h";
-  if (h > 0) return h + "h " + m + "m";
-  if (m > 0) return m + "m";
-  return "<1m";
-}
-function resetCreditsHtml(p) {
-  const rc = p && (p.resetCredits || p.rateLimitResetCredits);
-  if (!rc || typeof rc !== "object") return "";
-  const available = Number(rc.availableCount);
-  if (!Number.isFinite(available) || Math.floor(available) <= 0) return "";
-  const count = Math.max(0, Math.floor(available));
-  const value = count + " reset" + (count === 1 ? "" : "s");
-  const raw = Array.isArray(rc.expirations) ? rc.expirations : [];
-  let dates = raw.map((x) => new Date(x)).filter((d) => !Number.isNaN(d.getTime())).sort((a, b) => a - b);
-  if (!dates.length && rc.nextExpiresAt) {
-    const d = new Date(rc.nextExpiresAt);
-    if (!Number.isNaN(d.getTime())) dates = [d];
-  }
-  const parts = dates.slice(0, 3).map((d) => remainShort(d.toISOString()));
-  if (dates.length > 3) parts.push("+" + (dates.length - 3));
-  const times = parts.join(" · ");
-  return `<div class="win wide note"><div class="credits"><span>${esc(value)}</span>${times ? `<span class="times">${esc(times)}</span>` : ""}</div></div>`;
 }
 
 function fmtMoney(amount, currency) {
@@ -803,38 +705,39 @@ function renderLimits(full) {
   const raw = (state.stats.limits && state.stats.limits.providers) || [];
   if (!raw.length) return `<p class="empty">${esc(t("empty.limits"))}</p>`;
   const list = full ? sortLimits(raw) : raw.slice(0, 3);
-  return list.map((p) => {
+  const show = list;
+  return show.map((p) => {
     const m = meta(p.provider);
-    const wins = (p.windows || []).filter((w) => full || !isAdditionalWin(w));
-    const additionalWins = (p.windows || []).filter(isAdditionalWin);
-    const cols = wins.filter((w) => !windowWide(w, wins)).length <= 1 ? "one" : "";
+    const wins = (p.windows || []).filter((w) => full || !w.additional);
+    const compact = !full;
+    const use = compact ? wins.slice(0, 2) : wins;
+    const cols = use.length <= 1 ? "one" : "";
     const subBits = [];
     const ago = relAgo(p.updatedAt || (state.stats.limits && state.stats.limits.updatedAt));
     if (ago) subBits.push("Updated " + ago);
     const auth = authLabel(p);
     if (auth) subBits.push(auth);
-    const winHtml = wins.map((w) => {
-      const lab = windowLabel(w, additionalWins);
-      const wide = windowWide(w, wins) ? " wide" : "";
+    const winHtml = use.map((w) => {
+      const lab = WIN_LAB[w.kind] || w.kind || "Window";
       if (isMoneyWindow(w)) {
         const amt = w.remaining ?? w.amount ?? w.used;
         const money = fmtMoney(amt, w.currency || (p.balance && p.balance.currency));
-        return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span><span>${esc(money)}</span></div></div>`;
+        return `<div class="win"><div class="lab"><span>${esc(lab)}</span><span>${esc(money)}</span></div></div>`;
       }
       const left = w.remainingPercent != null ? Number(w.remainingPercent) : (100 - (Number(w.usedPercent) || 0));
-      return `<div class="win${wide}">
+      return `<div class="win">
         <div class="lab"><span>${esc(lab)}</span><span>${Math.round(left)}% left</span></div>
-        <div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>
+        ${full ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>` : ""}
         <div class="reset">${esc(relReset(w.resetsAt))}</div>
       </div>`;
-    }).join("") + resetCreditsHtml(p);
+    }).join("");
     const plan = planLabel(p);
     return `<article class="prov">
       <div class="prov-h">
         <div class="prov-name">${ico(p.provider)} ${esc(m.name)}</div>
         <div class="plan">${esc(plan)}</div>
       </div>
-      ${subBits.length ? `<div class="sub">${esc(subBits.join(" · "))}</div>` : ""}
+      ${full && subBits.length ? `<div class="sub">${esc(subBits.join(" · "))}</div>` : ""}
       <div class="wins ${cols}">${winHtml}</div>
     </article>`;
   }).join("");
