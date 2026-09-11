@@ -83,6 +83,46 @@
     }
     .sort button.on { background: #e8f0fe; color: #1a4fbf; font-weight: 650; }
 
+    @media (min-width: 860px) {
+      .shell { width: min(1120px, 100%); }
+      .top { padding: 18px 28px 8px; flex-wrap: nowrap; }
+      .tabs { flex: 1 1 auto; overflow: visible; }
+      .hero { padding: 8px 28px 4px; }
+      .hero .big { font-size: clamp(36px, 3.2vw, 48px); }
+      .banner, .asof { padding-left: 28px; padding-right: 28px; }
+      .scroll { padding: 8px 28px 36px; }
+      .gate { padding: 48px 28px; }
+      .gate-card { max-width: 400px; }
+      #app.view-home .hero, #app.view-home .asof-hero { display: none; }
+      .home-kpis { display: block; }
+      .home-grid {
+        display: grid;
+        grid-template-columns: minmax(240px, 320px) 1fr;
+        grid-template-areas:
+          "kpis heat"
+          "limits models";
+        gap: 8px 40px;
+        align-items: start;
+      }
+      .home-kpis { grid-area: kpis; padding-top: 8px; }
+      .home-heat { grid-area: heat; margin-top: 0; }
+      .home-limits { grid-area: limits; }
+      .home-models { grid-area: models; }
+      .heat-grid {
+        grid-template-rows: repeat(7, 11px);
+        grid-auto-columns: 11px;
+        gap: 4px;
+        justify-content: start;
+      }
+      .limits-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 40px;
+      }
+      .list-wrap { max-width: 760px; }
+      .tiles { grid-template-columns: repeat(4, 1fr); }
+    }
+
     .gate { flex: 1; display: grid; place-items: center; padding: 28px 22px; }
     .gate-card { width: 100%; }
     .gate-card h1 { margin: 0 0 6px; font-size: 20px; }
@@ -245,47 +285,6 @@
     .ghost { background: #fff; color: var(--ink); }
     .empty { color: var(--muted); font-size: 13px; padding: 12px 0; }
     .banner { color: #c4543a; font-size: 12px; padding: 0 16px 8px; }
-
-    @media (min-width: 860px) {
-      .shell { width: min(1120px, 100%); }
-      .top { padding: 18px 28px 8px; flex-wrap: nowrap; }
-      .tabs { flex: 1 1 auto; overflow: visible; }
-      .hero { padding: 8px 28px 4px; }
-      .hero .big { font-size: clamp(36px, 3.2vw, 48px); }
-      .banner, .asof { padding-left: 28px; padding-right: 28px; }
-      .scroll { padding: 8px 28px 36px; }
-      .gate { padding: 48px 28px; }
-      .gate-card { max-width: 400px; }
-      #app.view-home .hero, #app.view-home .asof-hero { display: none; }
-      .home-kpis { display: block; }
-      .home-grid {
-        display: grid;
-        grid-template-columns: minmax(240px, 320px) 1fr;
-        grid-template-areas:
-          "kpis heat"
-          "limits models";
-        gap: 8px 40px;
-        align-items: start;
-      }
-      .home-kpis { grid-area: kpis; padding-top: 8px; }
-      .home-heat { grid-area: heat; margin-top: 0; }
-      .home-limits { grid-area: limits; }
-      .home-models { grid-area: models; }
-      .heat-grid {
-        grid-template-rows: repeat(7, 11px);
-        grid-auto-columns: 11px;
-        gap: 4px;
-        justify-content: start;
-      }
-      .limits-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 40px;
-      }
-      .list-wrap { max-width: 760px; }
-      .tiles { grid-template-columns: repeat(4, 1fr); }
-    }
-
   </style>
 </head>
 <body>
