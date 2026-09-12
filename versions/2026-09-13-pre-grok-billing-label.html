@@ -785,10 +785,7 @@ function windowLabel(w, siblings) {
     return n > 1 && period ? display + " · " + period : display;
   }
   const k = winKind(w);
-  if (k === "billing" || k === "monthly") {
-    const label = String((w && w.label) || "").trim();
-    return label || "Monthly";
-  }
+  if (k === "billing" || k === "monthly") return "Monthly";
   return WIN_LAB[k] || WIN_LAB[w && w.kind] || (w && w.label) || (w && w.kind) || "Window";
 }
 function windowWide(w, wins) {
