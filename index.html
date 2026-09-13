@@ -672,6 +672,23 @@ function entries(map, costMap) {
     id: k, tokens: Number(o[k]) || 0, cost: Number(c[k]) || 0, pct: (Number(o[k]) || 0) / total
   }));
 }
+// Presentation-only exact aliases; keep Hub data intact and never strip variant suffixes generically.
+const MODEL_DISPLAY_ALIASES = Object.freeze({
+  "gemini-3.8-flash-high": "gemini-3.8-flash"
+});
+function modelEntries(period) {
+  const models = {};
+  const modelCosts = {};
+  for (const [id, value] of Object.entries(period.models || {})) {
+    const key = MODEL_DISPLAY_ALIASES[id] || id;
+    models[key] = (models[key] || 0) + (Number(value) || 0);
+  }
+  for (const [id, value] of Object.entries(period.modelCosts || {})) {
+    const key = MODEL_DISPLAY_ALIASES[id] || id;
+    modelCosts[key] = (modelCosts[key] || 0) + (Number(value) || 0);
+  }
+  return entries(models, modelCosts);
+}
 function sortSpec(view) {
   return state.sort[view] || { key: "tokens", dir: "desc" };
 }
@@ -1094,7 +1111,7 @@ function renderDevices() {
 function renderMain() {
   const p = periodOf(state.stats, state.period);
   const tools = sortEntries(entries(p.clients, p.clientCosts), "tools");
-  const models = sortEntries(entries(p.models, p.modelCosts), "models");
+  const models = sortEntries(modelEntries(p), "models");
   if (state.view === "limits") return `${sortBar("limits", ["left", "name"])}<div class="limits-grid">${renderLimits(true)}</div>`;
   if (state.view === "tools") return `${sortBar("tools", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(tools, false)}</div>`;
   if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(models, false)}</div>`;
