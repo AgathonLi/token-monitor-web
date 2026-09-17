@@ -858,18 +858,13 @@ function fmtMoney(amount, currency) {
   if (cur === "CNY" || cur === "RMB") return "¥" + n.toFixed(2);
   if (cur === "HKD") return "HK$" + n.toFixed(2);
   if (cur === "TWD") return "NT$" + n.toFixed(2);
-  if (cur === "CREDITS") return n.toFixed(2);
+  if (cur === "CREDITS") return n.toFixed(2) + " cr";
   return n.toFixed(2) + " " + cur;
 }
 function isMoneyWindow(w) {
   const kind = String(w.kind || "").toLowerCase();
   const metric = String(w.metric || "").toLowerCase();
   return metric === "credits" || metric === "spend" || kind === "credits" || kind === "balance";
-}
-function isCreditsWindow(w) {
-  const metric = String((w && w.metric) || "").toLowerCase();
-  if (metric === "credits") return true;
-  return !metric && String((w && w.label) || "").trim() === "Credits";
 }
 function limitLeft(p) {
   const nums = (p.windows || []).map((w) => w.remainingPercent != null ? Number(w.remainingPercent) : 100 - (Number(w.usedPercent) || 0));
@@ -932,19 +927,10 @@ function renderLimits(full) {
     const winHtml = wins.map((w) => {
       const lab = windowLabel(w, additionalWins);
       const wide = windowWide(w, wins) ? " wide" : "";
-      if (isCreditsWindow(w) || isMoneyWindow(w)) {
-        const amt = w.remaining ?? w.amount ?? (p.balance && p.balance.amount) ?? w.used;
-        let money = fmtMoney(amt, w.currency || (p.balance && p.balance.currency));
-        if (!money && String(w.detail || "").toLowerCase() === "unlimited") money = "Unlimited";
-        const showMeter = isCreditsWindow(w) && w.showMeter !== false;
-        const left = showMeter
-          ? (w.remainingPercent != null ? Number(w.remainingPercent) : (w.usedPercent != null ? 100 - Number(w.usedPercent) : NaN))
-          : NaN;
-        const bar = Number.isFinite(left)
-          ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>`
-          : "";
-        const reset = isCreditsWindow(w) && w.resetsAt ? `<div class="reset">${esc(relReset(w.resetsAt))}</div>` : "";
-        return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span><span>${esc(money)}</span></div>${bar}${reset}</div>`;
+      if (isMoneyWindow(w)) {
+        const amt = w.remaining ?? w.amount ?? w.used;
+        const money = fmtMoney(amt, w.currency || (p.balance && p.balance.currency));
+        return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span><span>${esc(money)}</span></div></div>`;
       }
       const left = w.remainingPercent != null ? Number(w.remainingPercent) : (100 - (Number(w.usedPercent) || 0));
       return `<div class="win${wide}">
