@@ -2,7 +2,11 @@
    <strong>EN</strong> | <a href="./README.zh-CN.md">简</a>
 </p>
 
-# Token Monitor Web
+<p align="center">
+   <img src="./assets/logo.svg" width="96" height="96" alt="Token Monitor Web logo" />
+</p>
+
+<h1 align="center">Token Monitor Web</h1>
 
 <p align="center">
    <em>A read-only web client for your self-hosted Token Monitor hub.</em>

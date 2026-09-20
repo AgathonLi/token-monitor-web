@@ -2,7 +2,11 @@
    <a href="./README.md">EN</a> | <strong>简</strong>
 </p>
 
-# Token Monitor Web
+<p align="center">
+   <img src="./assets/logo.svg" width="96" height="96" alt="Token Monitor Web 图标" />
+</p>
+
+<h1 align="center">Token Monitor Web</h1>
 
 <p align="center">
    <em>给你自己的 Token Monitor Hub 用的只读网页客户端。</em>
