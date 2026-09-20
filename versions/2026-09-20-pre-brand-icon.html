@@ -8,10 +8,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Token Monitor Web</title>
-  <link rel="icon" href="./favicon.ico" sizes="any">
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-  <link rel="manifest" href="./site.webmanifest">
   <style>
     :root {
       --bg: #eef0f3;
@@ -48,9 +44,7 @@
       display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
       padding: 12px 16px 6px;
     }
-    .brand-group { display: flex; align-items: center; gap: 6px; }
-    .brand { display: flex; align-items: center; gap: 7px; font-weight: 500; }
-    .brand-logo { display: block; width: 26px; height: 26px; flex: none; }
+    .brand { display: flex; align-items: center; gap: 7px; font-size: 18px; font-weight: 500; }
     .brand-name { font-size: 14px; font-weight: 600; }
     .top-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
     .tabs {
@@ -313,10 +307,7 @@
 
     <div id="app" hidden style="display:flex;flex-direction:column;min-height:100%;flex:1;">
       <header class="top">
-        <div class="brand-group">
-          <div class="brand"><img class="brand-logo" src="./assets/logo.svg" alt=""><span class="brand-name">Token Monitor Web</span></div>
-          <i class="dot" id="live" role="status" aria-label="Hub 状态"></i>
-        </div>
+        <div class="brand">Σ <i class="dot" id="live"></i><span class="brand-name">Token Monitor Web</span></div>
         <nav class="tabs" id="tabs"></nav>
         <div class="top-right">
           <div class="seg" id="seg">
@@ -1219,15 +1210,7 @@ function paint() {
     `<button type="button" data-v="${x.id}" class="${x.id === state.view ? "on" : ""}">${esc(x.label)}</button>`
   ).join("");
   for (const b of $("seg").querySelectorAll("button")) b.classList.toggle("on", b.dataset.p === state.period);
-  const live = $("live");
-  const liveLabel = state.error
-    ? (state.lang === "zh" ? "Hub 连接错误" : "Hub connection error")
-    : state.stats
-      ? (state.lang === "zh" ? "Hub 已连接" : "Hub connected")
-      : (state.lang === "zh" ? "Hub 未连接" : "Hub disconnected");
-  live.className = "dot " + (state.error ? "bad" : state.stats ? "on" : "");
-  live.title = liveLabel;
-  live.setAttribute("aria-label", liveLabel);
+  $("live").className = "dot " + (state.error ? "bad" : state.stats ? "on" : "");
 }
 
 async function api(path) {
