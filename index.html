@@ -683,7 +683,9 @@ function entries(map, costMap) {
 }
 // Presentation-only exact aliases; keep Hub data intact and never strip variant suffixes generically.
 const MODEL_DISPLAY_ALIASES = Object.freeze({
-  "gemini-3.8-flash-high": "gemini-3.8-flash"
+  "gemini-3.8-flash-high": "gemini-3.8-flash",
+  // MiniMax Code reports kimi-k3 usage under the exact model id k3.
+  "k3": "kimi-k3"
 });
 function modelEntries(period) {
   const models = {};
