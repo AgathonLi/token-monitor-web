@@ -98,7 +98,7 @@ test('summary cards retain model-pool identity and expose complete masked detail
   assert.ok(card.includes('data-quota-detail="0"'));
   const summaries = c.quotaSummary(p);
   assert.equal(summaries.length, 3);
-  assert.equal(summaries[0].window.remainingPercent, 20);
+  assert.equal(summaries[0].window.remainingPercent, 90);
   assert.ok(summaries[0].label.includes('Gemini'));
   assert.ok(summaries[2].label.includes('Argon'));
   const details = c.renderProviderDetails(p);
@@ -134,18 +134,18 @@ test('only model-page shares strictly below one percent collapse per period with
   for (const [period, smallName, smallCost] of [['today', 'tiny', '$3.0000'], ['month', 'boundary', '$2.0000']]) {
     run(`state.period=${JSON.stringify(period)}`);
     const rendered = c.renderMain();
-    assert.ok(rendered.includes('Other Models'));
+    assert.ok(rendered.includes('other models'));
     assert.ok(rendered.includes('<details class="other-models">'));
     assert.ok(!rendered.includes('<details class="other-models" open'));
     const children = rendered.slice(rendered.indexOf('class="other-model-list"'));
-    assert.ok(children.includes('>' + smallName + '</div>'));
+    assert.ok(children.includes('class="model-chip-name">' + smallName + '</span>'));
     assert.ok(children.includes(smallCost));
     assert.ok(children.includes('99'));
     const main = rendered.slice(0, rendered.indexOf('<details class="other-models">'));
-    assert.ok(!main.includes('>' + smallName + '</div>'));
+    assert.ok(!main.includes('class="model-chip-name">' + smallName + '</span>'));
   }
   run('state.period="allTime"');
-  assert.ok(!c.renderMain().includes('Other Models'));
+  assert.ok(!c.renderMain().includes('other models'));
   const list = [{ id: 'a', tokens: 1, cost: 2, pct: 0.0001 }, { id: 'b', tokens: 2, cost: 3, pct: 0.0002 }];
   const original = JSON.stringify(list);
   const rendered = c.renderModelList(list);

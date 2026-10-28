@@ -277,20 +277,22 @@
     .home-limits { order: 1; }
     .home-models { order: 2; }
     .home-quota-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-    .prov.quota-card { height: 320px; min-width: 0; display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
+    .prov.quota-card { height: 260px; min-width: 0; display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
     .prov.quota-card:last-child { border-bottom: 1px solid var(--line); }
-    .quota-card .prov-h { min-height: 24px; }
+    .quota-card .prov-h { align-items: center; min-height: 28px; }
     .quota-card .prov-name { flex: 1; white-space: nowrap; overflow: hidden; }
     .quota-card .prov-name > span:last-child { overflow: hidden; text-overflow: ellipsis; }
-    .quota-card .plan { max-width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .quota-card .account { height: 34px; min-height: 34px; line-height: 17px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .quota-card .sub { line-height: 16px; min-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .quota-summary { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 15px; padding-top: 6px; overflow: hidden; }
+    .quota-updated { color: var(--muted); font-size: 11px; white-space: nowrap; flex-shrink: 0; }
+    .quota-meta { color: #626b78; font-size: 11px; line-height: 18px; min-height: 18px; margin: 3px 0 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quota-summary { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+    .quota-summary .win { flex-shrink: 0; }
+    .quota-summary .bar { height: 6px; }
+    .quota-summary .reset { line-height: 14px; margin-top: 4px; color: #626b78; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .quota-summary .lab { display: grid; grid-template-columns: minmax(0, 1fr) max-content; align-items: baseline; gap: 8px; }
     .quota-summary .lab > span { white-space: nowrap; }
     .quota-summary .lab > span:first-child { overflow: hidden; text-overflow: ellipsis; }
-    .quota-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; font-size: 11px; color: var(--muted); }
-    .detail-trigger { background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 6px 9px; min-height: 32px; font-size: 12px; color: #526170; }
+    .quota-info { border: 0; background: transparent; color: #626b78; border-radius: 7px; min-width: 28px; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; flex-shrink: 0; }
+    .quota-info:hover, .quota-info:focus-visible { background: #dfe9fb; color: #1a4fbf; }
     .quota-preview { position: fixed; z-index: 100; width: min(420px, calc(100vw - 24px)); max-height: 70dvh; overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 10px 40px rgb(20 24 30 / 18%); }
     .quota-preview .prov, #quota-dialog .prov { padding: 0; border: 0; }
     #dlg { width: min(640px, calc(100vw - 24px)); max-height: 88dvh; overflow: auto; }
@@ -315,20 +317,25 @@
     .choice-order button:disabled { opacity: .3; cursor: default; }
     .other-models { margin-top: 0; }
     .other-title { display: flex; align-items: center; gap: 6px; }
-    .other-models > summary { list-style: none; cursor: pointer; }
+    .other-models > summary { list-style: none; cursor: pointer; flex-wrap: wrap; }
+    .model-group-main { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; }
     .other-models > summary::-webkit-details-marker { display: none; }
     .other-ai { color: #7c6cf0; flex: 0 0 18px; display: grid; place-items: center; }
     .other-chevron { font-size: 16px; color: #626b78; transition: transform .15s; }
     .other-models[open] .other-chevron { transform: rotate(180deg); }
     .other-models .cst { display: block; }
-    .other-model-list { margin: 2px 0 10px 12px; padding: 0 10px; border-left: 2px solid #d9dceb; background: rgb(255 255 255 / 24%); border-radius: 0 8px 8px 0; }
-    .other-model-list .row { padding: 9px 0; }
-    .other-model-list .row .nm, .other-model-list .row .tok { font-size: 12px; }
-    .other-model-list .nm { overflow-wrap: anywhere; }
-    .other-model-list .row .cst { font-size: 11px; }
-    .other-model-list .ico { width: 16px; height: 16px; flex-basis: 16px; }
-    .other-model-list .ico svg { width: 14px; height: 14px; }
-    .other-model-list .row-bar { height: 4px; }
+    .other-model-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 12px 0 14px; }
+    .model-chip { display: flex; align-items: center; gap: 6px; max-width: 100%; min-width: 0; min-height: 34px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: rgb(255 255 255 / 45%); color: var(--ink); font-size: 12px; font-weight: 500; text-align: left; }
+    .model-chip:hover, .model-chip:focus-visible { background: #e8f0fe; border-color: #c6d6ef; }
+    .model-chip-name { min-width: 0; overflow-wrap: anywhere; }
+    .model-chip-usage { color: #626b78; white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .model-chip .ico { width: 16px; height: 16px; flex-basis: 16px; }
+    .model-chip .ico svg { width: 14px; height: 14px; }
+    .model-detail h3 { display: flex; align-items: center; gap: 8px; font-size: 14px; overflow-wrap: anywhere; margin: 0 0 16px; }
+    .model-detail dl { margin: 0; font-size: 13px; }
+    .model-detail dl > div { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
+    .model-detail dt { color: #626b78; }
+    .model-detail dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
 
     @media (min-width: 860px) {
       .shell { width: min(1120px, 100%); }
@@ -436,7 +443,7 @@
     </div>
     <section id="panel-display" role="tabpanel" aria-labelledby="tab-display">
       <form id="display-form">
-        <h2 id="display-title">主页关注额度</h2>
+        <h2 id="display-title">主页额度</h2>
         <p class="settings-hint" id="display-hint">勾选要显示的订阅，用箭头调整顺序；仅保存在当前浏览器，按 Hub 分开。</p>
         <div id="display-list"></div>
         <p class="err" id="display-err" role="alert"></p>
@@ -887,7 +894,9 @@ function sortBar(view, keys) {
 function relReset(iso) {
   if (!iso) return "";
   const s = Math.round((new Date(iso).getTime() - Date.now()) / 1000);
-  const abs = Math.abs(s);
+  if (!Number.isFinite(s)) return "";
+  if (s <= 0) return state.lang === "zh" ? "已到重置时间" : "Reset due";
+  const abs = s;
   const d = Math.floor(abs / 86400);
   const h = Math.floor((abs % 86400) / 3600);
   const m = Math.floor((abs % 3600) / 60);
@@ -1278,7 +1287,7 @@ function renderWin(w, lab, wide, m, p, summary = false) {
     const bar = Number.isFinite(left)
       ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>`
       : "";
-    const reset = !summary && isCreditsWindow(w) && w.resetsAt ? `<div class="reset">${esc(relReset(w.resetsAt))}</div>` : "";
+    const reset = isCreditsWindow(w) ? windowResetHtml(w) : "";
     return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span><span>${esc(money)}</span></div>${bar}${reset}</div>`;
   }
   const rem = windowRemaining(w);
@@ -1288,8 +1297,13 @@ function renderWin(w, lab, wide, m, p, summary = false) {
   const bar = hasPercent
     ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>`
     : "";
-  const reset = !summary && w.resetsAt ? `<div class="reset">${esc(relReset(w.resetsAt))}</div>` : "";
+  const reset = windowResetHtml(w, summary);
   return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span>${pctText ? `<span>${esc(pctText)}</span>` : ""}</div>${bar}${reset}</div>`;
+}
+function windowResetHtml(w, showUnknown = false) {
+  const valid = w.resetsAt && Number.isFinite(new Date(w.resetsAt).getTime());
+  const text = valid ? relReset(w.resetsAt) : (w.resetDescription || (showUnknown ? (state.lang === "zh" ? "重置时间未知" : "Reset unavailable") : ""));
+  return text ? `<div class="reset" title="${esc(valid ? w.resetsAt : text)}">${esc(text)}</div>` : "";
 }
 
 function providerSpendHtml(p) {
@@ -1381,15 +1395,50 @@ function renderProviderDetails(p, full = true) {
       ${providerSpendHtml(p)}
     </article>`;
 }
+function quotaPeriod(w, pid) {
+  if (String(w.metric || "").toLowerCase() === "spend") return "";
+  const kind = winKind(w), label = String(w.label || "").toLowerCase();
+  const minutes = Number(w.windowMinutes);
+  if (minutes > 0) {
+    if (minutes === 300) return "5 hour";
+    if (minutes === 10080) return "weekly";
+    if (minutes === 43200 || kind === "monthly" || /\bmonthly\b/.test(label)) return "monthly";
+    return "";
+  }
+  if (/\b5[ -]?hours?\b|\b5h\b/.test(label)) return "5 hour";
+  if (/\bweekly\b/.test(label)) return "weekly";
+  if (/\bmonthly\b/.test(label)) return "monthly";
+  // Claude's upstream five_hour/OAuth and CLI windows both map to session.
+  if (kind === "session" && (FIVE_HOUR_PROVIDERS.has(pid) || pid === "claude")) return "5 hour";
+  if (kind === "weekly") return "weekly";
+  if (kind === "monthly" || (kind === "billing" && pid === "opencode" && !label)) return "monthly";
+  return "";
+}
 function quotaSummary(p) {
   const pid = String(p.provider || "").toLowerCase();
-  const groups = pid === "antigravity" ? antigravityQuotaGroups(p) : [];
-  if (groups.length) return groups.map((g) => {
-    const entries = g.windows.slice().sort((a, b) => (windowRemaining(a.window) ?? Infinity) - (windowRemaining(b.window) ?? Infinity));
-    return { window: entries[0].window, label: `${g.label} · ${entries[0].windowLabel}` };
-  });
-  const wins = (p.windows || []).filter((w) => pid !== "antigravity" || antigravityQuotaWindowVisible(w));
-  return wins.map((w) => ({ window: w, label: windowLabel(w, wins.filter(isAdditionalWin), pid) }));
+  const wins = (p.windows || []).filter((w) => !isAdditionalWin(w));
+  const periods = ["5 hour", "weekly", "monthly"];
+  if (pid === "antigravity") {
+    const gemini = wins.filter((w) => antigravityQuotaWindow(w)?.groupLabel === "Gemini" || /^Gemini monthly$/i.test(String(w.label || "").trim()));
+    const result = periods.map((period) => {
+      const window = gemini.find((w) => quotaPeriod(w, pid) === period);
+      return window ? { window, label: `${period} · Gemini`, period } : null;
+    }).filter(Boolean);
+    const argon = wins.filter((w) => antigravityQuotaWindow(w)?.groupLabel === "Gemini 4 Argon");
+    const window = argon.find((w) => quotaPeriod(w, pid) === "weekly") || argon[0];
+    if (window) return result.filter((x) => x.period !== "monthly").concat({ window, label: `Argon · ${quotaPeriod(window, pid)}`, period: "argon" });
+    return result;
+  }
+  const result = periods.map((period) => {
+    const window = wins.find((w) => quotaPeriod(w, pid) === period);
+    return window ? { window, label: period, period } : null;
+  }).filter(Boolean);
+  if (result.length) return result;
+  const balances = wins.filter((w) => (isCreditsWindow(w) || isMoneyWindow(w)) && String(w.metric || "").toLowerCase() !== "spend");
+  if (balances.length) return balances.slice(0, 3).map((window) => ({ window, label: window.label || (state.lang === "zh" ? "余额" : "Balance") }));
+  const balance = p.balance;
+  if (balance && fmtMoney(balance.amount, balance.currency)) return [{ window: { kind: "balance", metric: "credits", remaining: balance.amount, currency: balance.currency, showMeter: false }, label: state.lang === "zh" ? "余额" : "Balance" }];
+  return [];
 }
 function renderQuotaCard(p, index) {
   const m = meta(p.provider);
@@ -1397,14 +1446,12 @@ function renderQuotaCard(p, index) {
   const account = providerAccountLabel(p);
   const ago = relAgo(p.updatedAt || (state.stats && state.stats.limits && state.stats.limits.updatedAt));
   const zh = state.lang === "zh";
-  const count = (p.windows || []).length;
-  const details = zh ? `详情 · ${count} 项` : `Details · ${count}`;
+  const plan = planLabel(p);
+  const details = zh ? `${m.name} 额度详情` : `${m.name} quota details`;
   return `<article class="prov quota-card">
-    <div class="prov-h"><div class="prov-name">${ico(p.provider)}<span>${esc(m.name)}</span></div><div class="plan" title="${esc(planLabel(p))}">${esc(planLabel(p))}</div></div>
-    <div class="account" title="${esc(account)}">${esc(account) || "—"}</div>
-    <div class="sub">${esc([ago, authLabel(p)].filter(Boolean).join(" · ")) || "—"}</div>
+    <div class="prov-h"><div class="prov-name">${ico(p.provider)}<span>${esc(m.name)}</span></div><span class="quota-updated" title="${esc(p.updatedAt || "")}">${esc(ago)}</span><button type="button" class="quota-info" data-quota-detail="${index}" aria-label="${esc(details)}" aria-haspopup="dialog" aria-controls="quota-dialog"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg></button></div>
+    <div class="quota-meta" title="${esc([plan, account].filter(Boolean).join(" · "))}">${esc([plan, account].filter(Boolean).join(" · ")) || "—"}</div>
     <div class="quota-summary">${entries.slice(0, 3).map((e) => renderWin(e.window, e.label, " wide", m, p, true)).join("") || `<p class="empty">${zh ? "暂无额度读数" : "No quota readings"}</p>`}</div>
-    <div class="quota-footer"><span>${entries.length > 3 ? esc(zh ? `另有 ${entries.length - 3} 项` : `${entries.length - 3} more`) : ""}</span><button type="button" class="detail-trigger" data-quota-detail="${index}" aria-haspopup="dialog" aria-controls="quota-dialog">${esc(details)}</button></div>
   </article>`;
 }
 function renderLimits(full) {
@@ -1415,9 +1462,9 @@ function renderLimits(full) {
   return entries.map(({ p }) => p ? renderQuotaCard(p, raw.indexOf(p)) : `<article class="prov quota-card unavailable"><div class="prov-name">${state.lang === "zh" ? "已关注订阅暂不可用" : "Followed subscription unavailable"}</div><p class="empty">${state.lang === "zh" ? "保留原选择，不自动替换。" : "Selection kept; no automatic replacement."}</p></article>`).join("");
 }
 
-function renderBars(list, compact) {
+function renderBars(list, compact, scaleMax) {
   if (!list.length) return `<p class="empty">${esc(t("empty.data"))}</p>`;
-  const max = Math.max(...list.map((x) => x.tokens), 1);
+  const max = Math.max(scaleMax || 0, ...list.map((x) => x.tokens), 1);
   return list.map((x) => {
     const m = meta(vendorId(x.id));
     const name = compact ? x.id : (META[String(x.id).toLowerCase()] ? meta(x.id).name : x.id);
@@ -1441,8 +1488,13 @@ function renderModelList(list) {
   const minor = list.filter((x) => x.pct < 0.01);
   if (!minor.length) return renderBars(major, false);
   const total = minor.reduce((sum, x) => ({ tokens: sum.tokens + x.tokens, cost: sum.cost + x.cost, pct: sum.pct + x.pct }), { tokens: 0, cost: 0, pct: 0 });
+  const max = Math.max(total.tokens, ...major.map((x) => x.tokens), 1);
+  const chips = minor.map((x, index) => {
+    const label = `${x.id} · ${fmtFull(x.tokens)} tokens · ${fmtShare(x.pct)} · ${fmtCost(x.cost)}`;
+    return `<button type="button" class="model-chip" data-model-detail="${index}" aria-haspopup="dialog" aria-controls="quota-dialog" aria-label="${esc(label)}">${ico(x.id)}<span class="model-chip-name">${esc(x.id)}</span><span class="model-chip-usage">${fmtCompact(x.tokens)} · ${esc(fmtShare(x.pct))}</span></button>`;
+  }).join("");
   const icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M9 1v3m6-3v3M9 20v3m6-3v3M1 9h3m-3 6h3m16-6h3m-3 6h3"/><path d="m12 7 1.6 3.4L17 12l-3.4 1.6L12 17l-1.6-3.4L7 12l3.4-1.6Z" fill="currentColor" stroke="none"/></svg>';
-  return (major.length ? renderBars(major, false) : "") + `<details class="other-models"><summary class="row"><span class="other-ai">${icon}</span><span class="nm"><span class="other-title">Other Models<span class="other-chevron" aria-hidden="true">⌄</span></span><small>${minor.length} ${state.lang === "zh" ? "个模型 · 各自低于 1%" : "models · each below 1%"}</small></span><span class="vals"><span class="tok"><span class="usage-value">${fmtFull(total.tokens)}</span> <span class="usage-sep" aria-hidden="true">·</span> <span class="usage-share">${esc(fmtShare(total.pct))}</span></span><span class="cst">${fmtCost(total.cost)}</span></span></summary><div class="other-model-list">${renderBars(minor, false)}</div></details>`;
+  return (major.length ? renderBars(major, false, max) : "") + `<details class="other-models"><summary class="row"><span class="model-group-main"><span class="other-ai">${icon}</span><span class="nm"><span class="other-title">other models<span class="other-chevron" aria-hidden="true">⌄</span></span><small>${minor.length} ${state.lang === "zh" ? "个模型 · 各自低于 1%" : "models · each below 1%"}</small></span><span class="vals"><span class="tok"><span class="usage-value">${fmtFull(total.tokens)}</span> <span class="usage-sep" aria-hidden="true">·</span> <span class="usage-share">${esc(fmtShare(total.pct))}</span></span><span class="cst">${fmtCost(total.cost)}</span></span></span><span class="row-bar" style="width:100%"><i style="width:${Math.max(2, total.tokens / max * 100)}%;background:#7c6cf0"></i></span></summary><div class="other-model-list">${chips}</div></details>`;
 }
 async function opaqueId(value) {
   const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
@@ -1526,12 +1578,12 @@ function settingsLang() {
   const zh = state.lang === "zh";
   const labels = {
     "tab-display": zh ? "显示" : "Display", "tab-connection": zh ? "连接" : "Connection",
-    "display-title": zh ? "主页关注额度" : "Home subscriptions",
+    "display-title": zh ? "主页额度" : "Home quotas",
     "display-hint": zh ? "勾选要显示的订阅，用箭头调整顺序；仅保存在当前浏览器，按 Hub 分开。" : "Select subscriptions and use arrows to reorder. Saved in this browser, separately for each hub.",
     "btn-display-reset": zh ? "恢复默认" : "Restore defaults", "btn-display-save": zh ? "保存显示偏好" : "Save display preferences",
     "quota-dialog-title": zh ? "额度详情" : "Quota details"
   };
-  for (const [id, text] of Object.entries(labels)) if ($(id)) $(id).textContent = text;
+  for (const [id, text] of Object.entries(labels)) if ($(id) && !(id === "quota-dialog-title" && $("quota-dialog")?.open)) $(id).textContent = text;
   for (const id of ["btn-close-settings", "btn-close-quota"]) if ($(id)) $(id).setAttribute("aria-label", zh ? "关闭" : "Close");
   if ($("quota-preview")) $("quota-preview").setAttribute("aria-label", labels["quota-dialog-title"]);
 }
@@ -1553,13 +1605,21 @@ function showQuotaDetails(button, modal) {
   if (!Number.isInteger(index) || index < 0 || !providers[index]) return;
   const content = renderProviderDetails(providers[index]);
   if (modal) {
-    state.quotaModalActive = true;
-    $("quota-preview").hidden = true;
-    $("quota-dialog-body").innerHTML = content;
-    $("quota-dialog").showModal();
+    openDetailsDialog(content, state.lang === "zh" ? "额度详情" : "Quota details");
     return;
   }
+  renderDetailPreview(button, content);
+}
+function openDetailsDialog(content, title) {
+  state.quotaModalActive = true;
+  $("quota-preview").hidden = true;
+  if ($("quota-dialog-title")) $("quota-dialog-title").textContent = title;
+  $("quota-dialog-body").innerHTML = content;
+  $("quota-dialog").showModal();
+}
+function renderDetailPreview(button, content) {
   const preview = $("quota-preview");
+  preview.setAttribute("aria-label", button.dataset.modelDetail != null ? (state.lang === "zh" ? "模型详情" : "Model details") : (state.lang === "zh" ? "额度详情" : "Quota details"));
   preview.innerHTML = content;
   preview.hidden = false;
   const rect = button.getBoundingClientRect();
@@ -1567,6 +1627,49 @@ function showQuotaDetails(button, modal) {
   preview.style.left = Math.max(12, Math.min(innerWidth - width - 12, rect.right - width)) + "px";
   const height = preview.getBoundingClientRect().height;
   preview.style.top = Math.max(12, Math.min(innerHeight - height - 12, rect.bottom + 8)) + "px";
+}
+function modelDetailsHtml(model) {
+  const zh = state.lang === "zh";
+  return `<div class="model-detail"><h3>${ico(model.id)}<span>${esc(model.id)}</span></h3><dl><div><dt>Tokens</dt><dd>${fmtFull(model.tokens)}</dd></div><div><dt>${zh ? "周期占比" : "Period share"}</dt><dd>${esc(fmtShare(model.pct))}</dd></div><div><dt>${zh ? "费用" : "Cost"}</dt><dd>${fmtCost(model.cost)}</dd></div></dl></div>`;
+}
+function showModelDetails(button, modal) {
+  if (!modal && state.quotaModalActive) return;
+  const index = Number(button.dataset.modelDetail);
+  const models = sortEntries(modelEntries(periodOf(state.stats, state.period)), "models").filter((x) => x.pct < 0.01);
+  if (!Number.isInteger(index) || index < 0 || !models[index]) return;
+  const content = modelDetailsHtml(models[index]);
+  if (modal) openDetailsDialog(content, state.lang === "zh" ? "模型详情" : "Model details");
+  else renderDetailPreview(button, content);
+}
+function showItemDetails(button, modal) {
+  if (button.dataset.modelDetail != null) showModelDetails(button, modal);
+  else showQuotaDetails(button, modal);
+}
+function canPreviewDetails(event, button) {
+  if (event.type === "focusin") return state.lastInput !== "touch" && button.matches(":focus-visible");
+  return event.pointerType === "mouse" && Date.now() - (state.lastTouchAt || 0) > 800;
+}
+function dismissDetailsBackdrop(event) {
+  const dialog = $("quota-dialog");
+  if (event.target !== dialog) return;
+  const r = dialog.getBoundingClientRect();
+  if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close();
+}
+function captureChartPosition(chart) {
+  if (!chart) return null;
+  const max = Math.max(0, chart.scrollWidth - chart.clientWidth);
+  return { key: chart.dataset.chartKey, left: chart.scrollLeft, atEnd: max - chart.scrollLeft <= 2, width: chart.clientWidth };
+}
+function restoreChartPosition(chart, position) {
+  if (!chart) return;
+  const max = Math.max(0, chart.scrollWidth - chart.clientWidth);
+  chart.scrollLeft = !position || position.key !== chart.dataset.chartKey || position.atEnd ? max : Math.max(0, Math.min(max, position.left));
+}
+function rememberChartPosition(chart) {
+  if (!chart) return;
+  const previous = state.chartPosition;
+  if (previous && previous.key === chart.dataset.chartKey && previous.width !== chart.clientWidth) restoreChartPosition(chart, previous);
+  state.chartPosition = captureChartPosition(chart);
 }
 function dailyList() {
   const h = state.history || (state.stats && state.stats.historyPreview) || {};
@@ -1722,7 +1825,7 @@ function renderMain() {
     const tstat = streakAndTime();
     const b = monthBars();
     return `<div class="sec-h">${esc(t("sec.month"))}</div>
-      <div class="chart-scroll" tabindex="0" role="region" aria-label="${esc(t("sec.month"))}">
+      <div class="chart-scroll" data-chart-key="${esc(civilYmd().slice(0, 7))}" tabindex="0" role="region" aria-label="${esc(t("sec.month"))}">
         <div class="chart-content" style="min-width:${b.minWidth}px">
           <div class="chart">${b.bars || ""}</div>
           <div class="chart-x"><span>${esc(b.first)}</span><span>${esc(b.last)}</span></div>
@@ -1750,7 +1853,7 @@ function renderMain() {
       <div class="cost">${fmtCost(p.costUsd)}</div>
       <div class="asof">${esc(asofText())}</div>
     </div>
-    <div class="sec home-limits"><div class="sec-h">${state.lang === "zh" ? "关注额度" : "Followed quotas"}</div><div class="home-quota-grid">${renderLimits(false)}</div></div>
+    <div class="sec home-limits"><div class="sec-h">${esc(t("sec.limits"))}</div><div class="home-quota-grid">${renderLimits(false)}</div></div>
     <div class="sec home-models"><div class="sec-h">${esc(t("sec.models"))} <span>✣</span></div>${sortBar("models", ["tokens", "cost", "name"])}${modelRows}</div>
     <div class="sec home-heat"><div class="sec-h">${esc(t("sec.activity"))} <span>${esc(t("activeDays", { n: tstat.activeDays }))} ↗</span></div>${heatmapHtml()}</div>
   </div>`;
@@ -1784,6 +1887,8 @@ function fitTotals() {
   }
 }
 function paint() {
+  const chart = document.querySelector(".chart-scroll");
+  rememberChartPosition(chart);
   if ($("quota-preview")) $("quota-preview").hidden = true;
   applyStaticLang();
   $("app").classList.toggle("view-home", state.view === "home");
@@ -1820,6 +1925,8 @@ function paint() {
   live.title = liveLabel;
   live.setAttribute("aria-label", liveLabel);
   fitTotals();
+  restoreChartPosition(document.querySelector(".chart-scroll"), state.chartPosition);
+  rememberChartPosition(document.querySelector(".chart-scroll"));
 }
 
 async function api(path, cfg = state.cfg) {
@@ -1973,6 +2080,9 @@ $("btn-settings-top").addEventListener("click", openSettings);
 $("btn-close-settings").addEventListener("click", () => $("dlg").close());
 $("btn-close-quota").addEventListener("click", () => $("quota-dialog").close());
 $("quota-dialog").addEventListener("close", () => { state.quotaModalActive = false; $("quota-preview").hidden = true; });
+$("quota-dialog").addEventListener("click", dismissDetailsBackdrop);
+// Touch-scroll inertia can swallow click; an outside pointerdown still dismisses.
+$("quota-dialog").addEventListener("pointerdown", dismissDetailsBackdrop);
 $("dlg").addEventListener("click", (e) => {
   const tab = e.target.closest("[data-settings-tab]");
   if (tab) setSettingsTab(tab.dataset.settingsTab);
@@ -2015,26 +2125,28 @@ $("display-form").addEventListener("submit", (e) => {
   } catch (err) { $("display-err").textContent = maskEmails(err.message); }
 });
 $("main").addEventListener("click", (e) => {
-  const button = e.target.closest("[data-quota-detail]");
-  if (button) showQuotaDetails(button, true);
+  const button = e.target.closest("[data-quota-detail], [data-model-detail]");
+  if (button) showItemDetails(button, true);
 });
 $("main").addEventListener("pointerover", (e) => {
-  const button = e.target.closest("[data-quota-detail]");
-  if (button && !button.contains(e.relatedTarget) && (e.pointerType === "mouse" || window.matchMedia("(hover: hover)").matches)) {
-    clearTimeout(state.previewTimer); showQuotaDetails(button, false);
+  const button = e.target.closest("[data-quota-detail], [data-model-detail]");
+  if (button && !button.contains(e.relatedTarget) && canPreviewDetails(e, button)) {
+    clearTimeout(state.previewTimer); showItemDetails(button, false);
   }
 });
 $("main").addEventListener("focusin", (e) => {
-  const button = e.target.closest("[data-quota-detail]");
-  if (button && (button.matches(":focus-visible") || window.matchMedia("(hover: hover)").matches)) { clearTimeout(state.previewTimer); showQuotaDetails(button, false); }
+  const button = e.target.closest("[data-quota-detail], [data-model-detail]");
+  if (button && canPreviewDetails(e, button)) { clearTimeout(state.previewTimer); showItemDetails(button, false); }
 });
 for (const event of ["pointerout", "focusout"]) $("main").addEventListener(event, (e) => {
-  if (e.target.closest("[data-quota-detail]") && !$("quota-preview").contains(e.relatedTarget)) state.previewTimer = setTimeout(() => { $("quota-preview").hidden = true; }, 200);
+  if (e.pointerType !== "touch" && e.target.closest("[data-quota-detail], [data-model-detail]") && !$("quota-preview").contains(e.relatedTarget)) state.previewTimer = setTimeout(() => { $("quota-preview").hidden = true; }, 200);
 });
+document.addEventListener("pointerdown", (e) => { state.lastInput = e.pointerType; if (e.pointerType === "touch") state.lastTouchAt = Date.now(); }, true);
+$("main").addEventListener("scroll", (e) => { if (e.target.matches(".chart-scroll")) rememberChartPosition(e.target); }, true);
 $("quota-preview").addEventListener("pointerenter", () => clearTimeout(state.previewTimer));
 $("quota-preview").addEventListener("pointerleave", () => { $("quota-preview").hidden = true; });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("quota-preview").hidden = true; });
-window.addEventListener("resize", () => { $("quota-preview").hidden = true; fitTotals(); });
+document.addEventListener("keydown", (e) => { state.lastInput = "keyboard"; if (e.key === "Escape") $("quota-preview").hidden = true; });
+window.addEventListener("resize", () => { $("quota-preview").hidden = true; fitTotals(); const chart = document.querySelector(".chart-scroll"); restoreChartPosition(chart, state.chartPosition); rememberChartPosition(chart); });
 $("dlg-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
