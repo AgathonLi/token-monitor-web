@@ -56,17 +56,19 @@ The layout is the same on phone and desktop (light, no floating phone card). Bel
 
 | Control | What it shows |
 |---|---|
-| **DAY / MONTH / TOTAL** | Which period the headline tokens, cost, tools, and models use |
+| **DAY / MONTH / TOTAL** | Which period the headline tokens, cost, tools, models, and devices use; starts on DAY |
 | **Home** | Compact limits, top models, activity heatmap |
 | **Tools** | Per-client tokens, cost, and share |
-| **Limits** | Provider quota windows (session / weekly / …) |
+| **Limits** | Provider quota windows (session / weekly / …), alphabetically sorted by default |
 | **Models** | Per-model tokens, cost, and share |
 | **Devices** | Per-machine tokens, share, cost, and live/stale sync |
 | **Trends** | Daily bars labeled in millions of tokens (M), plus active days, streak, active time, peak day |
 
 Tools, models, and devices show each row's share of its category's token total for the selected period, to one decimal place (`<0.1%` for smaller nonzero shares). Trend labels use rounded whole millions (`<1M` for smaller nonzero usage, `0M` for zero); hover for the full date and exact token count. On narrow screens, scroll the chart horizontally to see every day.
 
-Fields the hub JSON does not send (plan labels such as Plus/Pro, OAuth vs Web, and so on) stay blank. Session-by-session transcripts never leave the desktop app.
+Limits separates account identity, plan, and authentication source when supplied by the hub. The page uses one card per row below 860px, two from 860px, and four from 1280px; each wide-screen card stacks its quota windows for readability. New API account adapters show reported Today/Month spending, with other supplied periods in expandable details. Included credits, purchased balances, and spending remain separate readings; missing values stay blank rather than being inferred from another balance.
+
+Muse Code and OmO Native names and marks are supported when their data reaches the hub; enabling collection or updating hub aggregation is separate from this read-only page. Fields absent from the hub JSON stay blank. Session-by-session transcripts are not displayed by this client.
 
 ## Privacy
 

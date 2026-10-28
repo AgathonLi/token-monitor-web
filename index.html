@@ -80,6 +80,8 @@
     }
     .home-kpis .cost { margin: 6px 0 0; color: var(--muted); font-size: 18px; font-weight: 500; }
     .list-wrap, .limits-grid { min-width: 0; }
+    .limits-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px 24px; align-items: start; }
+    .limits-grid > .prov { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
     .asof { font-size: 12px; color: var(--muted); padding: 0 16px 4px; }
     .sort { display: flex; gap: 4px; flex-wrap: wrap; margin: 0 0 10px; }
     .sort button {
@@ -141,17 +143,24 @@
     .prov { padding: 12px 0 14px; border-bottom: 1px solid var(--line); }
     .prov:last-child { border-bottom: 0; }
     .prov-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-    .prov-name { display: flex; align-items: center; gap: 8px; font-weight: 650; font-size: 15px; }
-    .plan { color: var(--muted); font-size: 13px; font-weight: 500; }
-    .sub { color: var(--muted); font-size: 12px; margin: 3px 0 10px; }
-    .wins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+    .prov-name { display: flex; align-items: center; gap: 8px; font-weight: 650; font-size: 15px; min-width: 0; overflow-wrap: anywhere; }
+    .plan { color: var(--muted); font-size: 13px; font-weight: 500; text-align: right; overflow-wrap: anywhere; }
+    .sub, .account { color: var(--muted); font-size: 12px; margin: 3px 0 10px; overflow-wrap: anywhere; }
+    .account { color: #626b78; margin-bottom: 4px; }
+    .spend-details { font-size: 12px; color: #626b78; margin-top: 12px; overflow-wrap: anywhere; }
+    .spend-details summary { cursor: pointer; line-height: 1.5; }
+    .spend-details dl { margin: 8px 0 0; }
+    .spend-details dl > div { display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; }
+    .spend-details dd { margin: 0; font-variant-numeric: tabular-nums; }
+    .wins { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 16px; }
     .wins.one { grid-template-columns: 1fr; }
     .win.wide { grid-column: 1 / -1; }
     .win-group { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; }
     .win-group-title { font-size: 13px; font-weight: 600; color: #5b616a; }
-    .win-group-items { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+    .win-group-items { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 16px; }
     .win-group-items.one { grid-template-columns: 1fr; }
-    .win .lab { display: flex; justify-content: space-between; font-size: 12px; color: #5b616a; margin-bottom: 6px; }
+    .win { min-width: 0; }
+    .win .lab { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; font-size: 12px; color: #5b616a; margin-bottom: 6px; overflow-wrap: anywhere; }
     .bar { height: 7px; background: var(--track); border-radius: 99px; overflow: hidden; }
     .bar > i { display: block; height: 100%; border-radius: 99px; width: 0; }
     .reset { font-size: 11px; color: var(--faint); margin-top: 5px; }
@@ -169,9 +178,10 @@
     .row .nm { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; }
     .row .nm small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; }
     .row .vals { text-align: right; flex-shrink: 0; }
-    .row .tok { font-size: 13px; font-weight: 650; }
-    .row .vals .tok { white-space: nowrap; }
-    .row .usage-share { font-size: 12px; font-weight: 500; color: var(--muted); }
+    .row .tok { font-family: var(--num); font-size: 13px; font-weight: 650; line-height: 1.4; font-variant-numeric: tabular-nums; }
+    .row .vals .tok { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+    .row .usage-share { font: inherit; color: #626b78; min-width: 6ch; text-align: right; }
+    .row .usage-sep { color: var(--muted); }
     .row .cst { font-size: 12px; color: var(--muted); }
     .row .pct { width: 36px; text-align: right; font-size: 12px; color: var(--muted); }
     .row-bar { height: 6px; background: var(--track); border-radius: 99px; margin-top: 8px; overflow: hidden; }
@@ -295,12 +305,14 @@
         justify-content: start;
       }
       .limits-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 40px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
       .list-wrap { max-width: 760px; }
       .tiles { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1280px) {
+      .limits-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .limits-grid .wins, .limits-grid .win-group-items { grid-template-columns: minmax(0, 1fr); }
     }
 
   </style>
@@ -331,8 +343,8 @@
         <nav class="tabs" id="tabs"></nav>
         <div class="top-right">
           <div class="seg" id="seg">
-            <button type="button" data-p="today">DAY</button>
-            <button type="button" data-p="month" class="on">MONTH</button>
+            <button type="button" data-p="today" class="on">DAY</button>
+            <button type="button" data-p="month">MONTH</button>
             <button type="button" data-p="allTime">TOTAL</button>
           </div>
           <button class="lang-btn" type="button" id="btn-lang" title="Language">EN</button>
@@ -509,6 +521,8 @@ const META = {
   antigravity: { name: "Antigravity", color: "#4285f4", mark: "A" },
   workbuddy: { name: "WorkBuddy", color: "#0DC8A5", mark: "W" },
   pi: { name: "Pi", color: "#000000", mark: "π" },
+  muse: { name: "Muse Code", color: "#0866FF", mark: "M" },
+  senpi: { name: "OmO Native", color: "#00D4FF", mark: "O" },
   kimi: { name: "Kimi", color: "#16191e", mark: "K" },
   zai: { name: "GLM", color: "#000000", mark: "Z" },
   zcode: { name: "GLM", color: "#000000", mark: "Z" },
@@ -574,11 +588,11 @@ const WIN_LAB = {
 };
 
 const $ = (id) => document.getElementById(id);
-const state = { cfg: null, stats: null, history: null, period: "month", view: "home", error: "", timer: null, lang: "zh", sort: {
+const state = { cfg: null, stats: null, history: null, period: "today", view: "home", error: "", timer: null, lang: "zh", sort: {
   tools: { key: "tokens", dir: "desc" },
   models: { key: "tokens", dir: "desc" },
   devices: { key: "tokens", dir: "desc" },
-  limits: { key: "left", dir: "asc" }
+  limits: { key: "name", dir: "asc" }
 } };
 
 function loadCfg() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } }
@@ -600,6 +614,8 @@ function meta(id) {
   return META[k] || { name: id, color: "#6b7280", mark: (String(id || "?").slice(0, 1) || "?").toUpperCase() };
 }
 const ICO_SVG = {
+  // OmO mark from upstream assets/icons/senpi.svg (original attribution retained in logs).
+  senpi: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" aria-hidden="true" viewBox="189.57269 219.30119 644.85474 576.19881"><g transform="scale(0.5)"><g transform="translate(0,2048) scale(0.05,-0.05)"><path fill="currentColor" fill-rule="evenodd" d="M9270 32167 c-309 -64 -456 -152 -621 -373 -562 -748 -776 -2689 -547 -4984 118 -1187 325 -2600 570 -3890 143 -753 152 -653 -128 -1380 -403 -1045 -643 -1873 -812 -2800 -853 -4689 1979 -7986 7858 -9148 1140 -225 2514 -397 3202 -400 l361 -2 79 55 c264 182 210 642 -111 942 -387 362 -950 532 -2801 845 -3004 507 -4249 965 -5520 2030 -1358 1138 -2012 2878 -1809 4810 545 5195 6617 8726 13529 7866 5506 -684 9480 -4255 9480 -8518 0 -2607 -1462 -4522 -4157 -5448 -927 -318 -1534 -459 -3203 -740 -1851 -313 -2414 -483 -2801 -845 -321 -300 -375 -760 -111 -942 l79 -55 361 2 c688 3 2062 175 3202 400 5879 1162 8711 4459 7858 9148 -169 927 -409 1755 -812 2800 -280 727 -271 627 -128 1380 245 1290 452 2703 570 3890 271 2720 -77 4861 -855 5259 -758 388 -2310 -238 -5021 -2024 -868 -571 -764 -557 -1489 -211 -3271 1558 -6755 1558 -10026 0 -725 -346 -621 -360 -1489 211 -2371 1562 -3959 2278 -4708 2122z m4132 -3345 c175 -175 124 -268 -409 -739 -1028 -910 -1995 -2053 -2713 -3209 -97 -156 -200 -318 -228 -359 -221 -321 -646 -76 -469 270 153 301 883 1334 1388 1965 578 723 1466 1614 2029 2035 191 142 288 151 402 37z m14507 -1 c496 -341 1482 -1323 2080 -2071 505 -631 1235 -1664 1388 -1965 177 -346 -248 -591 -469 -270 -28 41 -131 203 -228 359 -718 1156 -1685 2299 -2713 3209 -535 473 -585 564 -407 742 100 100 199 99 349 -4z M19910 25308 c-4039 -205 -7212 -1666 -9086 -4184 -1840 -2473 -1753 -5794 196 -7540 1161 -1040 2447 -1518 5420 -2015 1374 -229 1998 -380 2456 -591 754 -348 1163 -1000 1033 -1650 -10 -49 -1 -72 47 -124 l60 -64 444 0 444 0 60 64 c48 52 57 75 47 124 -130 650 279 1302 1033 1650 458 211 1082 362 2456 591 2973 497 4259 975 5420 2015 2084 1866 2026 5374 -131 7956 -2063 2469 -5995 3966 -9899 3768z m-4644 -4374 c1356 -360 2272 -1909 1998 -3378 -426 -2278 -2856 -3144 -4424 -1576 -1497 1496 -924 4218 1031 4899 393 137 996 161 1395 55z m11480 35 c1491 -261 2504 -1921 2154 -3532 -487 -2247 -3108 -3024 -4525 -1341 -1719 2042 -129 5310 2371 4873z m-6948 -2980 c172 -40 341 -133 495 -273 95 -86 143 -116 187 -116 44 0 92 30 187 116 718 650 1716 188 1854 -860 35 -267 18 -968 -25 -1048 -119 -219 -350 -251 -491 -68 -68 89 -73 124 -85 670 -13 623 -25 675 -200 838 -212 198 -516 199 -735 2 -180 -161 -192 -212 -205 -840 -12 -546 -17 -581 -85 -670 -122 -159 -308 -159 -430 0 -68 89 -73 124 -85 670 -13 628 -25 679 -205 840 -219 197 -523 196 -735 -2 -175 -163 -187 -215 -200 -838 -12 -546 -17 -581 -85 -670 -141 -183 -372 -151 -491 68 -74 136 -54 1039 30 1332 170 594 758 978 1304 849z M14340 20290 c-1858 -372 -2230 -3228 -546 -4191 1280 -732 2786 338 2786 1981 0 1391 -1068 2445 -2240 2210z M25990 20291 c-1733 -343 -2208 -2981 -732 -4069 1287 -949 2981 108 2982 1860 0 1392 -1070 2443 -2250 2209z"/></g></g></svg>',
   codex: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></svg>',
   claude: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z"></path></svg>',
   grok: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path></svg>',
@@ -674,7 +690,7 @@ function modelVendorFor(model) {
   if (/gemini|gemma|google/.test(name)) return "gemini";
   if (/grok|xai/.test(name)) return "xai";
   if (/deepseek/.test(name)) return "deepseek";
-  if (/llama|meta|muse-spark(?:-|$)/.test(name)) return "meta";
+  if (/llama|meta|muse-(?:spark|wonder|glimmer|image|voice)(?:-|$)/.test(name)) return "meta";
   if (/mistral|mixtral|codestral/.test(name)) return "mistral";
   if (/qwen|qwq|qvq/.test(name)) return "qwen";
   if (/kimi|moonshot|k2d6-agent|k3-agent/.test(name)) return "kimi";
@@ -695,7 +711,7 @@ function vendorId(id) {
 function ico(id) {
   const v = vendorId(id);
   const m = meta(v);
-  const svg = ICO_SVG[v];
+  const svg = ICO_SVG[v] || (v === "muse" ? ICO_SVG.meta : "");
   if (svg) return `<span class="ico ico-svg" style="color:${m.color}">${svg}</span>`;
   return `<span class="ico" style="background:${m.color}">${esc(m.mark)}</span>`;
 }
@@ -824,7 +840,15 @@ function authLabel(p) {
   return p.authType || p.source || "";
 }
 function planLabel(p) {
-  return p.planName || p.plan || p.planLabel || p.accountLabel || p.label || "";
+  return p.planLabel || p.planName || p.plan || p.label || "";
+}
+function providerAccountLabel(p) {
+  const name = p.accountName || p.profileName || p.accountLabel || "";
+  const parts = [name, p.accountEmail];
+  if (String(p.provider).toLowerCase() === "muse" || !parts.some(Boolean)) {
+    parts.push(p.sourceDeviceName || p.sourceDeviceId);
+  }
+  return [...new Set(parts.filter(Boolean))].join(" · ");
 }
 function winKind(w) {
   return String((w && w.kind) || "").trim().toLowerCase();
@@ -1084,6 +1108,7 @@ function resetCreditsHtml(p) {
 }
 
 function fmtMoney(amount, currency) {
+  if (amount == null || typeof amount === "boolean" || String(amount).trim() === "") return "";
   const n = Number(amount);
   if (!Number.isFinite(n)) return "";
   const cur = String(currency || "").toUpperCase();
@@ -1151,7 +1176,11 @@ function asofText() {
 }
 function renderWin(w, lab, wide, m, p) {
   if (isCreditsWindow(w) || isMoneyWindow(w)) {
-    const amt = w.remaining ?? w.amount ?? (p.balance && p.balance.amount) ?? w.used;
+    const metric = String(w.metric || "").toLowerCase();
+    // Spending and balances are independent readings, never fall back across them.
+    const amt = metric === "spend"
+      ? (w.used ?? w.amount)
+      : (w.remaining ?? w.amount ?? (!metric && p.balance ? p.balance.amount : undefined));
     let money = fmtMoney(amt, w.currency || (p.balance && p.balance.currency));
     if (!money && String(w.detail || "").toLowerCase() === "unlimited") money = "Unlimited";
     const showMeter = isCreditsWindow(w) && w.showMeter !== false;
@@ -1175,6 +1204,22 @@ function renderWin(w, lab, wide, m, p) {
   return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span>${pctText ? `<span>${esc(pctText)}</span>` : ""}</div>${bar}${reset}</div>`;
 }
 
+function providerSpendHtml(p) {
+  if (p.adapterId !== "newapi-account" && String(p.provider).toLowerCase() !== "newapi") return "";
+  const balance = p.balance || {};
+  const zh = state.lang === "zh";
+  const specs = [
+    ["todaySpend", zh ? "今日" : "Today"],
+    ["weekSpend", zh ? "近7天" : "Rolling week"],
+    ["monthSpend", zh ? "本月" : "Month"],
+    ["allTimeSpend", zh ? "累计" : "All time"]
+  ];
+  const readings = specs.map(([key, label]) => ({ key, label, value: fmtMoney(balance[key], balance.currency) })).filter((r) => r.value);
+  if (!readings.length) return "";
+  const primary = readings.filter((r) => r.key === "todaySpend" || r.key === "monthSpend");
+  const summary = (primary.length ? primary : readings).map((r) => `${r.label} ${r.value}`).join(" · ");
+  return `<details class="spend-details"><summary>${esc(zh ? "支出" : "Spend")} · ${esc(summary)}</summary><dl>${readings.map((r) => `<div><dt>${esc(r.label)}</dt><dd>${esc(r.value)}</dd></div>`).join("")}</dl></details>`;
+}
 function renderLimits(full) {
   const raw = (state.stats && state.stats.limits && state.stats.limits.providers) || [];
   if (!raw.length) return `<p class="empty">${esc(t("empty.limits"))}</p>`;
@@ -1240,13 +1285,16 @@ function renderLimits(full) {
     }
 
     const plan = planLabel(p);
+    const account = providerAccountLabel(p);
     return `<article class="prov">
       <div class="prov-h">
         <div class="prov-name">${ico(p.provider)} ${esc(m.name)}</div>
         <div class="plan">${esc(plan)}</div>
       </div>
+      ${account ? `<div class="account">${esc(account)}</div>` : ""}
       ${subBits.length ? `<div class="sub">${esc(subBits.join(" · "))}</div>` : ""}
       <div class="wins ${cols}">${winHtml}</div>
+      ${providerSpendHtml(p)}
     </article>`;
   }).join("");
 }
@@ -1262,7 +1310,7 @@ function renderBars(list, compact) {
         ${ico(x.id)}
         <div class="nm">${esc(name)}</div>
         <div class="vals">
-          <div class="tok">${compact ? fmtCompact(x.tokens) : `${fmtFull(x.tokens)} · <span class="usage-share">${esc(fmtShare(x.pct))}</span>`}</div>
+          <div class="tok">${compact ? fmtCompact(x.tokens) : `<span class="usage-value">${fmtFull(x.tokens)}</span> <span class="usage-sep" aria-hidden="true">·</span> <span class="usage-share">${esc(fmtShare(x.pct))}</span>`}</div>
           <div class="cst">${fmtCost(x.cost)}</div>
         </div>
         ${compact ? `<div class="pct">${Math.round(x.pct * 100)}%</div>` : ""}
@@ -1406,7 +1454,7 @@ function renderDevices() {
         <span class="dot ${d.stale ? "bad" : "on"}"></span>
         <div class="nm">${esc(name)}<small>${esc(bits.join(" · "))}</small></div>
         <div class="vals">
-          <div class="tok">${fmtFull(per.totalTokens)} · <span class="usage-share">${esc(fmtShare((Number(per.totalTokens) || 0) / total))}</span></div>
+          <div class="tok"><span class="usage-value">${fmtFull(per.totalTokens)}</span> <span class="usage-sep" aria-hidden="true">·</span> <span class="usage-share">${esc(fmtShare((Number(per.totalTokens) || 0) / total))}</span></div>
           <div class="cst">${fmtCost(per.costUsd)}</div>
         </div>
       </div>

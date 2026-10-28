@@ -39,7 +39,9 @@ test('full tool and model rows show exact tokens and one-decimal token share abo
   ]) {
     const rendered = ctx.renderBars(rows, false);
     for (const text of expected) assert.ok(rendered.includes(text), `Missing ${text}`);
-    assert.match(rendered, /class="tok">[^\n]* · /);
+    const usageLines = [...rendered.matchAll(/class="tok">([^\n]*?)<\/div>/g)].map((m) => m[1].replace(/<[^>]*>/g, ''));
+    assert.equal(usageLines.length, rows.length);
+    assert.ok(usageLines.every((line) => /^[\d,]+ · [\d.]+%$/.test(line)), usageLines.join('\n'));
     assert.match(rendered, /class="cst">\$/);
   }
 });
