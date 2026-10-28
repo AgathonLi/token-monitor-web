@@ -3,3 +3,6 @@ Thumbs.db
 *.local.html
 .env
 .env.*
+
+# Session handoff snapshots (local / NAS only; do not publish)
+.handoff/
