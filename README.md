@@ -57,16 +57,20 @@ The layout is the same on phone and desktop (light, no floating phone card). Bel
 | Control | What it shows |
 |---|---|
 | **DAY / MONTH / TOTAL** | Which period the headline tokens, cost, tools, models, and devices use; starts on DAY |
-| **Home** | Compact limits, top models, activity heatmap |
+| **Home** | Followed subscriptions across the page, top models, activity heatmap |
 | **Tools** | Per-client tokens, cost, and share |
 | **Limits** | Provider quota windows (session / weekly / …), alphabetically sorted by default |
-| **Models** | Per-model tokens, cost, and share |
+| **Models** | Per-model tokens, cost, and share; models below 1% fold into Other Models |
 | **Devices** | Per-machine tokens, share, cost, and live/stale sync |
 | **Trends** | Daily bars labeled in millions of tokens (M), plus active days, streak, active time, peak day |
 
 Tools, models, and devices show each row's share of its category's token total for the selected period, to one decimal place (`<0.1%` for smaller nonzero shares). Trend labels use rounded whole millions (`<1M` for smaller nonzero usage, `0M` for zero); hover for the full date and exact token count. On narrow screens, scroll the chart horizontally to see every day.
 
-Limits separates account identity, plan, and authentication source when supplied by the hub. The page uses one card per row below 860px, two from 860px, and four from 1280px; each wide-screen card stacks its quota windows for readability. New API account adapters show reported Today/Month spending, with other supplied periods in expandable details. Included credits, purchased balances, and spending remain separate readings; missing values stay blank rather than being inferred from another balance.
+Limits separates account identity, plan, and authentication source when supplied by the hub. Equal-height cards show a bounded quota summary: one per row below 860px, two from 860px, and four from 1280px. Independent model pools retain their names; the tightest window in each Antigravity pool appears in its summary. Hover or focus **Details** for the complete readings, or click it for a dialog that also works on touch screens. New API account adapters expose supplied period spending in the details. Included credits, purchased balances, and spending remain separate readings; missing values stay blank rather than being inferred from another balance.
+
+Use the top-right gear → **Display** to choose and reorder home subscriptions, select none, or restore the automatic selection. Home places the summary/heatmap above full-width followed quotas and a separate model list. Preferences stay in the current browser, separately for each hub, using opaque account references. Accounts without a unique stable identity remain visible in Limits but cannot be manually followed; missing selections are retained, not replaced by another account. Hub credentials are in the separate **Connection** tab.
+
+On Models, each selected period is grouped independently: after display aliases are combined, models with a token share strictly below 1% appear under **Other Models**, collapsed by default. The group keeps the exact combined tokens, cost, and share; click or use the keyboard to expand smaller rows and icons. Exactly 1% remains in the main list. This is presentation only and does not alter hub data or the home model summary.
 
 Muse Code and OmO Native names and marks are supported when their data reaches the hub; enabling collection or updating hub aggregation is separate from this read-only page. Fields absent from the hub JSON stay blank. Session-by-session transcripts are not displayed by this client.
 
@@ -75,6 +79,7 @@ Muse Code and OmO Native names and marks are supported when their data reaches t
 - No account on this project. Nothing is uploaded to GitHub or to the page author.
 - The shared hub secret never belongs in this repository. Keep it in the browser, the widget, and Cloudflare Secrets.
 - Usage data lives on your hub. Anyone with the URL still needs the secret to read `/api/stats`.
+- Account emails are partially masked in cards, settings, details, and display attributes; hovering does not reveal the original. This is display masking, not redaction of the hub response or browser memory.
 
 ## Acknowledgments
 

@@ -39,7 +39,8 @@ const antigravityQuotaWindowVisible = (w) => vm.runInContext(`antigravityQuotaWi
 const limitLeft = (p) => vm.runInContext(`limitLeft(${JSON.stringify(p)})`, context);
 const windowWide = (w, wins, pid) => vm.runInContext(`windowWide(${JSON.stringify(w)}, ${JSON.stringify(wins)}, ${JSON.stringify(pid)})`, context);
 const limitProviderCompactWindows = (pid, wins) => toHost(vm.runInContext(`limitProviderCompactWindows(${JSON.stringify(pid)}, ${JSON.stringify(wins)})`, context));
-const renderLimits = (full) => vm.runInContext(`renderLimits(${Boolean(full)})`, context);
+// Complete window contracts now live in the details renderer, not the bounded card summary.
+const renderLimits = (full) => vm.runInContext(`state.stats.limits.providers.map(p => renderProviderDetails(p, ${Boolean(full)})).join("")`, context);
 const meta = (id) => toHost(vm.runInContext(`meta(${JSON.stringify(id)})`, context));
 const ico = (id) => vm.runInContext(`ico(${JSON.stringify(id)})`, context);
 
@@ -177,7 +178,7 @@ test('Unknown readings do not render a percent or bar, while real 0% remains an 
   assert.ok(geminiGroup.includes('>5-hour</span>'));
 
   // Weekly lane at real 0% shows 0% left and exhausted bar
-  assert.ok(geminiGroup.includes('0% left'), 'Real 0% must show "0% left"');
+  assert.ok(geminiGroup.includes('剩余 0%'), 'Real 0% must remain visible');
   assert.ok(geminiGroup.includes('width:0%'), 'Real 0% must show exhausted meter width:0%');
 });
 
@@ -202,9 +203,9 @@ test('Legacy pool windows are hidden when unknown and visible at real 0%', () =>
   const rendered = renderLimits(true);
   assert.ok(!rendered.includes('Gemini Pro'), 'Unknown legacy pool row must be omitted entirely');
   assert.ok(rendered.includes('Gemini Flash'), 'Real 0% legacy pool must remain visible');
-  assert.ok(rendered.includes('0% left'), 'Real 0% legacy pool shows 0% left');
+  assert.ok(rendered.includes('剩余 0%'), 'Real 0% legacy pool remains visible');
   assert.ok(rendered.includes('Claude'), 'Measured legacy pool must be visible');
-  assert.ok(rendered.includes('45% left'), 'Measured legacy pool shows 45% left');
+  assert.ok(rendered.includes('剩余 45%'), 'Measured legacy pool remains visible');
 });
 
 test('limitLeft ignores unknown readings for min-remaining calculation', () => {

@@ -188,13 +188,13 @@
     .row-bar > i { display: block; height: 100%; border-radius: 99px; }
 
     .heat { margin-top: 4px; }
-    .heat-grid { display: grid; grid-template-rows: repeat(7, 9px); grid-auto-flow: column; grid-auto-columns: 9px; gap: 3px; justify-content: end; }
-    .heat-grid b { width: 9px; height: 9px; border-radius: 2px; background: #e3e6ea; display: block; }
+    .heat-grid { display: grid; grid-template-rows: repeat(7, auto); grid-template-columns: repeat(var(--heat-weeks), minmax(0, 1fr)); grid-auto-flow: column; gap: 3px; width: 100%; max-width: calc(var(--heat-weeks) * 12px - 3px); margin-left: auto; }
+    .heat-grid b { width: 100%; aspect-ratio: 1; border-radius: 2px; background: #e3e6ea; display: block; }
     .heat-grid b.i1 { background: #c5daf7; }
     .heat-grid b.i2 { background: #9dc2f3; }
     .heat-grid b.i3 { background: #6ea8f0; }
     .heat-grid b.i4 { background: #4d8ee6; }
-    .heat-months { display: flex; justify-content: space-between; color: var(--faint); font-size: 11px; margin-top: 8px; }
+    .heat-months { display: flex; justify-content: space-between; gap: 8px; overflow: hidden; color: var(--faint); font-size: 11px; margin-top: 8px; }
     .heat-peak { text-align: right; color: var(--muted); font-size: 12px; margin-top: 4px; }
 
     .chart-scroll { overflow-x: auto; max-width: 100%; }
@@ -272,6 +272,63 @@
     .ghost { background: #fff; color: var(--ink); }
     .empty { color: var(--muted); font-size: 13px; padding: 12px 0; }
     .banner { color: #c4543a; font-size: 12px; padding: 0 16px 8px; }
+    .home-grid { display: flex; flex-direction: column; }
+    .home-heat { order: 0; }
+    .home-limits { order: 1; }
+    .home-models { order: 2; }
+    .home-quota-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .prov.quota-card { height: 320px; min-width: 0; display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
+    .prov.quota-card:last-child { border-bottom: 1px solid var(--line); }
+    .quota-card .prov-h { min-height: 24px; }
+    .quota-card .prov-name { flex: 1; white-space: nowrap; overflow: hidden; }
+    .quota-card .prov-name > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+    .quota-card .plan { max-width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quota-card .account { height: 34px; min-height: 34px; line-height: 17px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .quota-card .sub { line-height: 16px; min-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quota-summary { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 15px; padding-top: 6px; overflow: hidden; }
+    .quota-summary .lab { display: grid; grid-template-columns: minmax(0, 1fr) max-content; align-items: baseline; gap: 8px; }
+    .quota-summary .lab > span { white-space: nowrap; }
+    .quota-summary .lab > span:first-child { overflow: hidden; text-overflow: ellipsis; }
+    .quota-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; font-size: 11px; color: var(--muted); }
+    .detail-trigger { background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 6px 9px; min-height: 32px; font-size: 12px; color: #526170; }
+    .quota-preview { position: fixed; z-index: 100; width: min(420px, calc(100vw - 24px)); max-height: 70dvh; overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 10px 40px rgb(20 24 30 / 18%); }
+    .quota-preview .prov, #quota-dialog .prov { padding: 0; border: 0; }
+    #dlg { width: min(640px, calc(100vw - 24px)); max-height: 88dvh; overflow: auto; }
+    #quota-dialog { width: min(520px, calc(100vw - 24px)); max-height: 88dvh; overflow: auto; }
+    .dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .dialog-head h1, .dialog-head h2 { margin: 0; font-size: 18px; }
+    .close-dialog { border: 0; background: transparent; border-radius: 8px; font-size: 24px; width: 36px; height: 36px; flex-shrink: 0; }
+    .settings-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+    .settings-tabs button { border: 0; border-radius: 8px; padding: 8px 16px; background: #fff; color: #626b78; }
+    .settings-tabs [aria-selected="true"] { background: #dfe9fb; color: #1a4fbf; font-weight: 650; }
+    #display-form h2 { font-size: 15px; margin: 0 0 8px; }
+    .settings-hint { color: #626b78; font-size: 12px; line-height: 1.5; margin: 0 0 14px; }
+    #display-list { max-height: min(45dvh, 460px); overflow: auto; }
+    .display-choice { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .display-choice label { display: flex; align-items: flex-start; gap: 10px; margin: 0; color: var(--ink); min-width: 0; }
+    .display-choice input { width: 16px; height: 16px; flex-shrink: 0; margin-top: 3px; }
+    .display-choice label > span { min-width: 0; overflow-wrap: anywhere; }
+    .display-choice strong { font-size: 13px; }
+    .display-choice small { display: block; font-size: 11px; line-height: 1.5; color: #626b78; margin-top: 3px; }
+    .choice-order { display: flex; gap: 4px; }
+    .choice-order button { border: 1px solid var(--line); background: #fff; border-radius: 7px; width: 32px; height: 34px; }
+    .choice-order button:disabled { opacity: .3; cursor: default; }
+    .other-models { margin-top: 0; }
+    .other-title { display: flex; align-items: center; gap: 6px; }
+    .other-models > summary { list-style: none; cursor: pointer; }
+    .other-models > summary::-webkit-details-marker { display: none; }
+    .other-ai { color: #7c6cf0; flex: 0 0 18px; display: grid; place-items: center; }
+    .other-chevron { font-size: 16px; color: #626b78; transition: transform .15s; }
+    .other-models[open] .other-chevron { transform: rotate(180deg); }
+    .other-models .cst { display: block; }
+    .other-model-list { margin: 2px 0 10px 12px; padding: 0 10px; border-left: 2px solid #d9dceb; background: rgb(255 255 255 / 24%); border-radius: 0 8px 8px 0; }
+    .other-model-list .row { padding: 9px 0; }
+    .other-model-list .row .nm, .other-model-list .row .tok { font-size: 12px; }
+    .other-model-list .nm { overflow-wrap: anywhere; }
+    .other-model-list .row .cst { font-size: 11px; }
+    .other-model-list .ico { width: 16px; height: 16px; flex-basis: 16px; }
+    .other-model-list .ico svg { width: 14px; height: 14px; }
+    .other-model-list .row-bar { height: 4px; }
 
     @media (min-width: 860px) {
       .shell { width: min(1120px, 100%); }
@@ -290,17 +347,18 @@
         grid-template-columns: minmax(240px, 320px) 1fr;
         grid-template-areas:
           "kpis heat"
-          "limits models";
-        gap: 8px 40px;
+          "limits limits"
+          "models models";
+        gap: 24px 40px;
         align-items: start;
       }
       .home-kpis { grid-area: kpis; padding-top: 8px; }
       .home-heat { grid-area: heat; margin-top: 0; }
       .home-limits { grid-area: limits; }
       .home-models { grid-area: models; }
+      .home-quota-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
       .heat-grid {
-        grid-template-rows: repeat(7, 11px);
-        grid-auto-columns: 11px;
+        max-width: calc(var(--heat-weeks) * 15px - 4px);
         gap: 4px;
         justify-content: start;
       }
@@ -370,9 +428,23 @@
     </div>
   </div>
 
-  <dialog id="dlg">
+  <dialog id="dlg" aria-labelledby="dlg-title">
+    <div class="dialog-head"><h1 id="dlg-title">设置</h1><button type="button" class="close-dialog" id="btn-close-settings" aria-label="关闭">×</button></div>
+    <div class="settings-tabs" role="tablist" aria-label="设置分类">
+      <button type="button" id="tab-display" role="tab" aria-selected="true" aria-controls="panel-display" data-settings-tab="display">显示</button>
+      <button type="button" id="tab-connection" role="tab" aria-selected="false" aria-controls="panel-connection" data-settings-tab="connection">连接</button>
+    </div>
+    <section id="panel-display" role="tabpanel" aria-labelledby="tab-display">
+      <form id="display-form">
+        <h2 id="display-title">主页关注额度</h2>
+        <p class="settings-hint" id="display-hint">勾选要显示的订阅，用箭头调整顺序；仅保存在当前浏览器，按 Hub 分开。</p>
+        <div id="display-list"></div>
+        <p class="err" id="display-err" role="alert"></p>
+        <div class="actions"><button type="button" class="btn ghost" id="btn-display-reset">恢复默认</button><button type="submit" class="btn" id="btn-display-save">保存显示偏好</button></div>
+      </form>
+    </section>
+    <section id="panel-connection" role="tabpanel" aria-labelledby="tab-connection" hidden>
     <form id="dlg-form">
-      <h1 id="dlg-title" style="margin:0 0 14px;font-size:18px;">设置</h1>
       <div class="err" id="dlg-err"></div>
       <label for="d-hub" id="lab-d-hub">Hub URL</label>
       <input id="d-hub" type="text" required inputmode="url">
@@ -383,11 +455,18 @@
         <button class="btn" type="submit" id="btn-save">保存</button>
       </div>
     </form>
+    </section>
+  </dialog>
+  <aside id="quota-preview" class="quota-preview" hidden aria-label="额度详情"></aside>
+  <dialog id="quota-dialog" aria-labelledby="quota-dialog-title">
+    <div class="dialog-head"><h2 id="quota-dialog-title">额度详情</h2><button type="button" class="close-dialog" id="btn-close-quota" aria-label="关闭">×</button></div>
+    <div id="quota-dialog-body"></div>
   </dialog>
 
 <script>
 const KEY = "tm-dash-v1";
 const LANG_KEY = "tm-dash-lang";
+const DISPLAY_KEY = "tm-dash-display-v1";
 const WIDE_MQ = window.matchMedia("(min-width: 860px)");
 function isWide() { return WIDE_MQ.matches; }
 const I18N = {
@@ -607,7 +686,16 @@ function normalizeHub(raw) {
   return hub.replace(/\/+$/, "").replace(/\/api\/.*$/i, "");
 }
 function esc(s) {
-  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  return maskEmails(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function maskEmails(value) {
+  return String(value ?? "").replace(/[\p{L}\p{N}._%+!#$&'*\/=?^`{|}~-]+@[\p{L}\p{N}.*-]+/gu, (email) => {
+    const [local, domain] = email.split("@");
+    if (local.includes("***") && domain.includes("***")) return email;
+    const suffix = domain.includes(".") ? "." + domain.split(".").pop() : "";
+    const name = local.length > 4 ? local.slice(0, 2) + "***" + local.slice(-2) : local.slice(0, 1) + "***";
+    return name + "@" + domain.slice(0, 1) + "***" + suffix;
+  });
 }
 function meta(id) {
   const k = String(id || "").toLowerCase();
@@ -848,7 +936,7 @@ function providerAccountLabel(p) {
   if (String(p.provider).toLowerCase() === "muse" || !parts.some(Boolean)) {
     parts.push(p.sourceDeviceName || p.sourceDeviceId);
   }
-  return [...new Set(parts.filter(Boolean))].join(" · ");
+  return maskEmails([...new Set(parts.filter(Boolean))].join(" · "));
 }
 function winKind(w) {
   return String((w && w.kind) || "").trim().toLowerCase();
@@ -1174,7 +1262,7 @@ function asofText() {
   if (!ms) return t("asof.unknown");
   return t("asof", { time: fmtStamp(ms), ago: relAgo(new Date(ms).toISOString()) });
 }
-function renderWin(w, lab, wide, m, p) {
+function renderWin(w, lab, wide, m, p, summary = false) {
   if (isCreditsWindow(w) || isMoneyWindow(w)) {
     const metric = String(w.metric || "").toLowerCase();
     // Spending and balances are independent readings, never fall back across them.
@@ -1190,17 +1278,17 @@ function renderWin(w, lab, wide, m, p) {
     const bar = Number.isFinite(left)
       ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>`
       : "";
-    const reset = isCreditsWindow(w) && w.resetsAt ? `<div class="reset">${esc(relReset(w.resetsAt))}</div>` : "";
+    const reset = !summary && isCreditsWindow(w) && w.resetsAt ? `<div class="reset">${esc(relReset(w.resetsAt))}</div>` : "";
     return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span><span>${esc(money)}</span></div>${bar}${reset}</div>`;
   }
   const rem = windowRemaining(w);
   const hasPercent = rem != null;
   const left = hasPercent ? rem : NaN;
-  const pctText = hasPercent ? `${Math.round(left)}% left` : "";
+  const pctText = hasPercent ? (state.lang === "zh" ? `剩余 ${Math.round(left)}%` : `${Math.round(left)}% left`) : "";
   const bar = hasPercent
     ? `<div class="bar"><i style="width:${Math.max(0, Math.min(100, left))}%;background:${m.color}"></i></div>`
     : "";
-  const reset = w.resetsAt ? `<div class="reset">${esc(relReset(w.resetsAt))}</div>` : "";
+  const reset = !summary && w.resetsAt ? `<div class="reset">${esc(relReset(w.resetsAt))}</div>` : "";
   return `<div class="win${wide}"><div class="lab"><span>${esc(lab)}</span>${pctText ? `<span>${esc(pctText)}</span>` : ""}</div>${bar}${reset}</div>`;
 }
 
@@ -1220,11 +1308,7 @@ function providerSpendHtml(p) {
   const summary = (primary.length ? primary : readings).map((r) => `${r.label} ${r.value}`).join(" · ");
   return `<details class="spend-details"><summary>${esc(zh ? "支出" : "Spend")} · ${esc(summary)}</summary><dl>${readings.map((r) => `<div><dt>${esc(r.label)}</dt><dd>${esc(r.value)}</dd></div>`).join("")}</dl></details>`;
 }
-function renderLimits(full) {
-  const raw = (state.stats && state.stats.limits && state.stats.limits.providers) || [];
-  if (!raw.length) return `<p class="empty">${esc(t("empty.limits"))}</p>`;
-  const list = full ? sortLimits(raw) : raw.slice(0, 3);
-  return list.map((p) => {
+function renderProviderDetails(p, full = true) {
     const m = meta(p.provider);
     const pid = String(p.provider || "").toLowerCase();
     const isAnti = pid === "antigravity";
@@ -1296,7 +1380,39 @@ function renderLimits(full) {
       <div class="wins ${cols}">${winHtml}</div>
       ${providerSpendHtml(p)}
     </article>`;
-  }).join("");
+}
+function quotaSummary(p) {
+  const pid = String(p.provider || "").toLowerCase();
+  const groups = pid === "antigravity" ? antigravityQuotaGroups(p) : [];
+  if (groups.length) return groups.map((g) => {
+    const entries = g.windows.slice().sort((a, b) => (windowRemaining(a.window) ?? Infinity) - (windowRemaining(b.window) ?? Infinity));
+    return { window: entries[0].window, label: `${g.label} · ${entries[0].windowLabel}` };
+  });
+  const wins = (p.windows || []).filter((w) => pid !== "antigravity" || antigravityQuotaWindowVisible(w));
+  return wins.map((w) => ({ window: w, label: windowLabel(w, wins.filter(isAdditionalWin), pid) }));
+}
+function renderQuotaCard(p, index) {
+  const m = meta(p.provider);
+  const entries = quotaSummary(p);
+  const account = providerAccountLabel(p);
+  const ago = relAgo(p.updatedAt || (state.stats && state.stats.limits && state.stats.limits.updatedAt));
+  const zh = state.lang === "zh";
+  const count = (p.windows || []).length;
+  const details = zh ? `详情 · ${count} 项` : `Details · ${count}`;
+  return `<article class="prov quota-card">
+    <div class="prov-h"><div class="prov-name">${ico(p.provider)}<span>${esc(m.name)}</span></div><div class="plan" title="${esc(planLabel(p))}">${esc(planLabel(p))}</div></div>
+    <div class="account" title="${esc(account)}">${esc(account) || "—"}</div>
+    <div class="sub">${esc([ago, authLabel(p)].filter(Boolean).join(" · ")) || "—"}</div>
+    <div class="quota-summary">${entries.slice(0, 3).map((e) => renderWin(e.window, e.label, " wide", m, p, true)).join("") || `<p class="empty">${zh ? "暂无额度读数" : "No quota readings"}</p>`}</div>
+    <div class="quota-footer"><span>${entries.length > 3 ? esc(zh ? `另有 ${entries.length - 3} 项` : `${entries.length - 3} more`) : ""}</span><button type="button" class="detail-trigger" data-quota-detail="${index}" aria-haspopup="dialog" aria-controls="quota-dialog">${esc(details)}</button></div>
+  </article>`;
+}
+function renderLimits(full) {
+  const raw = (state.stats && state.stats.limits && state.stats.limits.providers) || [];
+  if (full && !raw.length) return `<p class="empty">${esc(t("empty.limits"))}</p>`;
+  const entries = full ? sortLimits(raw).map((p) => ({ p })) : homeEntries();
+  if (!entries.length) return `<p class="empty">${state.lang === "zh" ? "未选择关注订阅，可在右上角设置中选择。" : "No followed subscriptions. Choose them in Settings."}</p>`;
+  return entries.map(({ p }) => p ? renderQuotaCard(p, raw.indexOf(p)) : `<article class="prov quota-card unavailable"><div class="prov-name">${state.lang === "zh" ? "已关注订阅暂不可用" : "Followed subscription unavailable"}</div><p class="empty">${state.lang === "zh" ? "保留原选择，不自动替换。" : "Selection kept; no automatic replacement."}</p></article>`).join("");
 }
 
 function renderBars(list, compact) {
@@ -1320,6 +1436,138 @@ function renderBars(list, compact) {
   }).join("");
 }
 
+function renderModelList(list) {
+  const major = list.filter((x) => x.pct >= 0.01);
+  const minor = list.filter((x) => x.pct < 0.01);
+  if (!minor.length) return renderBars(major, false);
+  const total = minor.reduce((sum, x) => ({ tokens: sum.tokens + x.tokens, cost: sum.cost + x.cost, pct: sum.pct + x.pct }), { tokens: 0, cost: 0, pct: 0 });
+  const icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M9 1v3m6-3v3M9 20v3m6-3v3M1 9h3m-3 6h3m16-6h3m-3 6h3"/><path d="m12 7 1.6 3.4L17 12l-3.4 1.6L12 17l-1.6-3.4L7 12l3.4-1.6Z" fill="currentColor" stroke="none"/></svg>';
+  return (major.length ? renderBars(major, false) : "") + `<details class="other-models"><summary class="row"><span class="other-ai">${icon}</span><span class="nm"><span class="other-title">Other Models<span class="other-chevron" aria-hidden="true">⌄</span></span><small>${minor.length} ${state.lang === "zh" ? "个模型 · 各自低于 1%" : "models · each below 1%"}</small></span><span class="vals"><span class="tok"><span class="usage-value">${fmtFull(total.tokens)}</span> <span class="usage-sep" aria-hidden="true">·</span> <span class="usage-share">${esc(fmtShare(total.pct))}</span></span><span class="cst">${fmtCost(total.cost)}</span></span></summary><div class="other-model-list">${renderBars(minor, false)}</div></details>`;
+}
+async function opaqueId(value) {
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(bytes), (x) => x.toString(16).padStart(2, "0")).join("");
+}
+function cleanDisplayPrefs(value) {
+  return { mode: value && value.mode === "manual" ? "manual" : "auto",
+    ids: [...new Set(Array.isArray(value && value.ids) ? value.ids.filter((id) => /^[a-f0-9]{64}$/.test(id)) : [])] };
+}
+function loadDisplayPrefs(scope) {
+  try {
+    const store = JSON.parse(localStorage.getItem(DISPLAY_KEY) || "null");
+    return cleanDisplayPrefs(store && store.version === 1 && store.hubs && store.hubs[scope]);
+  } catch { return cleanDisplayPrefs(null); }
+}
+function saveDisplayPrefs(value) {
+  if (!state.prefScope) throw new Error(state.lang === "zh" ? "请等待订阅列表加载完成" : "Wait for subscriptions to load");
+  let store;
+  try { store = JSON.parse(localStorage.getItem(DISPLAY_KEY) || "null"); } catch { /* malformed storage */ }
+  if (!store || store.version !== 1 || !store.hubs || Array.isArray(store.hubs) || typeof store.hubs !== "object") store = { version: 1, hubs: {} };
+  const prefs = cleanDisplayPrefs(value);
+  store.hubs[state.prefScope] = prefs;
+  localStorage.setItem(DISPLAY_KEY, JSON.stringify(store));
+  state.displayPrefs = prefs;
+}
+async function prepareSubscriptions() {
+  const stats = state.stats;
+  const hub = normalizeHub(state.cfg && state.cfg.hub);
+  const generation = state.catalogGeneration = (state.catalogGeneration || 0) + 1;
+  const scope = await opaqueId(hub);
+  const catalog = await Promise.all(((stats && stats.limits && stats.limits.providers) || []).map(async (p) => {
+    const pid = String(p.provider || "").toLowerCase();
+    const product = ["mimo", "alibaba", "workbuddy"].includes(pid) ? (p.accountLabel || p.region || "") : "";
+    const account = p.accountEmail || p.accountName || p.profileName || "";
+    if (!p.accountKey && !p.sourceDeviceId && !account) return { id: null, p };
+    const identity = p.accountKey || [p.sourceDeviceId || "", account];
+    const id = await opaqueId(JSON.stringify([pid, p.adapterId || "", identity, product, pid === "muse" ? p.sourceDeviceId || "" : ""]));
+    return { id, p };
+  }));
+  const counts = new Map();
+  for (const x of catalog) if (x.id) counts.set(x.id, (counts.get(x.id) || 0) + 1);
+  for (const x of catalog) if (counts.get(x.id) > 1) x.id = null;
+  if (generation !== state.catalogGeneration || stats !== state.stats || hub !== normalizeHub(state.cfg && state.cfg.hub)) return false;
+  state.catalog = catalog;
+  state.catalogStats = stats;
+  state.prefScope = scope;
+  state.displayPrefs = loadDisplayPrefs(scope);
+  return true;
+}
+function subscriptionCatalog() {
+  return state.catalogStats === state.stats ? state.catalog : ((state.stats && state.stats.limits && state.stats.limits.providers) || []).map((p) => ({ id: "", p }));
+}
+function homeEntries(prefs = state.displayPrefs || { mode: "auto", ids: [] }) {
+  const catalog = subscriptionCatalog();
+  if (prefs.mode === "manual") return prefs.ids.map((id) => catalog.find((x) => x.id === id) || { id, p: null });
+  const ordered = catalog.slice().sort((a, b) => String(meta(a.p.provider).name).localeCompare(String(meta(b.p.provider).name)));
+  const seen = new Set();
+  const unique = ordered.filter((x) => { if (seen.has(x.p.provider)) return false; seen.add(x.p.provider); return true; });
+  return unique.concat(ordered.filter((x) => !unique.includes(x))).slice(0, 3);
+}
+function renderDisplayChoices() {
+  if (!state.prefScope || state.catalogStats !== state.stats) return `<p class="empty">${state.lang === "zh" ? "订阅列表加载中…" : "Loading subscriptions…"}</p>`;
+  const catalog = subscriptionCatalog();
+  const draft = state.displayDraft || state.displayPrefs;
+  const automatic = homeEntries({ mode: "auto", ids: [] });
+  const ids = draft.mode === "manual" ? draft.ids : automatic.map((x) => x.id).filter(Boolean);
+  const selected = ids.map((id) => catalog.find((x) => x.id === id) || { id, p: null });
+  const choices = selected.concat(catalog.filter((x) => !ids.includes(x.id)));
+  const zh = state.lang === "zh";
+  if (!choices.length) return `<p class="empty">${zh ? "Hub 尚未提供订阅额度。" : "The hub has not supplied subscriptions yet."}</p>`;
+  return choices.map((choice) => {
+    const { id, p } = choice;
+    const pos = ids.indexOf(id);
+    const name = p ? meta(p.provider).name : (zh ? "已关注订阅暂不可用" : "Followed subscription unavailable");
+    const subtitle = (p ? [planLabel(p), providerAccountLabel(p), authLabel(p)].filter(Boolean).join(" · ") : (zh ? "保留选择，可取消关注" : "Selection kept; you may unfollow it")) + (!id ? (zh ? " · 缺少唯一稳定账号标识，暂不能手动关注" : " · Missing a unique stable account identity; manual selection unavailable") : "");
+    if (!id) return `<div class="display-choice"><label><input type="checkbox" disabled${draft.mode === "auto" && automatic.includes(choice) ? " checked" : ""}><span><strong>${esc(name)}</strong><small>${esc(subtitle)}</small></span></label></div>`;
+    return `<div class="display-choice"><label><input type="checkbox" data-subscription="${id}"${pos >= 0 ? " checked" : ""}><span><strong>${esc(name)}</strong><small>${esc(subtitle)}</small></span></label><div class="choice-order"><button type="button" data-subscription="${id}" data-move="-1" aria-label="${esc(zh ? "上移" : "Move up")} ${esc(name)}"${pos <= 0 ? " disabled" : ""}>↑</button><button type="button" data-subscription="${id}" data-move="1" aria-label="${esc(zh ? "下移" : "Move down")} ${esc(name)}"${pos < 0 || pos === ids.length - 1 ? " disabled" : ""}>↓</button></div></div>`;
+  }).join("");
+}
+function settingsLang() {
+  const zh = state.lang === "zh";
+  const labels = {
+    "tab-display": zh ? "显示" : "Display", "tab-connection": zh ? "连接" : "Connection",
+    "display-title": zh ? "主页关注额度" : "Home subscriptions",
+    "display-hint": zh ? "勾选要显示的订阅，用箭头调整顺序；仅保存在当前浏览器，按 Hub 分开。" : "Select subscriptions and use arrows to reorder. Saved in this browser, separately for each hub.",
+    "btn-display-reset": zh ? "恢复默认" : "Restore defaults", "btn-display-save": zh ? "保存显示偏好" : "Save display preferences",
+    "quota-dialog-title": zh ? "额度详情" : "Quota details"
+  };
+  for (const [id, text] of Object.entries(labels)) if ($(id)) $(id).textContent = text;
+  for (const id of ["btn-close-settings", "btn-close-quota"]) if ($(id)) $(id).setAttribute("aria-label", zh ? "关闭" : "Close");
+  if ($("quota-preview")) $("quota-preview").setAttribute("aria-label", labels["quota-dialog-title"]);
+}
+function setSettingsTab(tab) {
+  for (const key of ["display", "connection"]) {
+    $("panel-" + key).hidden = key !== tab;
+    $("tab-" + key).setAttribute("aria-selected", String(key === tab));
+  }
+  if (tab === "connection") {
+    const cfg = state.cfg || loadCfg() || {};
+    $("d-hub").value = cfg.hub || "";
+    $("d-secret").value = cfg.secret || "";
+  }
+}
+function showQuotaDetails(button, modal) {
+  if (!modal && state.quotaModalActive) return;
+  const index = Number(button.dataset.quotaDetail);
+  const providers = (state.stats && state.stats.limits && state.stats.limits.providers) || [];
+  if (!Number.isInteger(index) || index < 0 || !providers[index]) return;
+  const content = renderProviderDetails(providers[index]);
+  if (modal) {
+    state.quotaModalActive = true;
+    $("quota-preview").hidden = true;
+    $("quota-dialog-body").innerHTML = content;
+    $("quota-dialog").showModal();
+    return;
+  }
+  const preview = $("quota-preview");
+  preview.innerHTML = content;
+  preview.hidden = false;
+  const rect = button.getBoundingClientRect();
+  const width = preview.getBoundingClientRect().width;
+  preview.style.left = Math.max(12, Math.min(innerWidth - width - 12, rect.right - width)) + "px";
+  const height = preview.getBoundingClientRect().height;
+  preview.style.top = Math.max(12, Math.min(innerHeight - height - 12, rect.bottom + 8)) + "px";
+}
 function dailyList() {
   const h = state.history || (state.stats && state.stats.historyPreview) || {};
   return Array.isArray(h.daily) ? h.daily : [];
@@ -1390,8 +1638,8 @@ function heatmapHtml() {
   }).join("");
   const peak = days.reduce((m, d) => Math.max(m, Number(d.tokens) || 0), 0);
   return `<div class="heat">
-    <div class="heat-grid">${html}</div>
-    <div class="heat-months">${months.slice(isWide() ? -8 : -4).map(esc).join("&nbsp;&nbsp;&nbsp;&nbsp;") || ""}</div>
+    <div class="heat-grid" style="--heat-weeks:${Math.ceil(vals.length / 7)}">${html}</div>
+    <div class="heat-months">${months.slice(isWide() && window.innerWidth >= 1100 ? -8 : -4).map((m) => `<span>${esc(m)}</span>`).join("")}</div>
     <div class="heat-peak">${esc(t("peak"))} ${fmtCompact(peak)}</div>
   </div>`;
 }
@@ -1466,9 +1714,9 @@ function renderMain() {
   const p = periodOf(state.stats, state.period);
   const tools = sortEntries(entries(p.clients, p.clientCosts), "tools");
   const models = sortEntries(modelEntries(p), "models");
-  if (state.view === "limits") return `${sortBar("limits", ["left", "name"])}<div class="limits-grid">${renderLimits(true)}</div>`;
+  if (state.view === "limits") return `${sortBar("limits", ["name", "left"])}<div class="limits-grid">${renderLimits(true)}</div>`;
   if (state.view === "tools") return `${sortBar("tools", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(tools, false)}</div>`;
-  if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(models, false)}</div>`;
+  if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap">${renderModelList(models)}</div>`;
   if (state.view === "devices") return `${sortBar("devices", ["tokens", "cost", "sync", "name"])}<div class="list-wrap">${renderDevices()}</div>`;
   if (state.view === "trends") {
     const tstat = streakAndTime();
@@ -1502,7 +1750,7 @@ function renderMain() {
       <div class="cost">${fmtCost(p.costUsd)}</div>
       <div class="asof">${esc(asofText())}</div>
     </div>
-    <div class="sec home-limits"><div class="sec-h">${esc(t("sec.limits"))} <span>◔</span></div>${renderLimits(false)}</div>
+    <div class="sec home-limits"><div class="sec-h">${state.lang === "zh" ? "关注额度" : "Followed quotas"}</div><div class="home-quota-grid">${renderLimits(false)}</div></div>
     <div class="sec home-models"><div class="sec-h">${esc(t("sec.models"))} <span>✣</span></div>${sortBar("models", ["tokens", "cost", "name"])}${modelRows}</div>
     <div class="sec home-heat"><div class="sec-h">${esc(t("sec.activity"))} <span>${esc(t("activeDays", { n: tstat.activeDays }))} ↗</span></div>${heatmapHtml()}</div>
   </div>`;
@@ -1527,8 +1775,16 @@ function applyStaticLang() {
   set("btn-lang-gate", next);
   const gear = $("btn-settings-top");
   if (gear) gear.title = t("settings");
+  settingsLang();
+}
+function fitTotals() {
+  for (const el of document.querySelectorAll(".big")) {
+    el.style.fontSize = "";
+    if (el.clientWidth && el.scrollWidth > el.clientWidth) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * el.clientWidth / el.scrollWidth * 0.98) + "px";
+  }
 }
 function paint() {
+  if ($("quota-preview")) $("quota-preview").hidden = true;
   applyStaticLang();
   $("app").classList.toggle("view-home", state.view === "home");
   if (!state.stats) {
@@ -1542,7 +1798,7 @@ function paint() {
     $("hero-c").textContent = fmtCost(p.costUsd);
     $("asof").textContent = asofText();
     $("main").innerHTML = renderMain();
-    $("banner").textContent = state.error || "";
+    $("banner").textContent = maskEmails(state.error);
   }
   const vlist = views();
   const v = vlist.find((x) => x.id === state.view) || vlist[0];
@@ -1563,12 +1819,13 @@ function paint() {
   live.className = "dot " + (state.error ? "bad" : state.stats ? "on" : "");
   live.title = liveLabel;
   live.setAttribute("aria-label", liveLabel);
+  fitTotals();
 }
 
-async function api(path) {
-  const hub = String(state.cfg.hub || "").replace(/\/+$/, "");
+async function api(path, cfg = state.cfg) {
+  const hub = String(cfg.hub || "").replace(/\/+$/, "");
   const res = await fetch(hub + path, {
-    headers: { authorization: "Bearer " + state.cfg.secret },
+    headers: { authorization: "Bearer " + cfg.secret },
     cache: "no-store"
   });
   const text = await res.text();
@@ -1582,21 +1839,28 @@ async function api(path) {
 
 async function pull() {
   if (!state.cfg) return false;
+  const cfg = state.cfg;
   try {
-    const stats = await api("/api/stats");
+    const stats = await api("/api/stats", cfg);
+    if (state.cfg !== cfg) return false;
     if (!stats || !stats.periods) throw new Error(t("err.notStats"));
-    state.stats = stats;
-    try { state.history = await api("/api/history"); }
-    catch { state.history = stats.historyPreview || null; }
+    let history;
+    try { history = await api("/api/history", cfg); }
+    catch { history = stats.historyPreview || null; }
+    if (state.cfg !== cfg) return false;
+    state.stats = stats; state.history = history;
+    await prepareSubscriptions();
+    if (state.cfg !== cfg || state.stats !== stats) return false;
     state.error = "";
     paint();
     return true;
   } catch (e) {
+    if (state.cfg !== cfg) return false;
     let msg = e.message || String(e);
     if (/failed to fetch|networkerror|load failed/i.test(msg)) {
       msg = t("err.fetch");
     }
-    state.error = msg;
+    state.error = maskEmails(msg);
     paint();
     return false;
   }
@@ -1606,7 +1870,7 @@ function showGate(err) {
   $("app").hidden = true;
   $("gate").hidden = false;
   applyStaticLang();
-  $("gate-err").textContent = err || "";
+  $("gate-err").textContent = maskEmails(err);
   const cfg = loadCfg() || {};
   $("hub").value = cfg.hub || "";
   $("secret").value = cfg.secret || "";
@@ -1635,7 +1899,7 @@ $("gate-form").addEventListener("submit", async (e) => {
   $("gate-err").textContent = t("gate.connecting");
   $("btn-connect").disabled = true;
   try { await connectFromForm($("hub").value, $("secret").value); $("gate-err").textContent = ""; }
-  catch (err) { $("gate-err").textContent = err.message || String(err); }
+  catch (err) { $("gate-err").textContent = maskEmails(err.message || String(err)); }
   finally { $("btn-connect").disabled = false; }
 });
 $("seg").addEventListener("click", (e) => {
@@ -1687,26 +1951,101 @@ function toggleLang() {
 }
 $("btn-lang").addEventListener("click", toggleLang);
 $("btn-lang-gate").addEventListener("click", toggleLang);
-function openSettings() {
-  const cfg = state.cfg || loadCfg() || {};
-  $("d-hub").value = cfg.hub || "";
-  $("d-secret").value = cfg.secret || "";
+async function openSettings() {
   $("dlg-err").textContent = "";
+  $("display-err").textContent = "";
+  state.displayDraft = cleanDisplayPrefs(state.displayPrefs);
+  state.settingsScope = state.prefScope;
+  setSettingsTab("display");
+  $("display-list").innerHTML = renderDisplayChoices();
   $("dlg").showModal();
+  if (state.catalogStats !== state.stats) {
+    try {
+      await prepareSubscriptions();
+      state.settingsScope = state.prefScope;
+      state.displayDraft = cleanDisplayPrefs(state.displayPrefs);
+      $("display-list").innerHTML = renderDisplayChoices();
+    } catch (err) { $("display-err").textContent = maskEmails(err.message); }
+  }
 }
 $("btn-settings").addEventListener("click", openSettings);
 $("btn-settings-top").addEventListener("click", openSettings);
+$("btn-close-settings").addEventListener("click", () => $("dlg").close());
+$("btn-close-quota").addEventListener("click", () => $("quota-dialog").close());
+$("quota-dialog").addEventListener("close", () => { state.quotaModalActive = false; $("quota-preview").hidden = true; });
+$("dlg").addEventListener("click", (e) => {
+  const tab = e.target.closest("[data-settings-tab]");
+  if (tab) setSettingsTab(tab.dataset.settingsTab);
+});
+$("dlg").addEventListener("keydown", (e) => {
+  const tab = e.target.closest("[data-settings-tab]");
+  if (!tab || !["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+  e.preventDefault();
+  const next = tab.dataset.settingsTab === "display" ? "connection" : "display";
+  setSettingsTab(next); $("tab-" + next).focus();
+});
+$("display-list").addEventListener("change", (e) => {
+  const box = e.target.closest("input[data-subscription]");
+  if (!box) return;
+  const ids = state.displayDraft.mode === "manual" ? state.displayDraft.ids.slice() : homeEntries({ mode: "auto", ids: [] }).map((x) => x.id).filter(Boolean);
+  state.displayDraft = { mode: "manual", ids: box.checked ? [...new Set(ids.concat(box.dataset.subscription))] : ids.filter((id) => id !== box.dataset.subscription) };
+  $("display-list").innerHTML = renderDisplayChoices();
+  $("display-list").querySelector(`input[data-subscription="${box.dataset.subscription}"]`)?.focus();
+});
+$("display-list").addEventListener("click", (e) => {
+  const button = e.target.closest("button[data-move]");
+  if (!button) return;
+  const ids = state.displayDraft.mode === "manual" ? state.displayDraft.ids.slice() : homeEntries({ mode: "auto", ids: [] }).map((x) => x.id).filter(Boolean);
+  const index = ids.indexOf(button.dataset.subscription), next = index + Number(button.dataset.move);
+  if (index < 0 || next < 0 || next >= ids.length) return;
+  [ids[index], ids[next]] = [ids[next], ids[index]];
+  state.displayDraft = { mode: "manual", ids };
+  $("display-list").innerHTML = renderDisplayChoices();
+  $("display-list").querySelector(`input[data-subscription="${button.dataset.subscription}"]`)?.focus();
+});
+$("btn-display-reset").addEventListener("click", () => {
+  state.displayDraft = { mode: "auto", ids: [] };
+  $("display-list").innerHTML = renderDisplayChoices();
+});
+$("display-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    if (state.settingsScope !== state.prefScope) throw new Error(state.lang === "zh" ? "Hub 已变化，请重新打开设置。" : "Hub changed. Reopen Settings.");
+    saveDisplayPrefs(state.displayDraft); $("dlg").close(); paint();
+  } catch (err) { $("display-err").textContent = maskEmails(err.message); }
+});
+$("main").addEventListener("click", (e) => {
+  const button = e.target.closest("[data-quota-detail]");
+  if (button) showQuotaDetails(button, true);
+});
+$("main").addEventListener("pointerover", (e) => {
+  const button = e.target.closest("[data-quota-detail]");
+  if (button && !button.contains(e.relatedTarget) && (e.pointerType === "mouse" || window.matchMedia("(hover: hover)").matches)) {
+    clearTimeout(state.previewTimer); showQuotaDetails(button, false);
+  }
+});
+$("main").addEventListener("focusin", (e) => {
+  const button = e.target.closest("[data-quota-detail]");
+  if (button && (button.matches(":focus-visible") || window.matchMedia("(hover: hover)").matches)) { clearTimeout(state.previewTimer); showQuotaDetails(button, false); }
+});
+for (const event of ["pointerout", "focusout"]) $("main").addEventListener(event, (e) => {
+  if (e.target.closest("[data-quota-detail]") && !$("quota-preview").contains(e.relatedTarget)) state.previewTimer = setTimeout(() => { $("quota-preview").hidden = true; }, 200);
+});
+$("quota-preview").addEventListener("pointerenter", () => clearTimeout(state.previewTimer));
+$("quota-preview").addEventListener("pointerleave", () => { $("quota-preview").hidden = true; });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("quota-preview").hidden = true; });
+window.addEventListener("resize", () => { $("quota-preview").hidden = true; fitTotals(); });
 $("dlg-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
     await connectFromForm($("d-hub").value, $("d-secret").value);
     $("dlg").close();
-  } catch (err) { $("dlg-err").textContent = err.message || String(err); }
+  } catch (err) { $("dlg-err").textContent = maskEmails(err.message || String(err)); }
 });
 $("btn-forget").addEventListener("click", () => {
   localStorage.removeItem(KEY);
   $("dlg").close();
-  state.cfg = null; state.stats = null;
+  state.cfg = null; state.stats = null; state.catalog = []; state.catalogStats = null; state.prefScope = ""; state.displayPrefs = null;
   if (state.timer) clearInterval(state.timer);
   showGate();
 });

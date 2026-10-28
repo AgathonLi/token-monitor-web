@@ -23,7 +23,7 @@ function app() {
     run: (expression) => vm.runInContext(expression, ctx),
     render: (providers, full = true) => {
       vm.runInContext(`state.stats = {limits:{providers:${JSON.stringify(providers)}}}`, ctx);
-      return ctx.renderLimits(full);
+      return vm.runInContext(`state.stats.limits.providers.map(p => renderProviderDetails(p, ${Boolean(full)})).join("")`, ctx);
     },
   };
 }
@@ -82,8 +82,10 @@ test('same-plan quota cards keep account identities separate from plans and sour
   for (const full of [true, false]) {
     const rendered = render(providers, full);
     assert.ok(rendered.includes('Work &lt;team&gt;'));
-    assert.ok(rendered.includes('work@example.test'));
-    assert.ok(rendered.includes('personal@example.test'));
+    assert.ok(rendered.includes(ctx.maskEmails('work@example.test')));
+    assert.ok(rendered.includes(ctx.maskEmails('personal@example.test')));
+    assert.ok(!rendered.includes('work@example.test'));
+    assert.ok(!rendered.includes('personal@example.test'));
     assert.ok(rendered.includes('test-nas'));
     assert.ok(rendered.includes('Web'));
     assert.ok(rendered.includes('OAuth'));
