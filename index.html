@@ -277,7 +277,7 @@
     .home-limits { order: 1; }
     .home-models { order: 2; }
     .home-quota-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-    .prov.quota-card { height: 260px; min-width: 0; display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
+    .prov.quota-card { height: 210px; min-width: 0; display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
     .prov.quota-card:last-child { border-bottom: 1px solid var(--line); }
     .quota-card .prov-h { align-items: center; min-height: 28px; }
     .quota-card .prov-name { flex: 1; white-space: nowrap; overflow: hidden; }
@@ -1426,16 +1426,16 @@ function quotaSummary(p) {
     }).filter(Boolean);
     const argon = wins.filter((w) => antigravityQuotaWindow(w)?.groupLabel === "Gemini 4 Argon");
     const window = argon.find((w) => quotaPeriod(w, pid) === "weekly") || argon[0];
-    if (window) return result.filter((x) => x.period !== "monthly").concat({ window, label: `Argon · ${quotaPeriod(window, pid)}`, period: "argon" });
-    return result;
+    if (window) return [{ window, label: `Argon · ${quotaPeriod(window, pid)}`, period: "argon" }, ...result].slice(0, 2);
+    return result.slice(0, 2);
   }
   const result = periods.map((period) => {
     const window = wins.find((w) => quotaPeriod(w, pid) === period);
     return window ? { window, label: period, period } : null;
   }).filter(Boolean);
-  if (result.length) return result;
+  if (result.length) return result.slice(0, 2);
   const balances = wins.filter((w) => (isCreditsWindow(w) || isMoneyWindow(w)) && String(w.metric || "").toLowerCase() !== "spend");
-  if (balances.length) return balances.slice(0, 3).map((window) => ({ window, label: window.label || (state.lang === "zh" ? "余额" : "Balance") }));
+  if (balances.length) return balances.slice(0, 2).map((window) => ({ window, label: window.label || (state.lang === "zh" ? "余额" : "Balance") }));
   const balance = p.balance;
   if (balance && fmtMoney(balance.amount, balance.currency)) return [{ window: { kind: "balance", metric: "credits", remaining: balance.amount, currency: balance.currency, showMeter: false }, label: state.lang === "zh" ? "余额" : "Balance" }];
   return [];
@@ -1451,7 +1451,7 @@ function renderQuotaCard(p, index) {
   return `<article class="prov quota-card">
     <div class="prov-h"><div class="prov-name">${ico(p.provider)}<span>${esc(m.name)}</span></div><span class="quota-updated" title="${esc(p.updatedAt || "")}">${esc(ago)}</span><button type="button" class="quota-info" data-quota-detail="${index}" aria-label="${esc(details)}" aria-haspopup="dialog" aria-controls="quota-dialog"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg></button></div>
     <div class="quota-meta" title="${esc([plan, account].filter(Boolean).join(" · "))}">${esc([plan, account].filter(Boolean).join(" · ")) || "—"}</div>
-    <div class="quota-summary">${entries.slice(0, 3).map((e) => renderWin(e.window, e.label, " wide", m, p, true)).join("") || `<p class="empty">${zh ? "暂无额度读数" : "No quota readings"}</p>`}</div>
+    <div class="quota-summary">${entries.slice(0, 2).map((e) => renderWin(e.window, e.label, " wide", m, p, true)).join("") || `<p class="empty">${zh ? "暂无额度读数" : "No quota readings"}</p>`}</div>
   </article>`;
 }
 function renderLimits(full) {
@@ -1611,6 +1611,7 @@ function showQuotaDetails(button, modal) {
   renderDetailPreview(button, content);
 }
 function openDetailsDialog(content, title) {
+  clearTimeout(state.previewTimer);
   state.quotaModalActive = true;
   $("quota-preview").hidden = true;
   if ($("quota-dialog-title")) $("quota-dialog-title").textContent = title;
@@ -1619,6 +1620,8 @@ function openDetailsDialog(content, title) {
 }
 function renderDetailPreview(button, content) {
   const preview = $("quota-preview");
+  clearTimeout(state.previewTimer);
+  state.previewTrigger = button;
   preview.setAttribute("aria-label", button.dataset.modelDetail != null ? (state.lang === "zh" ? "模型详情" : "Model details") : (state.lang === "zh" ? "额度详情" : "Quota details"));
   preview.innerHTML = content;
   preview.hidden = false;
@@ -1648,6 +1651,18 @@ function showItemDetails(button, modal) {
 function canPreviewDetails(event, button) {
   if (event.type === "focusin") return state.lastInput !== "touch" && button.matches(":focus-visible");
   return event.pointerType === "mouse" && Date.now() - (state.lastTouchAt || 0) > 800;
+}
+function schedulePreviewClose() {
+  clearTimeout(state.previewTimer);
+  state.previewTimer = setTimeout(() => {
+    state.previewTimer = null;
+    const preview = $("quota-preview"), trigger = state.previewTrigger;
+    const activeTrigger = trigger?.isConnected && (trigger.matches(":hover") || (state.lastInput === "keyboard" && trigger.matches(":focus-visible")));
+    if (!activeTrigger && !preview.matches(":hover")) {
+      preview.hidden = true;
+      state.previewTrigger = null;
+    }
+  }, 200);
 }
 function dismissDetailsBackdrop(event) {
   const dialog = $("quota-dialog");
@@ -2130,8 +2145,9 @@ $("main").addEventListener("click", (e) => {
 });
 $("main").addEventListener("pointerover", (e) => {
   const button = e.target.closest("[data-quota-detail], [data-model-detail]");
-  if (button && !button.contains(e.relatedTarget) && canPreviewDetails(e, button)) {
-    clearTimeout(state.previewTimer); showItemDetails(button, false);
+  if (button && canPreviewDetails(e, button)) {
+    clearTimeout(state.previewTimer);
+    if (!button.contains(e.relatedTarget) || $("quota-preview").hidden) showItemDetails(button, false);
   }
 });
 $("main").addEventListener("focusin", (e) => {
@@ -2139,12 +2155,16 @@ $("main").addEventListener("focusin", (e) => {
   if (button && canPreviewDetails(e, button)) { clearTimeout(state.previewTimer); showItemDetails(button, false); }
 });
 for (const event of ["pointerout", "focusout"]) $("main").addEventListener(event, (e) => {
-  if (e.pointerType !== "touch" && e.target.closest("[data-quota-detail], [data-model-detail]") && !$("quota-preview").contains(e.relatedTarget)) state.previewTimer = setTimeout(() => { $("quota-preview").hidden = true; }, 200);
+  const button = e.target.closest("[data-quota-detail], [data-model-detail]");
+  if (e.pointerType !== "touch" && button && !button.contains(e.relatedTarget) && !$("quota-preview").contains(e.relatedTarget)) schedulePreviewClose();
 });
 document.addEventListener("pointerdown", (e) => { state.lastInput = e.pointerType; if (e.pointerType === "touch") state.lastTouchAt = Date.now(); }, true);
 $("main").addEventListener("scroll", (e) => { if (e.target.matches(".chart-scroll")) rememberChartPosition(e.target); }, true);
 $("quota-preview").addEventListener("pointerenter", () => clearTimeout(state.previewTimer));
-$("quota-preview").addEventListener("pointerleave", () => { $("quota-preview").hidden = true; });
+$("quota-preview").addEventListener("pointerleave", (e) => {
+  if (state.previewTrigger?.contains(e.relatedTarget)) clearTimeout(state.previewTimer);
+  else schedulePreviewClose();
+});
 document.addEventListener("keydown", (e) => { state.lastInput = "keyboard"; if (e.key === "Escape") $("quota-preview").hidden = true; });
 window.addEventListener("resize", () => { $("quota-preview").hidden = true; fitTotals(); const chart = document.querySelector(".chart-scroll"); restoreChartPosition(chart, state.chartPosition); rememberChartPosition(chart); });
 $("dlg-form").addEventListener("submit", async (e) => {

@@ -51,10 +51,13 @@ test('quota summaries use ordered real periods and Gemini never borrows the Clau
   ];
   const original = JSON.stringify(windows);
   const summary = c.quotaSummary({ provider: 'antigravity', windows });
-  assert.deepEqual(Array.from(summary, x => x.window.remainingPercent), [90, 50, 0]);
-  assert.ok(summary[0].label.startsWith('5 hour'));
-  assert.ok(summary[1].label.startsWith('weekly'));
-  assert.ok(summary[2].label.includes('Argon'));
+  assert.deepEqual(Array.from(summary, x => x.window.remainingPercent), [0, 90]);
+  assert.ok(summary[0].label.includes('Argon'));
+  assert.ok(summary[1].label.startsWith('5 hour'));
+  const noArgon = c.quotaSummary({ provider: 'antigravity', windows: windows.slice(0, 4) });
+  assert.deepEqual(Array.from(noArgon, x => x.window.remainingPercent), [90, 50]);
+  const noFiveHour = c.quotaSummary({ provider: 'antigravity', windows: windows.filter(w => w.kind !== 'session') });
+  assert.deepEqual(Array.from(noFiveHour, x => x.window.remainingPercent), [0, 50]);
   const noGemini = c.quotaSummary({ provider: 'antigravity', windows: windows.slice(0, 1) });
   assert.equal(noGemini.length, 0);
   const ordinary = c.quotaSummary({ provider: 'codex', windows: [
@@ -64,10 +67,40 @@ test('quota summaries use ordered real periods and Gemini never borrows the Clau
     { kind: 'weekly', remainingPercent: 20 },
     { kind: 'weekly', additional: true, label: 'Extra model pool', remainingPercent: 1 },
   ] });
-  assert.deepEqual(Array.from(ordinary, x => x.label), ['5 hour', 'weekly', 'monthly']);
+  assert.deepEqual(Array.from(ordinary, x => x.label), ['5 hour', 'weekly']);
   assert.equal(ordinary[0].window.remainingPercent, null);
   assert.equal(c.quotaSummary({ provider: 'unknown', windows: [{ kind: 'session', windowMinutes: 60 }] }).length, 0);
   assert.equal(JSON.stringify(windows), original);
+});
+
+test('two-row summaries fill missing periods in priority order without deleting complete details', () => {
+  const { c, run } = app();
+  const windows = [{ kind: 'session', windowMinutes: 300, remainingPercent: 80 },
+    { kind: 'weekly', remainingPercent: 50 }, { kind: 'monthly', remainingPercent: 20 }];
+  const labels = ['5 hour', 'weekly', 'monthly'];
+  for (let mask = 1; mask < 8; mask++) {
+    const selected = windows.filter((w, i) => mask & (1 << i));
+    const p = { provider: 'claude', windows: selected };
+    assert.deepEqual(Array.from(c.quotaSummary(p), x => x.label), labels.filter((v, i) => mask & (1 << i)).slice(0, 2));
+    const card = c.renderQuotaCard(p, 0);
+    assert.ok((card.match(/class="win /g) || []).length <= 2);
+    run(`state.stats={periods:{},limits:{providers:[${JSON.stringify(p)}]}}`);
+    assert.ok((c.renderLimits(false).match(/class="win /g) || []).length <= 2);
+  }
+  const full = c.renderProviderDetails({ provider: 'claude', windows });
+  assert.ok(full.includes('Monthly'));
+  assert.ok(full.includes('20%'));
+});
+
+test('balance summaries are also capped at two without altering the source wallets', () => {
+  const { c } = app();
+  const p = { provider: 'thirdparty', windows: Array.from({ length: 3 }, (_, i) =>
+    ({ kind: 'balance', metric: 'credits', label: 'Wallet ' + i, remaining: i, currency: 'USD', showMeter: false })) };
+  const before = JSON.stringify(p);
+  assert.equal(c.quotaSummary(p).length, 2);
+  const details = c.renderProviderDetails(p);
+  assert.ok(details.includes('Wallet 2'));
+  assert.equal(JSON.stringify(p), before);
 });
 
 test('pure balances remain truthful summaries and cards retain resets but not auth or footer buttons', () => {

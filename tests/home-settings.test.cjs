@@ -97,10 +97,10 @@ test('summary cards retain model-pool identity and expose complete masked detail
   assert.ok(card.includes('quota-card'));
   assert.ok(card.includes('data-quota-detail="0"'));
   const summaries = c.quotaSummary(p);
-  assert.equal(summaries.length, 3);
-  assert.equal(summaries[0].window.remainingPercent, 90);
-  assert.ok(summaries[0].label.includes('Gemini'));
-  assert.ok(summaries[2].label.includes('Argon'));
+  assert.equal(summaries.length, 2);
+  assert.equal(summaries[0].window.remainingPercent, 0);
+  assert.ok(summaries[0].label.includes('Argon'));
+  assert.ok(summaries[1].label.includes('Gemini'));
   const details = c.renderProviderDetails(p);
   for (const label of ['Gemini', 'Claude/GPT', 'Gemini 4 Argon', '5-hour', 'Weekly']) assert.ok(details.includes(label));
   assert.ok(details.includes('0%'));
