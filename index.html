@@ -168,8 +168,10 @@
     .row:last-child { border-bottom: 0; }
     .row .nm { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; }
     .row .nm small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; }
-    .row .vals { text-align: right; }
+    .row .vals { text-align: right; flex-shrink: 0; }
     .row .tok { font-size: 13px; font-weight: 650; }
+    .row .vals .tok { white-space: nowrap; }
+    .row .usage-share { font-size: 12px; font-weight: 500; color: var(--muted); }
     .row .cst { font-size: 12px; color: var(--muted); }
     .row .pct { width: 36px; text-align: right; font-size: 12px; color: var(--muted); }
     .row-bar { height: 6px; background: var(--track); border-radius: 99px; margin-top: 8px; overflow: hidden; }
@@ -185,14 +187,19 @@
     .heat-months { display: flex; justify-content: space-between; color: var(--faint); font-size: 11px; margin-top: 8px; }
     .heat-peak { text-align: right; color: var(--muted); font-size: 12px; margin-top: 4px; }
 
+    .chart-scroll { overflow-x: auto; max-width: 100%; }
     .chart {
-      background: #e7eaee; border-radius: 16px; height: 210px; padding: 16px 12px 8px;
+      background: #e7eaee; border-radius: 16px; height: 224px; padding: 30px 12px 8px;
       display: flex; align-items: flex-end; gap: 4px;
     }
-    .chart span {
-      flex: 1; background: #b7d4f7; border-radius: 3px 3px 0 0; min-height: 2px;
+    .chart-bar {
+      position: relative; flex: 1; min-width: 0; background: #b7d4f7; border-radius: 3px 3px 0 0; min-height: 2px;
     }
-    .chart span.on { background: var(--blue-deep); }
+    .chart-bar.on { background: var(--blue-deep); }
+    .chart-label {
+      position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+      font-family: ui-monospace, monospace; font-size: 11px; line-height: 14px; font-weight: 600; color: var(--muted); white-space: nowrap;
+    }
     .chart-x { display: flex; justify-content: space-between; color: var(--faint); font-size: 12px; margin-top: 8px; }
     .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
     .tile {
@@ -699,6 +706,14 @@ function fmtCompact(n) {
   if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e8 ? 0 : 1).replace(/\.0$/, "") + "M";
   if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e5 ? 0 : 1).replace(/\.0$/, "") + "K";
   return String(Math.round(n));
+}
+function fmtShare(ratio) {
+  const pct = (Number(ratio) || 0) * 100;
+  return pct > 0 && pct < 0.1 ? "<0.1%" : pct.toFixed(1) + "%";
+}
+function fmtMillions(tokens) {
+  const n = Number(tokens) || 0;
+  return n > 0 && n < 1e6 ? "<1M" : Math.round(n / 1e6) + "M";
 }
 function fmtCost(n) {
   n = Number(n) || 0;
@@ -1247,7 +1262,7 @@ function renderBars(list, compact) {
         ${ico(x.id)}
         <div class="nm">${esc(name)}</div>
         <div class="vals">
-          <div class="tok">${compact ? fmtCompact(x.tokens) : fmtFull(x.tokens)}</div>
+          <div class="tok">${compact ? fmtCompact(x.tokens) : `${fmtFull(x.tokens)} · <span class="usage-share">${esc(fmtShare(x.pct))}</span>`}</div>
           <div class="cst">${fmtCost(x.cost)}</div>
         </div>
         ${compact ? `<div class="pct">${Math.round(x.pct * 100)}%</div>` : ""}
@@ -1357,19 +1372,25 @@ function monthBars() {
   let rows = days.filter((d) => String(d.date).startsWith(ym));
   if (rows.length < 8) rows = days.slice(-24);
   const max = Math.max(...rows.map((d) => Number(d.tokens) || 0), 1);
-  const bars = rows.map((d) => {
-    const h = Math.max(2, Math.round((Number(d.tokens) / max) * 170));
+  const labels = rows.map((d) => fmtMillions(d.tokens));
+  const colWidth = Math.max(28, ...labels.map((label) => label.length * 6 + 4));
+  const minWidth = rows.length * (colWidth + 4) + 20;
+  const bars = rows.map((d, index) => {
+    const tokens = Number(d.tokens) || 0;
+    const h = Math.max(2, Math.round((tokens / max) * 170));
     const on = String(d.date).slice(0, 10) === today ? "on" : "";
-    return `<span class="${on}" style="height:${h}px"></span>`;
+    const detail = `${String(d.date).slice(0, 10)} · ${fmtFull(tokens)} tokens`;
+    return `<span class="chart-bar${on ? " on" : ""}" style="height:${h}px" title="${esc(detail)}" aria-label="${esc(detail)}"><span class="chart-label">${esc(labels[index])}</span></span>`;
   }).join("");
   const first = rows[0] ? String(rows[0].date).slice(5).replace("-", "/") : "";
   const last = rows[rows.length - 1] ? String(rows[rows.length - 1].date).slice(5).replace("-", "/") : "";
-  return { bars, first, last };
+  return { bars, first, last, minWidth };
 }
 
 function renderDevices() {
   const list = (state.stats && state.stats.devices) || [];
   if (!list.length) return `<p class="empty">${esc(t("empty.devices"))}</p>`;
+  const total = list.reduce((sum, d) => sum + (Number(d.periods && d.periods[state.period] && d.periods[state.period].totalTokens) || 0), 0) || 1;
   const ordered = sortDevices(list);
   return ordered.map((d) => {
     const per = (d.periods && d.periods[state.period]) || {};
@@ -1385,7 +1406,7 @@ function renderDevices() {
         <span class="dot ${d.stale ? "bad" : "on"}"></span>
         <div class="nm">${esc(name)}<small>${esc(bits.join(" · "))}</small></div>
         <div class="vals">
-          <div class="tok">${fmtFull(per.totalTokens)}</div>
+          <div class="tok">${fmtFull(per.totalTokens)} · <span class="usage-share">${esc(fmtShare((Number(per.totalTokens) || 0) / total))}</span></div>
           <div class="cst">${fmtCost(per.costUsd)}</div>
         </div>
       </div>
@@ -1405,8 +1426,12 @@ function renderMain() {
     const tstat = streakAndTime();
     const b = monthBars();
     return `<div class="sec-h">${esc(t("sec.month"))}</div>
-      <div class="chart">${b.bars || ""}</div>
-      <div class="chart-x"><span>${esc(b.first)}</span><span>${esc(b.last)}</span></div>
+      <div class="chart-scroll" tabindex="0" role="region" aria-label="${esc(t("sec.month"))}">
+        <div class="chart-content" style="min-width:${b.minWidth}px">
+          <div class="chart">${b.bars || ""}</div>
+          <div class="chart-x"><span>${esc(b.first)}</span><span>${esc(b.last)}</span></div>
+        </div>
+      </div>
       <div class="tiles">
         <div class="tile"><div class="v">${tstat.activeDays}</div><div class="l">${esc(t("tile.activeDays"))}</div></div>
         <div class="tile"><div class="v">${tstat.streak}</div><div class="l">${esc(t("tile.streak"))}</div></div>
