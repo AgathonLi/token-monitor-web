@@ -4,7 +4,7 @@ const { test } = require('node:test');
 const vm = require('node:vm');
 
 const html = readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
-const context = vm.createContext({});
+const context = vm.createContext({ state: { lang: 'zh' } });
 // Exercise the real presentation helpers without booting the Hub-connected app.
 for (const [start, end] of [
   ['const META =', 'const WIN_LAB ='],
@@ -332,4 +332,136 @@ test('full and compact model lists render canonical deepseek-v4.1-flash with Dee
     assert.ok(rendered.includes('$1.20'));
     assert.ok(rendered.includes(compact ? '6M' : '6,000,000'));
   }
+});
+
+test('k3.1-pro renders Kimi SVG while preserving separate row, exact name, tokens and cost', () => {
+  const period = {
+    models: {
+      'k3.1-pro': 2500000,
+      'kimi-k3.1-pro': 7500000,
+    },
+    modelCosts: {
+      'k3.1-pro': 1.25,
+      'kimi-k3.1-pro': 3.75,
+    },
+  };
+  const original = JSON.stringify(period);
+  const rows = modelEntries(period);
+
+  // Must remain 2 separate rows: k3.1-pro and kimi-k3.1-pro (no aliasing/aggregation)
+  assert.equal(rows.length, 2);
+  const k31Row = rows.find(r => r.id === 'k3.1-pro');
+  const kimiRow = rows.find(r => r.id === 'kimi-k3.1-pro');
+  assert.ok(k31Row, 'k3.1-pro row must exist');
+  assert.ok(kimiRow, 'kimi-k3.1-pro row must exist');
+
+  // Exact values and name preserved
+  assert.equal(k31Row.id, 'k3.1-pro');
+  assert.equal(k31Row.tokens, 2500000);
+  assert.ok(Math.abs(k31Row.cost - 1.25) < 1e-10);
+  assert.equal(k31Row.pct, 0.25);
+
+  assert.equal(kimiRow.id, 'kimi-k3.1-pro');
+  assert.equal(kimiRow.tokens, 7500000);
+  assert.ok(Math.abs(kimiRow.cost - 3.75) < 1e-10);
+  assert.equal(kimiRow.pct, 0.75);
+
+  // Raw Hub payload must remain unchanged
+  assert.equal(JSON.stringify(period), original, 'Raw Hub payload must remain unchanged');
+
+  // Vendor identification
+  assert.equal(context.modelVendorFor('k3.1-pro'), 'kimi');
+  assert.equal(context.modelVendorFor('K3.1-Pro'), 'kimi');
+  assert.equal(context.vendorId('k3.1-pro'), 'kimi');
+
+  // Icon rendering must use Kimi SVG, not fallback gray K
+  const iconHtml = context.ico('k3.1-pro');
+  const kimiSvg = vm.runInContext('ICO_SVG.kimi', context);
+  assert.ok(iconHtml.includes(kimiSvg), 'ico("k3.1-pro") must include Kimi SVG');
+  assert.ok(!iconHtml.includes('#6b7280'), 'ico("k3.1-pro") must not use fallback gray color');
+
+  // Full and compact list rendering
+  for (const compact of [false, true]) {
+    const rendered = context.renderBars(rows, compact);
+    assert.equal((rendered.match(/class="row"/g) || []).length, 2);
+    assert.ok(rendered.includes('>k3.1-pro</div>'), 'Must display k3.1-pro name');
+    assert.ok(rendered.includes('>kimi-k3.1-pro</div>'), 'Must display kimi-k3.1-pro name');
+    assert.ok(rendered.includes(compact ? '2.5M' : '2,500,000'));
+    assert.ok(rendered.includes(compact ? '7.5M' : '7,500,000'));
+    assert.ok(rendered.includes('$1.25'));
+    assert.ok(rendered.includes('$3.75'));
+    // Both rows must render with Kimi SVG, none with fallback gray K
+    const svgMatches = rendered.match(new RegExp(kimiSvg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || [];
+    assert.equal(svgMatches.length, 2, 'Both rows must render Kimi SVG');
+    assert.ok(!rendered.includes('background:#6b7280'), 'Neither row should use fallback gray letter');
+  }
+});
+
+test('folded model tags render k3.1-pro chip with Kimi SVG, exact tokens, share and cost', () => {
+  const list = [
+    { id: 'claude-3-5-sonnet', tokens: 9950000, cost: 9.95, pct: 0.995 },
+    { id: 'k3.1-pro', tokens: 50000, cost: 0.05, pct: 0.005 },
+  ];
+  const original = JSON.stringify(list);
+  const rendered = context.renderModelList(list);
+
+  assert.ok(rendered.includes('class="other-models"'));
+  const chip = rendered.slice(rendered.indexOf('class="model-chip"'));
+  assert.ok(chip.includes('class="model-chip-name">k3.1-pro</span>'));
+  assert.ok(chip.includes('50K · 0.5%'));
+  assert.ok(chip.includes('k3.1-pro · 50,000 tokens · 0.5% · $0.0500'));
+
+  const kimiSvg = vm.runInContext('ICO_SVG.kimi', context);
+  assert.ok(chip.includes(kimiSvg), 'Chip must render Kimi SVG');
+  assert.ok(!chip.includes('background:#6b7280'), 'Chip must not use fallback gray letter');
+  assert.ok(!rendered.includes('background:#6b7280'), 'Neither major model nor chip should use fallback gray letter');
+  assert.equal(JSON.stringify(list), original, 'Model list array must remain unchanged');
+});
+
+test('unapproved variants of k3.1-pro stay unassigned and do not receive Kimi SVG', () => {
+  const unapproved = [
+    'k3.1-pro-preview',
+    'k3.1',
+    'k3.2-pro',
+    'xk3.1-pro',
+    'k3.1-pro-extra',
+    'my-k3.1-pro',
+    'k3-pro',
+    'k3.1pro',
+    'k-3.1-pro',
+  ];
+  const kimiSvg = vm.runInContext('ICO_SVG.kimi', context);
+  for (const id of unapproved) {
+    assert.notEqual(context.modelVendorFor(id), 'kimi', `${id} must not be identified as kimi vendor`);
+    const iconHtml = context.ico(id);
+    assert.ok(!iconHtml.includes(kimiSvg), `${id} must not receive Kimi SVG`);
+    assert.ok(iconHtml.includes('background:#6b7280'), `${id} should use fallback icon`);
+  }
+});
+
+test('existing vendor recognition for Kimi family and other providers remains intact', () => {
+  // Kimi family
+  assert.equal(context.modelVendorFor('kimi-latest'), 'kimi');
+  assert.equal(context.modelVendorFor('kimi-k3.1-pro'), 'kimi');
+  assert.equal(context.modelVendorFor('moonshot-v1-8k'), 'kimi');
+  assert.equal(context.modelVendorFor('k2d6-agent'), 'kimi');
+  assert.equal(context.modelVendorFor('k3-agent'), 'kimi');
+
+  // Other providers
+  assert.equal(context.modelVendorFor('cursor-auto'), 'cursor');
+  assert.equal(context.modelVendorFor('claude-3-5-sonnet'), 'claude');
+  assert.equal(context.modelVendorFor('gpt-4o'), 'codex');
+  assert.equal(context.modelVendorFor('gemini-2.5-pro'), 'gemini');
+  assert.equal(context.modelVendorFor('grok-beta'), 'xai');
+  assert.equal(context.modelVendorFor('deepseek-chat'), 'deepseek');
+  assert.equal(context.modelVendorFor('llama-3.3-70b'), 'meta');
+  assert.equal(context.modelVendorFor('codestral-latest'), 'mistral');
+  assert.equal(context.modelVendorFor('qwen-2.5-72b'), 'qwen');
+  assert.equal(context.modelVendorFor('glm-4-plus'), 'zai');
+  assert.equal(context.modelVendorFor('command-r-plus'), 'cohere');
+  assert.equal(context.modelVendorFor('mimo-v1'), 'xiaomi');
+  assert.equal(context.modelVendorFor('minimax-abab6.5s'), 'minimax');
+  assert.equal(context.modelVendorFor('doubao-pro-32k'), 'doubao');
+  assert.equal(context.modelVendorFor('hunyuan-standard'), 'hunyuan');
+  assert.equal(context.modelVendorFor('big-pickle'), 'opencode');
 });
