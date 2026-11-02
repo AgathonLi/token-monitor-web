@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-   <img src="./assets/logo.svg" width="96" height="96" alt="Token Monitor Web logo" />
+   <img src="./assets/logo.svg?v=bplus-20261102" width="96" height="96" alt="Token Monitor Web logo" />
 </p>
 
 <h1 align="center">Token Monitor Web</h1>

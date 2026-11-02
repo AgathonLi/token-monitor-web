@@ -1,12 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <title>Token Monitor Web</title>
-  <rect x="5" y="34" width="14" height="9" rx="3" fill="#1c1f24"/>
-  <rect x="5" y="47" width="14" height="9" rx="3" fill="#1c1f24"/>
-  <rect x="25" y="21" width="14" height="9" rx="3" fill="#1c1f24"/>
-  <rect x="25" y="34" width="14" height="9" rx="3" fill="#1c1f24"/>
-  <rect x="25" y="47" width="14" height="9" rx="3" fill="#1c1f24"/>
-  <rect x="45" y="8" width="14" height="9" rx="3" fill="#4d8ee6"/>
-  <rect x="45" y="21" width="14" height="9" rx="3" fill="#1c1f24"/>
-  <rect x="45" y="34" width="14" height="9" rx="3" fill="#1c1f24"/>
-  <rect x="45" y="47" width="14" height="9" rx="3" fill="#1c1f24"/>
+  <style>
+    .ink { fill: #1c1f24; }
+    .accent { fill: #4d8ee6; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #eef0f3; }
+    }
+  </style>
+  <rect class="ink" x="8" y="10" width="48" height="10" rx="3" fill="#1c1f24"/>
+  <rect class="ink" x="8" y="27" width="20" height="10" rx="3" fill="#1c1f24"/>
+  <rect class="ink" x="32" y="27" width="16" height="10" rx="3" fill="#1c1f24"/>
+  <rect class="ink" x="8" y="44" width="28" height="10" rx="3" fill="#1c1f24"/>
+  <rect class="accent" x="40" y="44" width="16" height="10" rx="3" fill="#4d8ee6"/>
 </svg>
