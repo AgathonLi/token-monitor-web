@@ -613,6 +613,7 @@ const META = {
   zai: { name: "GLM", color: "#000000", mark: "Z" },
   zcode: { name: "GLM", color: "#000000", mark: "Z" },
   glm: { name: "GLM", color: "#000000", mark: "Z" },
+  ling: { name: "Ling", color: "#144DFF", mark: "L" },
   cursor: { name: "Cursor", color: "#000000", mark: "I" },
   copilot: { name: "Copilot", color: "#000000", mark: "C" },
   opencode: { name: "OpenCode", color: "#000000", mark: "O" },
@@ -723,6 +724,7 @@ const ICO_SVG = {
   zai: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12.105 2L9.927 4.953H.653L2.83 2h9.276zM23.254 19.048L21.078 22h-9.242l2.174-2.952h9.244zM24 2L9.264 22H0L14.736 2H24z"></path></svg>',
   zcode: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12.105 2L9.927 4.953H.653L2.83 2h9.276zM23.254 19.048L21.078 22h-9.242l2.174-2.952h9.244zM24 2L9.264 22H0L14.736 2H24z"></path></svg>',
   glm: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12.105 2L9.927 4.953H.653L2.83 2h9.276zM23.254 19.048L21.078 22h-9.242l2.174-2.952h9.244zM24 2L9.264 22H0L14.736 2H24z"></path></svg>',
+  ling: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M9.561 0.074a0.46 0.46 0 0 1 0.517 0.011l2.848 1.357a0.222 0.222 0 0 1-0.033 0.374C9.008 3.93 6.663 5.994 5.43 7.997c-0.798 1.296-2.264 4.83-0.937 8.02 1.375 3.301 4.49 4.493 6.797 4.493 1.743 0 2.927-0.522 4.13-1.334 3.262-2.204 3.638-6.503 1.21-9.46a10 10 0 0 1 2.2 2.902 6.5 6.5 0 0 0-0.72-1.664c-0.72-1.176-1.688-2.163-3.056-2.849-3.045-1.526-9.397-0.79-10.397 5.78 0.1-4.557 3.127-7.416 5.868-8.3a9.7 9.7 0 0 1 4.654-0.314c2.029-1.639 4.272-2.376 5.075-2.601a0.53 0.53 0 0 1 0.522 0.137c0.23 0.23 0.63 0.632 1.142 1.135h0.003c0.152 0.15 0.073 0.41-0.138 0.45-1.974 0.38-3.322 0.755-4.746 1.412 1.727 0.698 3.206 1.92 4.108 3.606a0.367 0.367 0 0 1-0.199 0.52l-1.207 0.437c1.061 1.8 1.334 4.006 0.813 6.266-0.884 3.843-3.845 6.562-7.626 7.209a9.5 9.5 0 0 1-1.756 0.157 0.37 0.37 0 0 1-0.363-0.341 0.36 0.36 0 0 1-0.043-0.245l0.231-1.295c-1.055-0.074-2.045-0.248-3.036-0.648C2.077 19.094 1.46 13.297 2.304 9.785 3.4 5.23 6.766 1.78 9.561 0.074"></path></svg>',
   cursor: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M22.106 5.68L12.5.135a.998.998 0 00-.998 0L1.893 5.68a.84.84 0 00-.419.726v11.186c0 .3.16.577.42.727l9.607 5.547a.999.999 0 00.998 0l9.608-5.547a.84.84 0 00.42-.727V6.407a.84.84 0 00-.42-.726zm-.603 1.176L12.228 22.92c-.063.108-.228.064-.228-.061V12.34a.59.59 0 00-.295-.51l-9.11-5.26c-.107-.062-.063-.228.062-.228h18.55c.264 0 .428.286.296.514z"></path></svg>',
   copilot: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M19.245 5.364c1.322 1.36 1.877 3.216 2.11 5.817.622 0 1.2.135 1.592.654l.73.964c.21.278.323.61.323.955v2.62c0 .339-.173.669-.453.868C20.239 19.602 16.157 21.5 12 21.5c-4.6 0-9.205-2.583-11.547-4.258-.28-.2-.452-.53-.453-.868v-2.62c0-.345.113-.679.321-.956l.73-.963c.392-.517.974-.654 1.593-.654l.029-.297c.25-2.446.81-4.213 2.082-5.52 2.461-2.54 5.71-2.851 7.146-2.864h.198c1.436.013 4.685.323 7.146 2.864zm-7.244 4.328c-.284 0-.613.016-.962.05-.123.447-.305.85-.57 1.108-1.05 1.023-2.316 1.18-2.994 1.18-.638 0-1.306-.13-1.851-.464-.516.165-1.012.403-1.044.996a65.882 65.882 0 00-.063 2.884l-.002.48c-.002.563-.005 1.126-.013 1.69.002.326.204.63.51.765 2.482 1.102 4.83 1.657 6.99 1.657 2.156 0 4.504-.555 6.985-1.657a.854.854 0 00.51-.766c.03-1.682.006-3.372-.076-5.053-.031-.596-.528-.83-1.046-.996-.546.333-1.212.464-1.85.464-.677 0-1.942-.157-2.993-1.18-.266-.258-.447-.661-.57-1.108-.32-.032-.64-.049-.96-.05zm-2.525 4.013c.539 0 .976.426.976.95v1.753c0 .525-.437.95-.976.95a.964.964 0 01-.976-.95v-1.752c0-.525.437-.951.976-.951zm5 0c.539 0 .976.426.976.95v1.753c0 .525-.437.95-.976.95a.964.964 0 01-.976-.95v-1.752c0-.525.437-.951.976-.951zM7.635 5.087c-1.05.102-1.935.438-2.385.906-.975 1.037-.765 3.668-.21 4.224.405.394 1.17.657 1.995.657h.09c.649-.013 1.785-.176 2.73-1.11.435-.41.705-1.433.675-2.47-.03-.834-.27-1.52-.63-1.813-.39-.336-1.275-.482-2.265-.394zm6.465.394c-.36.292-.6.98-.63 1.813-.03 1.037.24 2.06.675 2.47.968.957 2.136 1.104 2.776 1.11h.044c.825 0 1.59-.263 1.995-.657.555-.556.765-3.187-.21-4.224-.45-.468-1.335-.804-2.385-.906-.99-.088-1.875.058-2.265.394zM12 7.615c-.24 0-.525.015-.84.044.03.16.045.336.06.526l-.001.159a2.94 2.94 0 01-.014.25c.225-.022.425-.027.612-.028h.366c.187 0 .387.006.612.028-.015-.146-.015-.277-.015-.409.015-.19.03-.365.06-.526a9.29 9.29 0 00-.84-.044z"></path></svg>',
   opencode: '<svg fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M16 6H8v12h8V6zm4 16H4V2h16v20z"></path></svg>',
@@ -793,6 +795,7 @@ function modelVendorFor(model) {
   if (/cohere|command-r/.test(name)) return "cohere";
   if (/mimo|xiaomi/.test(name)) return "xiaomi";
   if (/minimax|\babab/.test(name)) return "minimax";
+  if (/^ling(?:[-.]|$)/.test(name)) return "ling";
   if (/doubao|\bseed(?:-|$)/.test(name)) return "doubao";
   if (/hy\d|hunyuan/.test(name)) return "hunyuan";
   if (/^big-pickle$/.test(name)) return "opencode";
@@ -843,6 +846,12 @@ function entries(map, costMap) {
     id: k, tokens: Number(o[k]) || 0, cost: Number(c[k]) || 0, pct: (Number(o[k]) || 0) / total
   }));
 }
+// Display-only: OpenRouter/HuggingFace-style provider prefixes are not part of the model name.
+function displayModelId(id) {
+  const raw = String(id == null ? "" : id);
+  const m = raw.match(/^(?:[a-z0-9][a-z0-9._-]*\/)+([^/].*)$/i);
+  return m ? m[1] : raw;
+}
 // Presentation-only exact aliases; keep Hub data intact and never strip variant suffixes generically.
 const MODEL_DISPLAY_ALIASES = Object.freeze({
   "gemini-3.8-flash-high": "gemini-3.8-flash",
@@ -851,6 +860,9 @@ const MODEL_DISPLAY_ALIASES = Object.freeze({
   "gemini-4-argon-contributor": "gemini-4-argon",
   "gemini-4-argon-high": "gemini-4-argon",
   "deepseek-v4.1-flash-free": "deepseek-v4.1-flash",
+  // Grok Build reports standard Grok 4.7 under the channel id grok-4.7-build;
+  // the separately priced grok-4.7-build-fast SKU stays separate.
+  "grok-4.7-build": "grok-4.7",
   // MiniMax Code reports kimi-k3 usage under the exact model id k3.
   "k3": "kimi-k3"
 });
@@ -858,11 +870,13 @@ function modelEntries(period) {
   const models = {};
   const modelCosts = {};
   for (const [id, value] of Object.entries(period.models || {})) {
-    const key = MODEL_DISPLAY_ALIASES[id] || id;
+    const bare = displayModelId(id);
+    const key = MODEL_DISPLAY_ALIASES[bare] || bare;
     models[key] = (models[key] || 0) + (Number(value) || 0);
   }
   for (const [id, value] of Object.entries(period.modelCosts || {})) {
-    const key = MODEL_DISPLAY_ALIASES[id] || id;
+    const bare = displayModelId(id);
+    const key = MODEL_DISPLAY_ALIASES[bare] || bare;
     modelCosts[key] = (modelCosts[key] || 0) + (Number(value) || 0);
   }
   return entries(models, modelCosts);

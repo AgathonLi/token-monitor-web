@@ -312,6 +312,90 @@ test('DeepSeek V4.1 Flash unapproved similarly named variants stay untouched', (
   ]);
 });
 
+test('provider prefixes are stripped before alias resolution and aggregation', () => {
+  const period = {
+    models: {
+      'deepseek/deepseek-v4.1-flash': 1078140,
+      'deepseek-v4.1-flash': 5218798,
+      'z-ai/glm-5.3-flash': 162000,
+      'glm-5.3-flash': 703094,
+      'accounts/fireworks/models/llama-3-70b': 1000,
+    },
+    modelCosts: {
+      'deepseek/deepseek-v4.1-flash': 0,
+      'deepseek-v4.1-flash': 0.1594,
+      'z-ai/glm-5.3-flash': 0.01,
+      'glm-5.3-flash': 0.0383,
+      'accounts/fireworks/models/llama-3-70b': 0.5,
+    },
+  };
+  const original = JSON.stringify(period);
+  const rows = modelEntries(period);
+  assert.deepEqual(rows.map(r => r.id).sort(), [
+    'deepseek-v4.1-flash',
+    'glm-5.3-flash',
+    'llama-3-70b',
+  ]);
+  const byId = Object.fromEntries(rows.map(r => [r.id, r]));
+  assert.equal(byId['deepseek-v4.1-flash'].tokens, 6296938);
+  assert.ok(Math.abs(byId['deepseek-v4.1-flash'].cost - 0.1594) < 1e-10);
+  assert.equal(byId['glm-5.3-flash'].tokens, 865094);
+  assert.ok(Math.abs(byId['glm-5.3-flash'].cost - 0.0483) < 1e-10);
+  assert.equal(byId['llama-3-70b'].tokens, 1000);
+  assert.equal(JSON.stringify(period), original, 'Raw Hub payload must remain unchanged');
+});
+
+test('prefix normalization keeps malformed and bare ids unchanged', () => {
+  for (const id of ['foo/', 'foo//bar', '/bar', '///', 'k3.1-pro', 'kimi-k3-high']) {
+    assert.equal(context.displayModelId(id), id);
+  }
+  assert.equal(context.displayModelId('google/gemini-3.8-flash-high'), 'gemini-3.8-flash-high');
+  assert.equal(
+    context.displayModelId('inclusionai/ling-3.1-flash-1019:free'),
+    'ling-3.1-flash-1019:free'
+  );
+});
+
+test('prefix removal composes with existing display aliases', () => {
+  assert.deepEqual(modelEntries({
+    models: { 'google/gemini-3.8-flash-high': 10, 'gemini-3.8-flash': 20 },
+  }), [
+    { id: 'gemini-3.8-flash', tokens: 30, cost: 0, pct: 1 },
+  ]);
+});
+
+test('inclusionai/ling displays bare with the Ling icon', () => {
+  const rows = modelEntries({
+    models: { 'inclusionai/ling-3.1-flash-1019:free': 382369 },
+    modelCosts: { 'inclusionai/ling-3.1-flash-1019:free': 0.0752 },
+  });
+  assert.deepEqual(rows, [
+    { id: 'ling-3.1-flash-1019:free', tokens: 382369, cost: 0.0752, pct: 1 },
+  ]);
+  assert.equal(context.modelVendorFor('ling-3.1-flash-1019:free'), 'ling');
+  assert.equal(context.modelVendorFor('ling'), 'ling');
+  assert.notEqual(context.modelVendorFor('kling-video'), 'ling');
+  assert.notEqual(context.modelVendorFor('billing'), 'ling');
+  for (const compact of [false, true]) {
+    const rendered = context.renderBars(rows, compact);
+    assert.ok(rendered.includes('>ling-3.1-flash-1019:free</div>'));
+    assert.ok(!rendered.includes('inclusionai/'));
+    assert.ok(rendered.includes(vm.runInContext('ICO_SVG.ling', context)));
+  }
+});
+
+test('Grok Build channel id joins grok-4.7 while the fast SKU stays separate', () => {
+  const rows = modelEntries({
+    models: { 'grok-4.7-build': 305000, 'grok-4.7': 244000, 'grok-4.7-build-fast': 50000 },
+    modelCosts: { 'grok-4.7-build': 0, 'grok-4.7': 1.46, 'grok-4.7-build-fast': 0.6 },
+  });
+  const byId = Object.fromEntries(rows.map(r => [r.id, r]));
+  assert.deepEqual(Object.keys(byId).sort(), ['grok-4.7', 'grok-4.7-build-fast']);
+  assert.equal(byId['grok-4.7'].tokens, 549000);
+  assert.ok(Math.abs(byId['grok-4.7'].cost - 1.46) < 1e-10);
+  assert.equal(byId['grok-4.7-build-fast'].tokens, 50000);
+});
+
 test('full and compact model lists render canonical deepseek-v4.1-flash with DeepSeek SVG', () => {
   const rows = modelEntries({
     models: {
