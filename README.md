@@ -21,7 +21,7 @@ Independent page you open in a browser (phone or desktop) to watch usage that th
 
 ## What is this?
 
-Token Monitor runs on your computers: it reads local tool logs and, in sync mode, posts summaries to a hub (often a Cloudflare Worker). This repo is a small HTML client for that hub’s HTTP API — home, tools, limits, models, and trends — so you can check the same totals on a phone without installing the desktop widget.
+Token Monitor runs on your computers: it reads local tool logs and, in sync mode, posts summaries to a hub (often a Cloudflare Worker). This repo is a small HTML client for that hub’s HTTP API — home, limits, models, tools, devices, sessions, and trends — so you can check the same totals on a phone without installing the desktop widget.
 
 It does not scrape logs, does not talk to model providers, and does not send telemetry to the authors of this page. The only network call is from your browser to the hub URL you type in.
 
@@ -52,16 +52,17 @@ A hosted copy is at [https://agathonli.github.io/token-monitor-web/](https://aga
 
 ## Views
 
-The layout is the same on phone and desktop (light, no floating phone card). Below 860px the header wraps and tabs scroll; from 860px it uses a two-column home. Use EN/中 in the header. List views sort by tokens, cost, or name. The time under the totals is the latest device `receivedAt` (last ingest to the hub), not the page fetch.
+The layout is the same on phone and desktop (light, no floating phone card). Below 860px the header wraps; tabs scroll within their own strip whenever needed, including on narrower desktops. From 860px the home uses two columns. Use EN/中 in the header. List views sort by tokens, cost, or name. The time under the totals is the latest device `receivedAt` (last ingest to the hub), not the page fetch.
 
 | Control | What it shows |
 |---|---|
-| **DAY / MONTH / TOTAL** | Which period the headline tokens, cost, tools, models, and devices use; starts on DAY |
+| **DAY / MONTH / TOTAL** | Which period the headline tokens, cost, tools, models, devices, and available session details use; starts on DAY |
 | **Home** | Selected quota summaries across the page, top models, activity heatmap |
-| **Tools** | Per-client tokens, cost, and share |
 | **Limits** | Provider quota windows (session / weekly / …), alphabetically sorted by default |
 | **Models** | Per-model tokens, cost, and share; models below 1% fold into other models |
+| **Tools** | Per-client tokens, cost, and share |
 | **Devices** | Per-machine tokens, share, cost, and live/stale sync |
+| **Sessions** | Supplied per-session usage, recent activity, calls, cache-hit readings, and tool filtering |
 | **Trends** | Daily bars labeled in millions of tokens (M), plus active days, streak, active time, peak day |
 
 Tools, models, and devices show each row's share of its category's token total for the selected period, to one decimal place (`<0.1%` for smaller nonzero shares). Trend labels use rounded whole millions (`<1M` for smaller nonzero usage, `0M` for zero); hover for the full date and exact token count. On narrow screens, the chart initially opens at the latest day; scroll horizontally for history. Refreshes and resizing preserve a historical position, while a view already at the latest edge follows new days. A new calendar month starts at its latest day.
@@ -77,6 +78,10 @@ On Models, each selected period is grouped independently: after display aliases 
 Muse Code and OmO Native names and marks are supported when their data reaches the hub; enabling collection or updating hub aggregation is separate from this read-only page. Fields absent from the hub JSON stay blank. Session-by-session transcripts are not displayed by this client.
 
 Tool rows use client-specific names and marks, including Gemini CLI, Kilo, MiniMax Code, Prime Agent, and Jcode. Model and quota rows retain their own vendor presentation; choosing a client mark does not merge usage IDs. Activity statistics use valid Hub summary readings, including zero, with daily-data fallback when a reading is unavailable.
+
+Sessions uses the selected period's session summaries already supplied by the hub. Rows show a permitted title when available (otherwise the tool and model), recent activity, usage-bearing `calls`, available cache-hit readings, source device, session ID, exact tokens, and reported cost. The percentage beside calls is **cache hit**, not the session's share of all tokens. Unavailable readings are omitted. Titles are not enabled or fetched separately by this page; conversation messages are not displayed.
+
+Use **All** and the tool-icon filter buttons to narrow only the session list; selecting the active tool again returns to All. Options follow the current period's available sessions and scroll horizontally on narrow screens. Sessions starts with recent activity descending and also sorts by tokens or cost; **Load more** reveals another 50 rows without changing the received data. The headline remains the selected period's total, not the filtered subtotal. Missing or omitted details are identified explicitly. Synced hubs normally omit all-time session details: TOTAL never substitutes the month's sessions and shows an unavailable message unless actual all-time records are supplied.
 
 ## Privacy
 

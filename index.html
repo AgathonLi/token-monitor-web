@@ -32,6 +32,7 @@
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
     html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); }
+    html { scrollbar-gutter: stable; }
     body { padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
     button, input, select { font: inherit; color: inherit; }
     button { cursor: pointer; }
@@ -48,11 +49,11 @@
       display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
       padding: 12px 16px 6px;
     }
-    .brand-group { display: flex; align-items: center; gap: 6px; }
+    .brand-group { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
     .brand { display: flex; align-items: center; gap: 7px; font-weight: 500; }
     .brand-logo { display: block; width: 26px; height: 26px; flex: none; color-scheme: light; }
-    .brand-name { font-size: 14px; font-weight: 600; }
-    .top-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .brand-name { font-size: 14px; font-weight: 600; white-space: nowrap; }
+    .top-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 0 0 auto; }
     .tabs {
       display: flex; align-items: center; gap: 2px; flex: 1 1 100%;
       min-width: 0; overflow-x: auto;
@@ -120,6 +121,9 @@
       padding: 6px 11px; border-radius: 999px; min-height: 28px;
     }
     .seg button.on { background: var(--pill-on); color: var(--ink); }
+    @media (max-width: 359px) {
+      .seg button { padding-left: 9px; padding-right: 9px; }
+    }
 
     .hero { padding: 10px 22px 6px; }
     .k {
@@ -186,6 +190,40 @@
     .row .pct { width: 36px; text-align: right; font-size: 12px; color: var(--muted); }
     .row-bar { height: 6px; background: var(--track); border-radius: 99px; margin-top: 8px; overflow: hidden; }
     .row-bar > i { display: block; height: 100%; border-radius: 99px; }
+
+    .sessions-panel { min-width: 0; }
+    .session-tools {
+      display: flex; align-items: center; gap: 6px; margin: 0 0 10px;
+      max-width: 100%; overflow-x: auto; padding-bottom: 2px;
+    }
+    .session-tools button {
+      flex: 0 0 auto; border: 0; background: #fff; color: #5b616a; border-radius: 8px;
+      box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
+      font-size: 12px; padding: 6px 10px; min-height: 32px;
+      display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .session-tools button.on { background: #e8f0fe; color: #1a4fbf; font-weight: 650; }
+    .session-note {
+      margin: 0 0 10px; padding: 8px 10px; border-radius: 10px;
+      background: #fdf5e6; color: #7a5b1f; font-size: 12px; line-height: 1.45;
+    }
+    .session-row { flex-wrap: wrap; align-items: flex-start; }
+    .session-line { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; }
+    .session-body { flex: 1; min-width: 0; }
+    .session-name { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+    .session-meta {
+      display: flex; flex-wrap: wrap; gap: 2px 8px; margin-top: 2px;
+      font-size: 12px; font-weight: 500; color: var(--muted); min-width: 0;
+    }
+    .session-model, .session-activity, .session-device, .session-id { overflow-wrap: anywhere; min-width: 0; }
+    .session-activity { color: #5b616a; }
+    .session-cache { color: #626b78; font-variant-numeric: tabular-nums; }
+    .session-id { font-family: var(--num); color: var(--faint); }
+    .session-more {
+      display: block; width: 100%; margin: 12px 0 0; border: 0; background: #fff;
+      border-radius: 10px; box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
+      color: #1a4fbf; font-size: 13px; font-weight: 600; padding: 10px 12px; min-height: 44px;
+    }
 
     .heat { margin-top: 4px; }
     .heat-grid { display: grid; grid-template-rows: repeat(7, auto); grid-template-columns: repeat(var(--heat-weeks), minmax(0, 1fr)); grid-auto-flow: column; gap: 3px; width: 100%; max-width: calc(var(--heat-weeks) * 12px - 3px); margin-left: auto; }
@@ -340,7 +378,7 @@
     @media (min-width: 860px) {
       .shell { width: min(1120px, 100%); }
       .top { padding: 18px 28px 8px; flex-wrap: nowrap; }
-      .tabs { flex: 1 1 auto; overflow: visible; }
+      .tabs { flex: 1 1 auto; overflow-x: auto; }
       .hero { padding: 8px 28px 4px; }
       .hero .big { font-size: clamp(36px, 3.2vw, 48px); }
       .banner, .asof { padding-left: 28px; padding-right: 28px; }
@@ -494,6 +532,7 @@ const I18N = {
     "view.limits": "额度",
     "view.models": "模型",
     "view.devices": "设备",
+    "view.sessions": "会话",
     "view.trends": "趋势",
     "sec.limits": "额度",
     "sec.models": "模型",
@@ -508,10 +547,19 @@ const I18N = {
     "sort.name": "名称",
     "sort.sync": "同步",
     "sort.left": "剩余",
+    "sort.recent": "最近",
     "empty.limits": "暂无额度。电脑端打开额度采集后会出现。",
     "empty.data": "暂无数据",
     "empty.models": "暂无模型",
     "empty.devices": "暂无设备。桌面端打开多设备同步后会出现。",
+    "empty.sessions": "暂无可用的会话明细",
+    "sessions.allTime": "Hub 不提供全时段会话明细，请切换到 DAY 或 MONTH。",
+    "sessions.omitted": "另有 {n} 条会话明细未提供，此列表不完整。",
+    "sessions.more": "加载更多（还剩 {n} 条）",
+    "sessions.filter": "按工具筛选会话",
+    "sessions.allTools": "全部",
+    "sessions.cacheHit": "缓存命中率 {p}",
+    "sessions.models": "{n} 个模型",
     "empty.wait": "等待数据",
     "asof": "数据截至 {time}（{ago}）",
     "asof.unknown": "尚无同步时间",
@@ -547,6 +595,7 @@ const I18N = {
     "view.limits": "Limits",
     "view.models": "Models",
     "view.devices": "Devices",
+    "view.sessions": "Sessions",
     "view.trends": "Trends",
     "sec.limits": "Limits",
     "sec.models": "Models",
@@ -561,10 +610,19 @@ const I18N = {
     "sort.name": "Name",
     "sort.sync": "Sync",
     "sort.left": "Left",
+    "sort.recent": "Recent",
     "empty.limits": "No limits yet. Enable limits collection on the desktop app.",
     "empty.data": "No data",
     "empty.models": "No models",
     "empty.devices": "No devices. Turn on multi-device sync in the desktop app.",
+    "empty.sessions": "No session details available",
+    "sessions.allTime": "The Hub does not provide all-time session details. Switch to DAY or MONTH.",
+    "sessions.omitted": "{n} session details were not provided; this list is partial.",
+    "sessions.more": "Load more ({n} remaining)",
+    "sessions.filter": "Filter sessions by tool",
+    "sessions.allTools": "All",
+    "sessions.cacheHit": "Cache hit {p}",
+    "sessions.models": "{n} models",
     "empty.wait": "Waiting for data",
     "asof": "As of {time} ({ago})",
     "asof.unknown": "No sync time yet",
@@ -591,10 +649,11 @@ function t(key, vars) {
 }
 const VIEW_DEFS = [
   { id: "home", icon: "⌂", key: "view.home" },
-  { id: "tools", icon: "☰", key: "view.tools" },
   { id: "limits", icon: "◔", key: "view.limits" },
   { id: "models", icon: "✣", key: "view.models" },
+  { id: "tools", icon: "☰", key: "view.tools" },
   { id: "devices", icon: "▣", key: "view.devices" },
+  { id: "sessions", icon: "▤", key: "view.sessions" },
   { id: "trends", icon: "↗", key: "view.trends" }
 ];
 function views() { return VIEW_DEFS.map((v) => ({ id: v.id, icon: v.icon, label: t(v.key) })); }
@@ -685,8 +744,9 @@ const state = { cfg: null, stats: null, history: null, period: "today", view: "h
   tools: { key: "tokens", dir: "desc" },
   models: { key: "tokens", dir: "desc" },
   devices: { key: "tokens", dir: "desc" },
-  limits: { key: "name", dir: "asc" }
-} };
+  limits: { key: "name", dir: "asc" },
+  sessions: { key: "recent", dir: "desc" }
+}, sessionClient: "", sessionVisible: 50 };
 
 function loadCfg() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } }
 function loadLang() {
@@ -713,7 +773,7 @@ function maskEmails(value) {
 }
 function meta(id) {
   const k = String(id || "").toLowerCase();
-  return META[k] || { name: id, color: "#6b7280", mark: (String(id || "?").slice(0, 1) || "?").toUpperCase() };
+  return ownKey(META, k) ? META[k] : { name: id, color: "#6b7280", mark: (String(id || "?").slice(0, 1) || "?").toUpperCase() };
 }
 // Client labels and Gemini CLI's own mark/colour come from the stable client
 // catalog; the shared META names above stay the model-vendor meanings.
@@ -734,7 +794,7 @@ const GEMINI_CLI_COLOR = "#1E1E2E";
 function clientMeta(id) {
   const k = String(id || "").toLowerCase();
   const base = meta(k);
-  return CLIENT_META[k] ? { ...base, name: CLIENT_META[k].name } : base;
+  return ownKey(CLIENT_META, k) ? { ...base, name: CLIENT_META[k].name } : base;
 }
 const ICO_SVG = {
   // OmO mark from upstream assets/icons/senpi.svg (original attribution retained in logs).
@@ -845,7 +905,7 @@ function modelVendorFor(model) {
 }
 function vendorId(id) {
   const k = String(id || "").toLowerCase();
-  if (ICO_SVG[k] || META[k]) return k;
+  if (ownKey(ICO_SVG, k) || ownKey(META, k)) return k;
   return modelVendorFor(k) || k;
 }
 function ico(id, domain = "models") {
@@ -853,7 +913,8 @@ function ico(id, domain = "models") {
   const tools = domain === "tools";
   const m = tools ? clientMeta(v) : meta(v);
   const cli = tools && v === "gemini";
-  const svg = (cli ? ICO_SVG["gemini-cli"] : ICO_SVG[v]) || (v === "muse" ? ICO_SVG.meta : "");
+  const art = ownKey(ICO_SVG, v) ? ICO_SVG[v] : "";
+  const svg = (cli ? ICO_SVG["gemini-cli"] : art) || (v === "muse" ? ICO_SVG.meta : "");
   if (svg) return `<span class="ico ico-svg" style="color:${cli ? GEMINI_CLI_COLOR : m.color}">${svg}</span>`;
   return `<span class="ico" style="background:${m.color}">${esc(m.mark)}</span>`;
 }
@@ -882,6 +943,114 @@ function fmtCost(n) {
 function periodOf(stats, key) {
   return (stats && stats.periods && stats.periods[key]) || { totalTokens: 0, costUsd: 0, clients: {}, clientCosts: {}, models: {}, modelCosts: {} };
 }
+// Session rows are presentation projections of periods.<period>.sessions only:
+// device session maps add provenance, never rows, and nothing is summed in.
+const SESSION_BATCH = 50;
+function ownKey(obj, key) {
+  return !!obj && typeof obj === "object" && Object.prototype.hasOwnProperty.call(obj, key);
+}
+// Unavailable readings are null so a missing field cannot read as zero.
+// Numbers and nonblank numeric strings only; booleans, junk and negatives are unknown.
+function numField(value) {
+  if (typeof value === "number") return Number.isFinite(value) && value >= 0 ? value : null;
+  if (typeof value !== "string") return null;
+  const s = value.trim();
+  if (!/^\d+(?:\.\d+)?$/.test(s)) return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+function timeField(value) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const ms = new Date(value).getTime();
+  return Number.isFinite(ms) ? ms : null;
+}
+// Accounting key is client:sessionId; only the first colon separates them, so a
+// session id keeps every colon it already contains.
+function sessionIdentity(key, session) {
+  const raw = String(key == null ? "" : key);
+  const cut = raw.indexOf(":");
+  const keyClient = cut >= 0 ? raw.slice(0, cut) : raw;
+  const keyId = cut >= 0 ? raw.slice(cut + 1) : raw;
+  const client = typeof session.client === "string" && session.client.trim() ? session.client.trim() : keyClient;
+  const sessionId = typeof session.sessionId === "string" && session.sessionId.trim() ? session.sessionId : keyId;
+  return { client, sessionId };
+}
+// Presentation-only model naming: the page's display normalisation, no accounting.
+function sessionModelName(id) {
+  const bare = displayModelId(id);
+  return ownKey(MODEL_DISPLAY_ALIASES, bare) ? MODEL_DISPLAY_ALIASES[bare] : bare;
+}
+function sessionModelLabel(session) {
+  const models = session.models && typeof session.models === "object" && !Array.isArray(session.models) ? session.models : {};
+  const ids = [...new Set(Object.keys(models).filter((id) => (numField(models[id]) || 0) > 0).map(sessionModelName))].sort();
+  const latest = typeof session.latestModel === "string" ? session.latestModel.trim() : "";
+  if (latest) {
+    const name = sessionModelName(latest);
+    const others = ids.filter((id) => id !== name).length;
+    return others ? `${name} +${others}` : name;
+  }
+  if (!ids.length) return "";
+  return ids.length === 1 ? ids[0] : t("sessions.models", { n: ids.length });
+}
+// Provider-served cache share, not a token share. No cache traffic and no explicit
+// cacheReported flag means "no reading", never a fabricated 0%.
+function sessionCacheHit(session) {
+  const read = numField(session.cacheReadTokens) || 0;
+  const write = numField(session.cacheWriteTokens) || 0;
+  const input = numField(session.inputTokens) || 0;
+  if (read <= 0 && write <= 0 && session.cacheReported !== true) return null;
+  const denominator = input + read + write;
+  return denominator > 0 ? read / denominator : null;
+}
+function cacheHitText(ratio) {
+  const pct = Math.min(100, Math.max(0, ratio * 100));
+  return pct > 0 && pct < 1 ? "<1%" : Math.round(pct) + "%";
+}
+// Device provenance is presentation metadata: only a unique owner may be named.
+function sessionOwners(periodName, sessions) {
+  const owners = new Map();
+  for (const device of (state.stats && state.stats.devices) || []) {
+    const per = device && device.periods && device.periods[periodName];
+    const map = per && per.sessions;
+    if (!map || typeof map !== "object" || Array.isArray(map)) continue;
+    for (const key of Object.keys(map)) {
+      if (!ownKey(sessions, key)) continue;
+      const previous = owners.get(key);
+      if (previous === null) continue;
+      owners.set(key, previous && previous.deviceId !== device.deviceId ? null : device);
+    }
+  }
+  return owners;
+}
+function deviceName(device) {
+  return String((device && (device.hostname || device.displayName || device.deviceId)) || "");
+}
+function sessionRows(period, periodName) {
+  const map = period && period.sessions;
+  if (!map || typeof map !== "object" || Array.isArray(map)) return [];
+  const owners = sessionOwners(periodName, map);
+  const rows = [];
+  for (const key of Object.keys(map)) {
+    const session = map[key];
+    if (!session || typeof session !== "object" || Array.isArray(session)) continue;
+    const tokens = numField(session.totalTokens);
+    if (!(tokens > 0)) continue;
+    const { client, sessionId } = sessionIdentity(key, session);
+    const title = typeof session.title === "string" ? session.title.trim() : "";
+    rows.push({
+      key, client, sessionId, title, tokens,
+      name: title || clientMeta(client).name,
+      cost: numField(session.costUsd),
+      calls: numField(session.messageCount),
+      cacheHit: sessionCacheHit(session),
+      modelLabel: sessionModelLabel(session),
+      timeMs: timeField(session.lastUsedAt) ?? timeField(session.startedAt),
+      device: deviceName(owners.get(key) || null)
+    });
+  }
+  return rows;
+}
+
 function entries(map, costMap) {
   const o = map || {};
   const c = costMap || {};
@@ -1916,6 +2085,128 @@ function renderDevices() {
   }).join("");
 }
 
+function clientColor(client) {
+  const v = vendorId(client);
+  return v === "gemini" ? GEMINI_CLI_COLOR : meta(v).color;
+}
+// A session's "message count" is its usage-bearing replies (a request count),
+// not transcript turns; the wording stays fixed like the Limits billing units.
+function callsLabel(count) {
+  const n = Math.round(count);
+  return `${fmtFull(n)} ${n === 1 ? "call" : "calls"}`;
+}
+function sessionActivity(row) {
+  const parts = [];
+  if (row.timeMs !== null) parts.push(esc(fmtStamp(row.timeMs)));
+  if (row.calls !== null && row.calls > 0) parts.push(esc(callsLabel(row.calls)));
+  if (row.cacheHit !== null) {
+    const label = t("sessions.cacheHit", { p: cacheHitText(row.cacheHit) });
+    parts.push(`<span class="session-cache" title="${esc(label)}" aria-label="${esc(label)}">${esc(cacheHitText(row.cacheHit))}</span>`);
+  }
+  return parts.join(' <span class="usage-sep" aria-hidden="true">·</span> ');
+}
+// Recent-first by default; ties fall back to tokens, cost, then name/key so the
+// order is deterministic and never depends on object insertion order.
+function sortSessionRows(rows) {
+  const { key, dir } = sortSpec("sessions");
+  const recent = (a, b) => (b.timeMs || 0) - (a.timeMs || 0);
+  const byName = (a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
+  const costOf = (r) => (r.cost === null ? -Infinity : r.cost);
+  return rows.slice().sort((a, b) => {
+    if (key === "tokens") return cmp(a.tokens, b.tokens, dir) || recent(a, b) || byName(a, b);
+    if (key === "cost") {
+      if ((a.cost === null) !== (b.cost === null)) return a.cost === null ? 1 : -1;
+      return cmp(a.cost, b.cost, dir) || recent(a, b) || byName(a, b);
+    }
+    return recent(a, b) * (dir === "asc" ? -1 : 1) || cmp(a.tokens, b.tokens, "desc") || cmp(costOf(a), costOf(b), "desc") || byName(a, b);
+  });
+}
+function sessionVisibleCount(total) {
+  const size = Number(state.sessionVisible);
+  const batch = Number.isFinite(size) && size >= SESSION_BATCH ? Math.floor(size) : SESSION_BATCH;
+  return Math.max(0, Math.min(total, batch));
+}
+function resetSessionBatch() {
+  state.sessionVisible = SESSION_BATCH;
+}
+function showMoreSessions() {
+  const size = Number(state.sessionVisible);
+  const batch = Number.isFinite(size) && size >= SESSION_BATCH ? Math.floor(size) : SESSION_BATCH;
+  state.sessionVisible = batch + SESSION_BATCH;
+}
+// One selection at a time; the control set is the full option list, not the
+// filtered rows, and clicking the active tool clears back to All.
+function setSessionTool(client) {
+  const next = String(client == null ? "" : client);
+  state.sessionClient = state.sessionClient === next ? "" : next;
+  resetSessionBatch();
+}
+// A different Hub starts from All; nothing about a selection is persisted.
+function resetSessionState() {
+  state.sessionClient = "";
+  resetSessionBatch();
+}
+function sessionToolButton(client, selected) {
+  const label = clientMeta(client).name;
+  const on = selected === client;
+  const attrs = `type="button" data-session-client="${esc(client)}" class="${on ? "on" : ""}" aria-pressed="${on}" title="${esc(label)}" aria-label="${esc(label)}"`;
+  const v = vendorId(client);
+  const art = ownKey(ICO_SVG, v) ? ICO_SVG[v] : "";
+  const svg = (v === "gemini" ? ICO_SVG["gemini-cli"] : art) || (v === "muse" ? ICO_SVG.meta : "");
+  return svg
+    ? `<button ${attrs}><span class="ico ico-svg" style="color:${clientColor(client)}">${svg}</span></button>`
+    : `<button ${attrs}>${esc(label)}</button>`;
+}
+function sessionToolbar(rows) {
+  const clients = [...new Set(rows.map((r) => r.client))].filter(Boolean);
+  if (!clients.length) return "";
+  clients.sort((a, b) => {
+    const an = String(clientMeta(a).name).toLowerCase(), bn = String(clientMeta(b).name).toLowerCase();
+    return an < bn ? -1 : an > bn ? 1 : a < b ? -1 : a > b ? 1 : 0;
+  });
+  const allOn = state.sessionClient === "";
+  const buttons = [`<button type="button" data-session-client="" class="${allOn ? "on" : ""}" aria-pressed="${allOn}" aria-label="${esc(t("sessions.allTools"))}">${esc(t("sessions.allTools"))}</button>`];
+  for (const client of clients) buttons.push(sessionToolButton(client, state.sessionClient));
+  return `<div id="session-tool-filter" class="session-tools" role="group" aria-label="${esc(t("sessions.filter"))}">${buttons.join("")}</div>`;
+}
+function sessionRowHtml(row, max) {
+  const activity = sessionActivity(row);
+  return `<div class="row session-row" data-session-client="${esc(row.client)}">
+    <div class="session-line">
+      ${ico(row.client, "tools")}
+      <div class="session-body">
+        <div class="session-name" title="${esc(row.name)}">${esc(row.name)}</div>
+        <div class="session-meta">${row.modelLabel ? `<span class="session-model">${esc(row.modelLabel)}</span>` : ""}${activity ? `<span class="session-activity">${activity}</span>` : ""}${row.device ? `<span class="session-device">${esc(row.device)}</span>` : ""}<span class="session-id" title="${esc(row.sessionId)}">${esc(row.sessionId)}</span></div>
+      </div>
+      <div class="vals"><div class="tok"><span class="usage-value">${fmtFull(row.tokens)}</span></div>${row.cost === null ? "" : `<div class="cst">${fmtCost(row.cost)}</div>`}</div>
+    </div>
+    <span class="row-bar" style="width:100%"><i style="width:${Math.max(2, (row.tokens / max) * 100)}%;background:${clientColor(row.client)}"></i></span>
+  </div>`;
+}
+function renderSessions() {
+  const periodName = state.period;
+  const all = sessionRows(periodOf(state.stats, periodName), periodName);
+  // A selection the current period no longer offers falls back to All.
+  if (state.sessionClient && !all.some((r) => r.client === state.sessionClient)) resetSessionState();
+  // Top-level counts only: per-device counts are already summed into these.
+  const omitted = numField(state.stats && state.stats.sessionDetailsOmitted && state.stats.sessionDetailsOmitted[periodName]) || 0;
+  const hint = omitted > 0
+    ? `<p class="session-note" role="status">${esc(t("sessions.omitted", { n: fmtFull(omitted) }))}</p>` : "";
+  if (!all.length) {
+    // TOTAL has no detail rows of its own; month rows must never stand in for it.
+    const message = periodName === "allTime" ? t("sessions.allTime") : t("empty.sessions");
+    return `<div class="sessions-panel">${hint}<p class="empty">${esc(message)}</p></div>`;
+  }
+  const filtered = state.sessionClient ? all.filter((r) => r.client === state.sessionClient) : all;
+  const sorted = sortSessionRows(filtered);
+  const visible = sessionVisibleCount(sorted.length);
+  const max = Math.max(...filtered.map((r) => r.tokens), 1);
+  const rows = sorted.slice(0, visible).map((row) => sessionRowHtml(row, max)).join("");
+  const more = sorted.length > visible
+    ? `<button type="button" class="session-more" data-session-more>${esc(t("sessions.more", { n: fmtFull(sorted.length - visible) }))}</button>` : "";
+  return `<div class="sessions-panel">${hint}${sessionToolbar(all)}${sortBar("sessions", ["recent", "tokens", "cost"])}<div class="list-wrap">${rows}</div>${more}</div>`;
+}
+
 function renderMain() {
   const p = periodOf(state.stats, state.period);
   const tools = sortEntries(entries(p.clients, p.clientCosts), "tools");
@@ -1924,6 +2215,7 @@ function renderMain() {
   if (state.view === "tools") return `${sortBar("tools", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(tools, false, 0, "tools")}</div>`;
   if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap">${renderModelList(models)}</div>`;
   if (state.view === "devices") return `${sortBar("devices", ["tokens", "cost", "sync", "name"])}<div class="list-wrap">${renderDevices()}</div>`;
+  if (state.view === "sessions") return renderSessions();
   if (state.view === "trends") {
     const tstat = streakAndTime();
     const b = monthBars();
@@ -2098,6 +2390,7 @@ async function connectFromForm(hubRaw, secret) {
   if (!/^https?:\/\//i.test(hub)) throw new Error(t("err.hub"));
   if (!secret) throw new Error(t("err.secret"));
   state.cfg = { hub, secret };
+  resetSessionState();
   saveCfg(state.cfg);
   const ok = await pull();
   if (!ok) throw new Error(state.error || t("err.connect"));
@@ -2116,6 +2409,7 @@ $("seg").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-p]");
   if (!b) return;
   state.period = b.dataset.p;
+  resetSessionBatch();
   paint();
 });
 function toggleMenu() {
@@ -2151,6 +2445,18 @@ $("main").addEventListener("click", (e) => {
   if (cur.key === key) cur.dir = cur.dir === "desc" ? "asc" : "desc";
   else { cur.key = key; cur.dir = (key === "name" || key === "left") ? "asc" : "desc"; }
   state.sort[view] = { key: cur.key, dir: cur.dir };
+  resetSessionBatch();
+  paint();
+});
+$("main").addEventListener("click", (e) => {
+  if (e.target.closest("[data-session-more]")) {
+    showMoreSessions();
+    paint();
+    return;
+  }
+  const tool = e.target.closest("button[data-session-client]");
+  if (!tool) return;
+  setSessionTool(tool.dataset.sessionClient);
   paint();
 });
 function toggleLang() {
@@ -2266,6 +2572,7 @@ $("btn-forget").addEventListener("click", () => {
   localStorage.removeItem(KEY);
   $("dlg").close();
   state.cfg = null; state.stats = null; state.catalog = []; state.catalogStats = null; state.prefScope = ""; state.displayPrefs = null;
+  resetSessionState();
   if (state.timer) clearInterval(state.timer);
   showGate();
 });
