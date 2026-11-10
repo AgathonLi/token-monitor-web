@@ -418,6 +418,51 @@
       .limits-grid .wins, .limits-grid .win-group-items { grid-template-columns: minmax(0, 1fr); }
     }
 
+    /* Layout C: Models, Tools and Devices become light cards on a capped grid;
+       Sessions stays one full-width list. Home keeps the 760px reading measure. */
+    .list-wrap.usage-grid {
+      max-width: none;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px 24px;
+      align-items: start;
+    }
+    .list-wrap.usage-grid > .row {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+    }
+    .list-wrap.usage-grid > .row:last-child { border-bottom: 1px solid var(--line); }
+    /* A wrapped card line must give the name a real measure: a zero-basis
+       flex:1 crushed 300-character model names into a 33px column at 375px. */
+    .list-wrap.usage-grid > .row > div { flex-wrap: wrap; }
+    .list-wrap.usage-grid > .row .nm { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+    .list-wrap.usage-grid > .row .nm small { overflow-wrap: anywhere; }
+    .list-wrap.usage-grid > .row .vals { min-width: 0; margin-left: auto; }
+    .list-wrap.usage-grid > .other-models {
+      grid-column: 1 / -1;
+      min-width: 0;
+      padding: 2px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+    }
+    .list-wrap.usage-grid > .other-models > summary { padding: 12px 0; border: 0; }
+    .list-wrap.usage-grid > .empty { grid-column: 1 / -1; }
+    .list-wrap.usage-grid > :only-child { grid-column: 1 / -1; }
+    .list-wrap.session-list { max-width: none; }
+    @media (min-width: 1100px) {
+      .list-wrap.usage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 359px) {
+      .list-wrap.usage-grid > .row { padding: 12px; }
+      .list-wrap.usage-grid > .row > div { flex-wrap: wrap; }
+      .list-wrap.usage-grid > .row .nm { flex: 1 1 120px; min-width: 120px; }
+      .list-wrap.usage-grid > .row .vals { margin-left: auto; }
+      .list-wrap.usage-grid > .row .vals .tok { flex-wrap: wrap; justify-content: flex-end; white-space: normal; }
+    }
   </style>
 </head>
 <body>
@@ -2204,7 +2249,7 @@ function renderSessions() {
   const rows = sorted.slice(0, visible).map((row) => sessionRowHtml(row, max)).join("");
   const more = sorted.length > visible
     ? `<button type="button" class="session-more" data-session-more>${esc(t("sessions.more", { n: fmtFull(sorted.length - visible) }))}</button>` : "";
-  return `<div class="sessions-panel">${hint}${sessionToolbar(all)}${sortBar("sessions", ["recent", "tokens", "cost"])}<div class="list-wrap">${rows}</div>${more}</div>`;
+  return `<div class="sessions-panel">${hint}${sessionToolbar(all)}${sortBar("sessions", ["recent", "tokens", "cost"])}<div class="list-wrap session-list">${rows}</div>${more}</div>`;
 }
 
 function renderMain() {
@@ -2212,9 +2257,9 @@ function renderMain() {
   const tools = sortEntries(entries(p.clients, p.clientCosts), "tools");
   const models = sortEntries(modelEntries(p), "models");
   if (state.view === "limits") return `${sortBar("limits", ["name", "left"])}<div class="limits-grid">${renderLimits(true)}</div>`;
-  if (state.view === "tools") return `${sortBar("tools", ["tokens", "cost", "name"])}<div class="list-wrap">${renderBars(tools, false, 0, "tools")}</div>`;
-  if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap">${renderModelList(models)}</div>`;
-  if (state.view === "devices") return `${sortBar("devices", ["tokens", "cost", "sync", "name"])}<div class="list-wrap">${renderDevices()}</div>`;
+  if (state.view === "tools") return `${sortBar("tools", ["tokens", "cost", "name"])}<div class="list-wrap usage-grid">${renderBars(tools, false, 0, "tools")}</div>`;
+  if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap usage-grid">${renderModelList(models)}</div>`;
+  if (state.view === "devices") return `${sortBar("devices", ["tokens", "cost", "sync", "name"])}<div class="list-wrap usage-grid">${renderDevices()}</div>`;
   if (state.view === "sessions") return renderSessions();
   if (state.view === "trends") {
     const tstat = streakAndTime();
