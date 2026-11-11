@@ -4,6 +4,7 @@ const { join } = require('node:path');
 const { test } = require('node:test');
 const { webcrypto } = require('node:crypto');
 const vm = require('node:vm');
+const { installFixedClock } = require('./helpers/fixed-clock.cjs');
 
 // Fixed clock and UTC keep civil-date expectations independent of the host.
 process.env.TZ = 'UTC';
@@ -20,13 +21,21 @@ function app(lang = 'zh') {
   });
   const start = script.indexOf('$("gate-form").addEventListener');
   assert.ok(start > 0, 'Missing inline app bootstrap boundary');
+  installFixedClock(context, NOW);
   vm.runInContext(script.slice(0, start), context);
-  vm.runInContext(`state.lang = ${JSON.stringify(lang)}; Date.now = () => ${NOW};`, context);
+  vm.runInContext(`state.lang = ${JSON.stringify(lang)};`, context);
   return {
     run: (expression) => vm.runInContext(expression, context),
     json: (expression) => JSON.parse(vm.runInContext(`JSON.stringify(${expression})`, context)),
   };
 }
+
+test('clock: constructor and Date.now agree before civil-date calculations', () => {
+  const { run } = app();
+  assert.equal(run('new Date().getTime()'), NOW);
+  assert.equal(run('Date.now()'), NOW);
+  assert.equal(run('civilYmd()'), '2026-11-10');
+});
 
 const DAILY = [
   { date: '2026-11-09', tokens: 0, cost: 0, activeTimeMs: 120000 },

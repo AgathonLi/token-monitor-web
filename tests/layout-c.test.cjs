@@ -9,6 +9,7 @@ const { join } = require('node:path');
 const { test } = require('node:test');
 const { webcrypto } = require('node:crypto');
 const vm = require('node:vm');
+const { installFixedClock } = require('./helpers/fixed-clock.cjs');
 
 process.env.TZ = 'UTC';
 const NOW = Date.parse('2026-11-10T00:00:00Z');
@@ -27,8 +28,9 @@ function app(lang = 'en') {
   });
   const start = script.indexOf('$("gate-form").addEventListener');
   assert.ok(start > 0, 'Missing inline app bootstrap boundary');
+  installFixedClock(context, NOW);
   vm.runInContext(script.slice(0, start), context);
-  vm.runInContext(`state.lang = ${JSON.stringify(lang)}; Date.now = () => ${NOW};`, context);
+  vm.runInContext(`state.lang = ${JSON.stringify(lang)};`, context);
   return {
     run: (expression) => vm.runInContext(expression, context),
     json: (expression) => JSON.parse(vm.runInContext(`JSON.stringify(${expression})`, context)),
@@ -166,7 +168,7 @@ test('layout-c CSS contract: usage grid lifts the 760px cap and caps at two colu
   assert.match(base, /max-width:\s*none/);
   assert.match(base, /display:\s*grid/);
   assert.match(base, /grid-template-columns:\s*minmax\(0,\s*1fr\)/);
-  assert.match(base, /gap:\s*16px 24px/);
+  assert.match(base, /gap:\s*8px 16px/);
   assert.ok(!/repeat\(/.test(base), 'the default is exactly one column');
   const wide = media('min-width: 1100px');
   assert.ok(wide, 'Missing the 1100px breakpoint');
@@ -180,15 +182,24 @@ test('layout-c CSS contract: usage grid lifts the 760px cap and caps at two colu
 test('layout-c CSS contract: only direct standalone rows become light cards', () => {
   const card = rule('.list-wrap.usage-grid > .row');
   assert.match(card, /border:\s*1px solid var\(--line\)/);
-  assert.match(card, /border-radius:\s*12px/);
+  assert.match(card, /border-radius:\s*10px/);
   assert.match(card, /background:\s*var\(--card\)/);
-  assert.match(card, /padding:\s*14px/);
+  assert.match(card, /padding:\s*10px 12px/);
   assert.match(rule('.list-wrap.usage-grid > .row:last-child'), /border-bottom:\s*1px solid var\(--line\)/);
   // The shared .row idiom itself stays borderless so Home/other callers are unchanged.
   const shared = maybeRule('.row');
   assert.match(shared, /border-bottom:\s*1px solid var\(--line\)/);
   assert.ok(!/border-radius/.test(shared), 'the shared row is not globally carded');
   assert.ok(!/--card/.test(shared), 'the shared row keeps its transparent background');
+});
+
+test('compact cards: bar spacing is not counted twice and the home bar stays unchanged', () => {
+  assert.match(rule('.list-wrap.usage-grid > .row'), /gap:\s*6px/);
+  const bar = rule('.list-wrap.usage-grid .row-bar');
+  assert.match(bar, /height:\s*3px/);
+  assert.match(bar, /margin-top:\s*0/);
+  assert.match(rule('.row-bar'), /height:\s*6px/);
+  assert.match(rule('.row-bar'), /margin-top:\s*8px/);
 });
 
 // --- Slice 2: models folding, single item, empty states ---------------------
@@ -214,7 +225,7 @@ test('layout-c: other models spans both columns and keeps its folding, control a
 
   const shell = rule('.list-wrap.usage-grid > .other-models');
   assert.match(shell, /grid-column:\s*1 \/ -1/);
-  assert.match(shell, /border-radius:\s*12px/);
+  assert.match(shell, /border-radius:\s*10px/);
   assert.match(shell, /background:\s*var\(--card\)/);
   const summary = rule('.list-wrap.usage-grid > .other-models > summary');
   assert.match(summary, /border:\s*0/, 'the nested summary is not an independent card');
@@ -260,7 +271,7 @@ test('layout-c: sessions keeps one full-width column with its filters, sort, 50-
   assert.ok(out.includes('data-session-more'), 'the remaining 10 rows stay behind the more button');
   assert.ok(out.includes('Load more (10 remaining)'), 'the more label counts the hidden rows');
   assert.ok(out.includes('title="Session 60 — a very long session title that must wrap instead of pushing the values away"'),
-    'the full session title is preserved for wrapping and the title tooltip');
+    'the full session title is preserved for disclosure and the title tooltip');
   assert.ok(out.includes('<span class="usage-value">1,060</span>'), 'exact token totals are unchanged');
   assert.ok(out.includes('$0.2500'), 'exact cost is unchanged');
   const list = rule('.list-wrap.session-list');
@@ -277,19 +288,20 @@ test('layout-c: the sessions wrapper is scoped, so the shared list cap still app
 
 // --- Slice 3: narrow-screen guards ----------------------------------------
 
-test('layout-c CSS contract: narrow cards keep long names and large values from colliding', () => {
+test('compact cards: mobile separates names from a full-width exact-value line', () => {
   assert.match(rule('.list-wrap.usage-grid > .row .nm'), /overflow-wrap:\s*anywhere/);
   assert.match(rule('.list-wrap.usage-grid > .row .nm small'), /overflow-wrap:\s*anywhere/);
-  const narrow = media('max-width: 359px');
-  assert.ok(narrow, 'Missing the 320px-class guard');
-  assert.match(rule('.list-wrap.usage-grid > .row', narrow), /padding:\s*12px/);
-  assert.match(rule('.list-wrap.usage-grid > .row > div', narrow), /flex-wrap:\s*wrap/);
-  assert.match(rule('.list-wrap.usage-grid > .row .nm', narrow), /min-width:\s*120px/);
-  assert.match(rule('.list-wrap.usage-grid > .row .vals', narrow), /margin-left:\s*auto/);
-  assert.match(rule('.list-wrap.usage-grid > .row .vals .tok', narrow), /white-space:\s*normal/);
-  // Every new guard is scoped: the shared row/typography contract is untouched.
-  const shared = rule('.row .tok');
-  assert.ok(!/white-space:\s*normal/.test(shared), 'shared token typography keeps its single line');
+  const narrow = media('max-width: 599px');
+  assert.ok(narrow, 'Mobile layout must include both 320px and 430px phones');
+  assert.match(rule('.list-wrap.usage-grid > .row .nm', narrow), /flex:\s*1 1 calc\(100% - 34px\)/);
+  const values = rule('.list-wrap.usage-grid > .row .vals', narrow);
+  assert.match(values, /width:\s*100%/);
+  assert.match(values, /display:\s*flex/);
+  assert.match(values, /justify-content:\s*space-between/);
+  assert.match(values, /flex-wrap:\s*wrap/, 'extreme costs can wrap without clipping exact tokens');
+  assert.ok(!/font-size/.test(values), 'density must not come from shrinking the values');
+  assert.match(rule('.list-wrap.usage-grid .usage-value', narrow), /min-width:\s*10ch/, 'reserve a token column so mobile percentages line up');
+  assert.ok(!/white-space:\s*normal/.test(rule('.row .tok')), 'shared typography is unchanged');
 });
 
 // --- Slice 4: 375px-class readable card names (no three-character columns) --
@@ -306,9 +318,9 @@ test('layout-c CSS contract: card names keep a readable measure at every width a
   const vals = rule('.list-wrap.usage-grid > .row .vals');
   assert.match(vals, /margin-left:\s*auto/, 'wrapped values stay right-aligned');
   assert.match(rule('.list-wrap.usage-grid > .row > div'), /flex-wrap:\s*wrap/, 'wrapping is not limited to 359px');
-  // The 359px guard survives for the extra-small case.
-  const narrow = media('max-width: 359px');
-  assert.match(rule('.list-wrap.usage-grid > .row .nm', narrow), /flex: 1 1 120px/);
+  // Phones use an explicit name line instead of content-dependent wrapping.
+  const narrow = media('max-width: 599px');
+  assert.match(rule('.list-wrap.usage-grid > .row .nm', narrow), /flex: 1 1 calc\(100% - 34px\)/);
   // Mechanism check in real output: card rows wrap, so the basis above can take effect.
   for (const [name, rows] of [['models', 2], ['tools', 4], ['devices', 2]]) {
     const out = viewApp(name, { devices: name === 'devices' ? DEVICES : [] }).run('renderMain()');
@@ -326,7 +338,7 @@ test('layout-c: the readable-name fix stays scoped to the standalone cards', () 
     assert.ok(!out.includes('usage-grid'), `${name} still bypasses the card rules`);
   }
   const sessions = viewApp('sessions', { sessions: sessionsFixture() }).run('renderMain()');
-  assert.ok(!sessions.includes('usage-grid'), 'sessions keeps its own long-title wrapping');
+  assert.ok(!sessions.includes('usage-grid'), 'sessions keeps its own title disclosure rules');
 });
 
 // --- Baseline guards (already green before layout C) -----------------------

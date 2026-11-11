@@ -207,18 +207,33 @@
       margin: 0 0 10px; padding: 8px 10px; border-radius: 10px;
       background: #fdf5e6; color: #7a5b1f; font-size: 12px; line-height: 1.45;
     }
-    .session-row { flex-wrap: wrap; align-items: flex-start; }
-    .session-line { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; }
+    .session-row { flex-wrap: wrap; align-items: flex-start; gap: 6px; }
+    .session-detail { width: 100%; min-width: 0; }
+    .session-summary { display: block; cursor: pointer; list-style: none; border-radius: 4px; }
+    .session-summary::-webkit-details-marker { display: none; }
+    .session-summary:focus-visible { outline: 2px solid #4d8ee6; outline-offset: 3px; }
+    .session-line { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; min-height: 24px; }
     .session-body { flex: 1; min-width: 0; }
-    .session-name { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+    .session-name { display: block; font-size: 14px; line-height: 1.5; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .session-chevron { flex: 0 0 16px; text-align: center; color: var(--muted); transition: transform .15s; }
+    .session-detail[open] .session-chevron { transform: rotate(180deg); }
     .session-meta {
-      display: flex; flex-wrap: wrap; gap: 2px 8px; margin-top: 2px;
-      font-size: 12px; font-weight: 500; color: var(--muted); min-width: 0;
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; margin-top: 4px;
+      font-size: 12px; line-height: 1.5; font-weight: 500; color: var(--muted); min-width: 0;
     }
-    .session-model, .session-activity, .session-device, .session-id { overflow-wrap: anywhere; min-width: 0; }
+    .session-model, .session-activity { display: block; min-width: 0; min-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .session-activity { color: #5b616a; }
     .session-cache { color: #626b78; font-variant-numeric: tabular-nums; }
+    .session-expanded { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); overflow-wrap: anywhere; font-size: 12px; line-height: 1.6; color: var(--muted); }
+    .session-expanded > div + div { margin-top: 4px; }
+    .session-full-title { font-size: 14px; color: var(--ink); }
+    .session-expanded .session-model, .session-expanded .session-activity { white-space: normal; overflow: visible; }
     .session-id { font-family: var(--num); color: var(--faint); }
+    .session-row > .vals { width: 100%; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 2px 10px; text-align: left; }
+    .session-row > .vals .cst { margin-left: auto; }
+    .session-row > .row-bar { height: 3px; margin-top: 0; }
+    .session-list > .session-row { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+    .session-list > .session-row + .session-row { margin-top: 8px; }
     .session-more {
       display: block; width: 100%; margin: 12px 0 0; border: 0; background: #fff;
       border-radius: 10px; box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
@@ -418,50 +433,59 @@
       .limits-grid .wins, .limits-grid .win-group-items { grid-template-columns: minmax(0, 1fr); }
     }
 
-    /* Layout C: Models, Tools and Devices become light cards on a capped grid;
-       Sessions stays one full-width list. Home keeps the 760px reading measure. */
+    /* Standalone compact cards only; shared Home rows keep their reading measure. */
     .list-wrap.usage-grid {
       max-width: none;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: 16px 24px;
+      gap: 8px 16px;
       align-items: start;
     }
     .list-wrap.usage-grid > .row {
       min-width: 0;
-      padding: 14px;
+      padding: 10px 12px;
+      gap: 6px;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 10px;
       background: var(--card);
     }
     .list-wrap.usage-grid > .row:last-child { border-bottom: 1px solid var(--line); }
-    /* A wrapped card line must give the name a real measure: a zero-basis
-       flex:1 crushed 300-character model names into a 33px column at 375px. */
-    .list-wrap.usage-grid > .row > div { flex-wrap: wrap; }
+    .list-wrap.usage-grid > .row > div { flex-wrap: wrap; row-gap: 4px; }
     .list-wrap.usage-grid > .row .nm { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
-    .list-wrap.usage-grid > .row .nm small { overflow-wrap: anywhere; }
+    .list-wrap.usage-grid > .row .nm small { overflow-wrap: anywhere; line-height: 1.45; margin-top: 2px; }
     .list-wrap.usage-grid > .row .vals { min-width: 0; margin-left: auto; }
+    .list-wrap.usage-grid .row-bar { height: 3px; margin-top: 0; }
     .list-wrap.usage-grid > .other-models {
       grid-column: 1 / -1;
       min-width: 0;
-      padding: 2px 14px;
+      padding: 0 12px;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 10px;
       background: var(--card);
     }
-    .list-wrap.usage-grid > .other-models > summary { padding: 12px 0; border: 0; }
+    .list-wrap.usage-grid > .other-models > summary { padding: 10px 0; gap: 6px; border: 0; }
     .list-wrap.usage-grid > .empty { grid-column: 1 / -1; }
     .list-wrap.usage-grid > :only-child { grid-column: 1 / -1; }
     .list-wrap.session-list { max-width: none; }
     @media (min-width: 1100px) {
       .list-wrap.usage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-    @media (max-width: 359px) {
-      .list-wrap.usage-grid > .row { padding: 12px; }
-      .list-wrap.usage-grid > .row > div { flex-wrap: wrap; }
-      .list-wrap.usage-grid > .row .nm { flex: 1 1 120px; min-width: 120px; }
-      .list-wrap.usage-grid > .row .vals { margin-left: auto; }
-      .list-wrap.usage-grid > .row .vals .tok { flex-wrap: wrap; justify-content: flex-end; white-space: normal; }
+    @media (max-width: 599px) {
+      .session-meta { grid-template-columns: minmax(0, 1fr); }
+      .list-wrap.usage-grid .usage-value { min-width: 10ch; text-align: right; }
+      .list-wrap.usage-grid > .row .nm { flex: 1 1 calc(100% - 34px); }
+      .list-wrap.usage-grid > .row .vals {
+        width: 100%; display: flex; align-items: baseline; justify-content: space-between;
+        flex-wrap: wrap; gap: 2px 10px; text-align: left;
+      }
+      .list-wrap.usage-grid > .row .vals .tok { flex-wrap: wrap; white-space: normal; }
+      .list-wrap.usage-grid > .row .cst { margin-left: auto; }
+      .list-wrap.usage-grid .model-group-main { flex-wrap: wrap; row-gap: 4px; }
+      .list-wrap.usage-grid .model-group-main .nm { flex: 1 1 calc(100% - 34px); }
+      .list-wrap.usage-grid .model-group-main .vals {
+        width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 2px 10px; flex-wrap: wrap;
+      }
+      .list-wrap.usage-grid .model-group-main .cst { margin-left: auto; }
     }
   </style>
 </head>
@@ -605,6 +629,7 @@ const I18N = {
     "sessions.allTools": "全部",
     "sessions.cacheHit": "缓存命中率 {p}",
     "sessions.models": "{n} 个模型",
+    "sessions.details": "展开或收起会话详情：{name}",
     "empty.wait": "等待数据",
     "asof": "数据截至 {time}（{ago}）",
     "asof.unknown": "尚无同步时间",
@@ -668,6 +693,7 @@ const I18N = {
     "sessions.allTools": "All",
     "sessions.cacheHit": "Cache hit {p}",
     "sessions.models": "{n} models",
+    "sessions.details": "Expand or collapse session details: {name}",
     "empty.wait": "Waiting for data",
     "asof": "As of {time} ({ago})",
     "asof.unknown": "No sync time yet",
@@ -2217,14 +2243,24 @@ function sessionToolbar(rows) {
 function sessionRowHtml(row, max) {
   const activity = sessionActivity(row);
   return `<div class="row session-row" data-session-client="${esc(row.client)}">
-    <div class="session-line">
-      ${ico(row.client, "tools")}
-      <div class="session-body">
-        <div class="session-name" title="${esc(row.name)}">${esc(row.name)}</div>
-        <div class="session-meta">${row.modelLabel ? `<span class="session-model">${esc(row.modelLabel)}</span>` : ""}${activity ? `<span class="session-activity">${activity}</span>` : ""}${row.device ? `<span class="session-device">${esc(row.device)}</span>` : ""}<span class="session-id" title="${esc(row.sessionId)}">${esc(row.sessionId)}</span></div>
+    <details class="session-detail">
+      <summary class="session-summary" aria-label="${esc(t("sessions.details", { name: row.name }))}">
+        <div class="session-line">
+          ${ico(row.client, "tools")}
+          <div class="session-body"><div class="session-name" title="${esc(row.name)}">${esc(row.name)}</div></div>
+          <span class="session-chevron" aria-hidden="true">⌄</span>
+        </div>
+        <div class="session-meta"><span class="session-model" title="${esc(row.modelLabel)}">${esc(row.modelLabel)}</span><span class="session-activity">${activity}</span></div>
+      </summary>
+      <div class="session-expanded">
+        <div class="session-full-title">${esc(row.name)}</div>
+        ${row.modelLabel ? `<div class="session-model">${esc(row.modelLabel)}</div>` : ""}
+        ${activity ? `<div class="session-activity">${activity}</div>` : ""}
+        ${row.device ? `<div class="session-device">${esc(row.device)}</div>` : ""}
+        <div class="session-id" title="${esc(row.sessionId)}">${esc(row.sessionId)}</div>
       </div>
-      <div class="vals"><div class="tok"><span class="usage-value">${fmtFull(row.tokens)}</span></div>${row.cost === null ? "" : `<div class="cst">${fmtCost(row.cost)}</div>`}</div>
-    </div>
+    </details>
+    <div class="vals"><div class="tok"><span class="usage-value">${fmtFull(row.tokens)}</span></div>${row.cost === null ? "" : `<div class="cst">${fmtCost(row.cost)}</div>`}</div>
     <span class="row-bar" style="width:100%"><i style="width:${Math.max(2, (row.tokens / max) * 100)}%;background:${clientColor(row.client)}"></i></span>
   </div>`;
 }

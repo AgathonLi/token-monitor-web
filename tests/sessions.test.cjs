@@ -5,6 +5,7 @@ const { join } = require('node:path');
 const { test } = require('node:test');
 const { webcrypto } = require('node:crypto');
 const vm = require('node:vm');
+const { installFixedClock } = require('./helpers/fixed-clock.cjs');
 
 // Fixed clock and UTC keep civil-time expectations independent of the host.
 process.env.TZ = 'UTC';
@@ -22,8 +23,9 @@ function app(lang = 'zh') {
   });
   const start = script.indexOf('$("gate-form").addEventListener');
   assert.ok(start > 0, 'Missing inline app bootstrap boundary');
+  installFixedClock(context, NOW);
   vm.runInContext(script.slice(0, start), context);
-  vm.runInContext(`state.lang = ${JSON.stringify(lang)}; Date.now = () => ${NOW};`, context);
+  vm.runInContext(`state.lang = ${JSON.stringify(lang)};`, context);
   return {
     run: (expression) => vm.runInContext(expression, context),
     json: (expression) => JSON.parse(vm.runInContext(`JSON.stringify(${expression})`, context)),
@@ -490,7 +492,8 @@ test('sessions: the strip scrolls horizontally inside a bounded row', () => {
   assert.ok(/overflow-x:\s*auto/.test(rule[0]), 'Narrow screens scroll the strip, not the page');
   assert.ok(/max-width:\s*100%/.test(rule[0]));
   assert.ok(/\.session-row \{[^}]*flex-wrap:\s*wrap/.test(css), 'Session rows wrap instead of colliding');
-  assert.ok(/\.session-name \{[^}]*overflow-wrap:\s*anywhere/.test(css), 'Long titles wrap inside the row');
+  assert.ok(/\.session-name \{[^}]*text-overflow:\s*ellipsis/.test(css), 'Long titles ellipsize inside a bounded line');
+  assert.ok(/\.session-name \{[^}]*white-space:\s*nowrap/.test(css), 'Collapsed titles stay on one line');
 });
 
 // --- Slice 4: availability, omissions and safety --------------------------
@@ -566,6 +569,26 @@ test('sessions: the omission hint survives an empty retained list and junk count
   const other = listApp({ 'claude:a': SESSION({ sessionId: 'a', title: 'A' }) });
   other.run('state.stats.sessionDetailsOmitted = { month: 5 };');
   assert.ok(!other.run('renderSessions()').includes('session-note'));
+});
+
+test('sessions: compact cards expose complete masked text through native disclosure, not hard truncation', () => {
+  const title = '合成会话标题 🧪 '.repeat(30) + '<b>alice@corp.example</b>';
+  for (const lang of ['zh', 'en']) {
+    const { run } = listApp({ 'claude:long': SESSION({ title, sessionId: 'long-id-'.repeat(40) }) }, { lang });
+    const before = run('JSON.stringify(state.stats)');
+    const out = run('renderSessions()');
+    assert.match(out, /<details class="session-detail">/);
+    assert.match(out, /<summary class="session-summary" aria-label="[^"]+">/);
+    assert.ok(out.includes(lang === 'zh' ? '展开或收起会话详情' : 'Expand or collapse session details'));
+    assert.match(out, /class="session-full-title">[^<]*合成会话标题/);
+    assert.ok(out.includes(run(`esc(${JSON.stringify(title)})`)), 'Full text survives display truncation');
+    assert.ok(out.includes('long-id-'.repeat(40)), 'Complete ID stays available in the expanded content');
+    assert.ok(!out.includes('alice@corp.example') && !out.includes('<b>'), 'Expanded text stays masked and escaped');
+    assert.equal(run('JSON.stringify(state.stats)'), before);
+  }
+  const css = html.slice(html.indexOf('<style>'), html.indexOf('</style>'));
+  assert.match(css, /\.session-expanded \{[^}]*overflow-wrap:\s*anywhere/);
+  assert.match(css, /\.session-summary:focus-visible \{[^}]*outline:/, 'Keyboard focus has a visible indicator');
 });
 
 test('sessions: identity and title text stays masked, escaped and non-actionable', () => {
