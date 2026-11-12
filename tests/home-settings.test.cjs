@@ -131,7 +131,7 @@ test('only model-page shares strictly below one percent collapse per period with
     month:{models:{large:9801,boundary:99,tiny:100},modelCosts:{large:1,boundary:2,tiny:3}},
     allTime:{models:{large:9800,boundary:100,tiny:100},modelCosts:{large:1,boundary:2,tiny:3}}
   }}`);
-  for (const [period, smallName, smallCost] of [['today', 'tiny', '$3.0000'], ['month', 'boundary', '$2.0000']]) {
+  for (const [period, smallName, smallCost] of [['today', 'tiny', '$3.00'], ['month', 'boundary', '$2.00']]) {
     run(`state.period=${JSON.stringify(period)}`);
     const rendered = c.renderMain();
     assert.ok(rendered.includes('other models'));
@@ -149,7 +149,7 @@ test('only model-page shares strictly below one percent collapse per period with
   const list = [{ id: 'a', tokens: 1, cost: 2, pct: 0.0001 }, { id: 'b', tokens: 2, cost: 3, pct: 0.0002 }];
   const original = JSON.stringify(list);
   const rendered = c.renderModelList(list);
-  assert.ok(rendered.includes('$5.0000'));
+  assert.ok(rendered.includes('$5.00'));
   assert.ok(rendered.includes('class="other-ai"'));
   assert.equal(JSON.stringify(list), original);
 });

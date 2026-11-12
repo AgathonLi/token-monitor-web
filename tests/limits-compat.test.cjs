@@ -42,8 +42,8 @@ test('fresh page defaults to DAY and alphabetical Limits without changing other 
 test('spending uses used or amount, never remaining allowance or provider balance', () => {
   const { ctx } = app();
   for (const [window, expected] of [
-    [{ used: 7.5, remaining: 30 }, '$7.5000'],
-    [{ used: 0, amount: 9 }, '$0.0000'],
+    [{ used: 7.5, remaining: 30 }, '$7.50'],
+    [{ used: 0, amount: 9 }, '$0.00'],
     [{ amount: 12 }, '$12.00'],
   ]) {
     const rendered = ctx.renderWin({ kind: 'billing', metric: 'spend', currency: 'USD', ...window }, 'Spent', '', { color: '#888' }, { balance: { amount: 60, currency: 'USD' } });
@@ -58,7 +58,7 @@ test('spending uses used or amount, never remaining allowance or provider balanc
 test('credits remain independent and unavailable money is not fabricated as zero', () => {
   const { ctx, render } = app();
   for (const value of [null, undefined, '', ' ', 'bad', false]) assert.equal(ctx.fmtMoney(value, 'USD'), '');
-  assert.equal(ctx.fmtMoney(0, 'USD'), '$0.0000');
+  assert.equal(ctx.fmtMoney(0, 'USD'), '$0.00');
   const rendered = render([{ provider: 'ollama', balance: { amount: 999, currency: 'USD' }, windows: [
     { kind: 'billing', label: 'Included credits', metric: 'credits', remaining: 30, currency: 'USD', remainingPercent: 50 },
     { kind: 'billing', label: 'Credit balance', metric: 'credits', remaining: 60, currency: 'USD', showMeter: false },
@@ -67,7 +67,7 @@ test('credits remain independent and unavailable money is not fabricated as zero
   ] }]);
   assert.ok(rendered.includes('$30.00'));
   assert.ok(rendered.includes('$60.00'));
-  assert.ok(rendered.includes('$7.5000'));
+  assert.ok(rendered.includes('$7.50'));
   assert.ok(!rendered.includes('$999.00'));
   assert.equal((rendered.match(/class="bar"/g) || []).length, 1);
 });
@@ -104,7 +104,7 @@ test('New API exposes supplied period spending with real zero and expandable det
   for (const full of [true, false]) {
     const rendered = render([provider], full);
     assert.ok(rendered.includes('<details class="spend-details">'));
-    for (const text of ['今日', '近7天', '本月', '累计', '$0.0000', '$12.00', '$20.00', '$80.00']) assert.ok(rendered.includes(text), text);
+    for (const text of ['今日', '近7天', '本月', '累计', '$0.00', '$12.00', '$20.00', '$80.00']) assert.ok(rendered.includes(text), text);
     assert.ok(!rendered.includes('$60.00'));
   }
   run('state.lang = "en"');

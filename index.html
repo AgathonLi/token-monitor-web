@@ -16,8 +16,8 @@
     :root {
       --bg: #eef0f3;
       --ink: #1c1f24;
-      --muted: #8b919a;
-      --faint: #a8adb4;
+      --muted: #525a66;
+      --faint: #616a76;
       --line: #e1e4e8;
       --pill: #ffffff;
       --pill-on: #dfe3e8;
@@ -81,7 +81,7 @@
     }
     .home-kpis .cost { margin: 6px 0 0; color: var(--muted); font-size: 18px; font-weight: 500; }
     .list-wrap, .limits-grid { min-width: 0; }
-    .limits-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px 24px; align-items: start; }
+    .limits-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px 24px; align-items: stretch; }
     .limits-grid > .prov { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
     .asof { font-size: 12px; color: var(--muted); padding: 0 16px 4px; }
     .sort { display: flex; gap: 4px; flex-wrap: wrap; margin: 0 0 10px; }
@@ -100,6 +100,9 @@
     input[type="text"], input[type="password"] {
       width: 100%; border: 0; background: #fff; border-radius: 12px;
       padding: 12px 14px; margin-bottom: 12px; outline: none;
+    }
+    input[type="text"]:focus-visible, input[type="password"]:focus-visible {
+      outline: 2px solid #1a4fbf; outline-offset: 2px;
     }
     .err { color: #c4543a; font-size: 13px; min-height: 1.2em; margin: 0 0 10px; }
     .btn {
@@ -125,7 +128,7 @@
       .seg button { padding-left: 9px; padding-right: 9px; }
     }
 
-    .hero { padding: 10px 22px 6px; }
+    .hero { padding: 10px 16px 6px; }
     .k {
       font-size: 11px; letter-spacing: 0.14em; color: var(--muted);
       font-weight: 600;
@@ -143,6 +146,9 @@
       font-size: 13px; font-weight: 650; margin: 0 0 10px; color: #3a3f46;
     }
     .sec-h span { color: var(--muted); font-weight: 500; font-size: 12px; }
+    .scope-note { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+    .chart-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 0 0 10px; font-size: 13px; font-weight: 650; color: #3a3f46; }
+    .chart-h .range { color: var(--muted); font-size: 12px; font-weight: 500; }
 
     .prov { padding: 12px 0 14px; border-bottom: 1px solid var(--line); }
     .prov:last-child { border-bottom: 0; }
@@ -209,7 +215,7 @@
     }
     .session-row { flex-wrap: wrap; align-items: flex-start; gap: 6px; }
     .session-detail { width: 100%; min-width: 0; }
-    .session-summary { display: block; cursor: pointer; list-style: none; border-radius: 4px; }
+    .session-summary { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px 16px; cursor: pointer; list-style: none; border-radius: 4px; }
     .session-summary::-webkit-details-marker { display: none; }
     .session-summary:focus-visible { outline: 2px solid #4d8ee6; outline-offset: 3px; }
     .session-line { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; min-height: 24px; }
@@ -229,8 +235,15 @@
     .session-full-title { font-size: 14px; color: var(--ink); }
     .session-expanded .session-model, .session-expanded .session-activity { white-space: normal; overflow: visible; }
     .session-id { font-family: var(--num); color: var(--faint); }
-    .session-row > .vals { width: 100%; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 2px 10px; text-align: left; }
-    .session-row > .vals .cst { margin-left: auto; }
+    .session-summary > .vals { width: 100%; min-width: 0; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 2px 10px; text-align: left; padding-left: 26px; }
+    .session-summary > .vals .tok { white-space: normal; overflow-wrap: anywhere; }
+    .session-summary > .vals .cst { margin-left: auto; overflow-wrap: anywhere; }
+    .session-summary .session-meta { margin-top: 0; padding-left: 26px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    @media (min-width: 600px) {
+      .session-summary { grid-template-columns: minmax(0, 1fr) auto; }
+      .session-summary > .session-line, .session-summary > .session-meta { grid-column: 1; }
+      .session-summary > .vals { grid-column: 2; grid-row: 1 / 3; padding-left: 0; width: auto; max-width: min(40vw, 280px); flex-direction: column; align-items: flex-end; justify-content: flex-start; text-align: right; }
+    }
     .session-row > .row-bar { height: 3px; margin-top: 0; }
     .session-list > .session-row { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
     .session-list > .session-row + .session-row { margin-top: 8px; }
@@ -265,6 +278,9 @@
     }
     .chart-x { display: flex; justify-content: space-between; color: var(--faint); font-size: 12px; margin-top: 8px; }
     .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .tiles-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 18px 0 0; }
+    .tiles-h .title { font-size: 13px; font-weight: 650; color: #3a3f46; }
+    .tiles-h .note { font-size: 12px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
     .tile {
       background: #e7eaee; border-radius: 14px; padding: 14px 14px 12px;
     }
@@ -330,20 +346,21 @@
     .home-limits { order: 1; }
     .home-models { order: 2; }
     .home-quota-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-    .prov.quota-card { height: 210px; min-width: 0; display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
+    .prov.quota-card { min-width: 0; display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
     .prov.quota-card:last-child { border-bottom: 1px solid var(--line); }
     .quota-card .prov-h { align-items: center; min-height: 28px; }
     .quota-card .prov-name { flex: 1; white-space: nowrap; overflow: hidden; }
     .quota-card .prov-name > span:last-child { overflow: hidden; text-overflow: ellipsis; }
     .quota-updated { color: var(--muted); font-size: 11px; white-space: nowrap; flex-shrink: 0; }
     .quota-meta { color: #626b78; font-size: 11px; line-height: 18px; min-height: 18px; margin: 3px 0 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .quota-summary { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+    .quota-summary { display: flex; flex-direction: column; gap: 12px; }
     .quota-summary .win { flex-shrink: 0; }
     .quota-summary .bar { height: 6px; }
-    .quota-summary .reset { line-height: 14px; margin-top: 4px; color: #626b78; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quota-summary .reset { line-height: 1.3; margin-top: 4px; color: #626b78; white-space: normal; overflow-wrap: anywhere; }
     .quota-summary .lab { display: grid; grid-template-columns: minmax(0, 1fr) max-content; align-items: baseline; gap: 8px; }
     .quota-summary .lab > span { white-space: nowrap; }
-    .quota-summary .lab > span:first-child { overflow: hidden; text-overflow: ellipsis; }
+    .quota-summary .lab > span:first-child { white-space: normal; overflow-wrap: anywhere; }
+    .quota-summary .credits { flex-wrap: wrap; overflow-wrap: anywhere; }
     .quota-info { border: 0; background: transparent; color: #626b78; border-radius: 7px; min-width: 28px; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; flex-shrink: 0; }
     .quota-info:hover, .quota-info:focus-visible { background: #dfe9fb; color: #1a4fbf; }
     .quota-preview { position: fixed; z-index: 100; width: min(420px, calc(100vw - 24px)); max-height: 70dvh; overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 10px 40px rgb(20 24 30 / 18%); }
@@ -390,6 +407,13 @@
     .model-detail dt { color: #626b78; }
     .model-detail dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
 
+    /* Subpage summary; Home keeps its large responsive totals. */
+    #app:not(.view-home) .headline { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; padding: 10px 16px 6px; }
+    #app:not(.view-home) .hero { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 0; min-width: 0; max-width: 100%; }
+    #app:not(.view-home) .hero .big { font-size: 18px; line-height: 1.4; margin: 0; min-width: 0; overflow-wrap: anywhere; }
+    #app:not(.view-home) .hero .cost { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+    #app:not(.view-home) .asof-hero { padding: 0; flex: 1 1 280px; min-width: 0; overflow-wrap: anywhere; }
+
     @media (min-width: 860px) {
       .shell { width: min(1120px, 100%); }
       .top { padding: 18px 28px 8px; flex-wrap: nowrap; }
@@ -427,6 +451,7 @@
       }
       .list-wrap { max-width: 760px; }
       .tiles { grid-template-columns: repeat(4, 1fr); }
+      #app:not(.view-home) .headline { padding: 8px 28px 4px; }
     }
     @media (min-width: 1280px) {
       .limits-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -487,6 +512,8 @@
       }
       .list-wrap.usage-grid .model-group-main .cst { margin-left: auto; }
     }
+
+
   </style>
 </head>
 <body>
@@ -523,12 +550,14 @@
           <button class="gear-top" type="button" id="btn-settings-top" title="设置">⚙</button>
         </div>
       </header>
+      <div class="headline">
       <div class="hero">
-        <div class="k">TOTAL TOKENS</div>
+        <div class="k" id="hero-k">今日 TOKENS</div>
         <div class="big" id="hero-n">—</div>
         <div class="cost" id="hero-c">—</div>
       </div>
       <div class="asof asof-hero" id="asof"></div>
+      </div>
       <div class="banner" id="banner"></div>
       <div class="scroll" id="main"></div>
       <div class="dock">
@@ -607,6 +636,16 @@ const I18N = {
     "sec.models": "模型",
     "sec.activity": "活动",
     "sec.month": "本月每日",
+    "tokens.today": "今日 TOKENS",
+    "tokens.month": "本月 TOKENS",
+    "tokens.allTime": "累计 TOKENS",
+    "scope.period": "顶部周期只影响顶部总数；额度显示当前配额窗口。",
+    "scope.chart": "图表范围：{range}；顶部周期不会改变此图。",
+    "scope.chart.empty": "暂无每日数据，无法确定图表范围。",
+    "chart.recent": "最近每日用量",
+    "chart.empty": "每日用量",
+    "trends.history": "历史活动统计",
+    "trends.history.note": "优先采用 Hub 历史汇总，不受顶部周期影响；缺少汇总时回退现有每日数据，可能并非完整历史。",
     "tile.activeDays": "活跃天数",
     "tile.streak": "连续天数",
     "tile.activeTime": "活跃时间",
@@ -671,6 +710,16 @@ const I18N = {
     "sec.models": "Models",
     "sec.activity": "Activity",
     "sec.month": "This month",
+    "tokens.today": "TOKENS TODAY",
+    "tokens.month": "TOKENS THIS MONTH",
+    "tokens.allTime": "ALL-TIME TOKENS",
+    "scope.period": "The period selector only changes the headline total; limits show the current quota windows.",
+    "scope.chart": "Chart range: {range}; the period selector does not change this chart.",
+    "scope.chart.empty": "No daily data yet, so the chart range is unknown.",
+    "chart.recent": "Recent daily usage",
+    "chart.empty": "Daily usage",
+    "trends.history": "Historical activity",
+    "trends.history.note": "Uses the Hub history summary when available, independent of the period selector; otherwise falls back to the daily data on hand and may not cover the full history.",
     "tile.activeDays": "Active days",
     "tile.streak": "Streak",
     "tile.activeTime": "Active time",
@@ -1007,12 +1056,17 @@ function fmtMillions(tokens) {
 }
 function fmtCost(n) {
   n = Number(n) || 0;
-  if (n >= 100) return "$" + n.toFixed(2);
-  if (n >= 10) return "$" + n.toFixed(2);
+  if (n === 0 || n >= 1) return "$" + n.toFixed(2);
+  if (n > 0 && n < 0.0001) return "<$0.0001";
   return "$" + n.toFixed(4);
 }
 function periodOf(stats, key) {
   return (stats && stats.periods && stats.periods[key]) || { totalTokens: 0, costUsd: 0, clients: {}, clientCosts: {}, models: {}, modelCosts: {} };
+}
+// The headline total is period-scoped, so name the window instead of "TOTAL".
+function periodTokensLabel() {
+  const key = state.period === "month" ? "tokens.month" : state.period === "allTime" ? "tokens.allTime" : "tokens.today";
+  return t(key);
 }
 // Session rows are presentation projections of periods.<period>.sessions only:
 // device session maps add provenance, never rows, and nothing is summed in.
@@ -1213,7 +1267,7 @@ function relReset(iso, boundaryKind) {
   const span = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
   if (kind === "expiry") return `${zh ? "到期" : "Expires"} ${span}`;
   if (kind === "mixed") return `${zh ? "重置/到期" : "Changes in"} ${span}`;
-  return `Reset ${span}`;
+  return `${zh ? "重置" : "Reset"} ${span}`;
 }
 function relAgo(iso) {
   if (!iso) return "";
@@ -1646,7 +1700,7 @@ function renderProviderDetails(p, full = true) {
     const additionalWins = (p.windows || []).filter(isAdditionalWin);
     const subBits = [];
     const ago = relAgo(p.updatedAt || (state.stats && state.stats.limits && state.stats.limits.updatedAt));
-    if (ago) subBits.push("Updated " + ago);
+    if (ago) subBits.push((state.lang === "zh" ? "更新于 " : "Updated ") + ago);
     const auth = authLabel(p);
     if (auth) subBits.push(auth);
 
@@ -2111,8 +2165,10 @@ function monthBars() {
   const days = dailyList();
   const today = civilYmd();
   const ym = today.slice(0, 7);
-  let rows = days.filter((d) => String(d.date).startsWith(ym));
-  if (rows.length < 8) rows = days.slice(-24);
+  const monthRows = days.filter((d) => String(d.date).startsWith(ym));
+  const fallback = monthRows.length < 8;
+  let rows = monthRows;
+  if (fallback) rows = days.slice(-24);
   const max = Math.max(...rows.map((d) => Number(d.tokens) || 0), 1);
   const labels = rows.map((d) => fmtMillions(d.tokens));
   const colWidth = Math.max(28, ...labels.map((label) => label.length * 6 + 4));
@@ -2126,7 +2182,10 @@ function monthBars() {
   }).join("");
   const first = rows[0] ? String(rows[0].date).slice(5).replace("-", "/") : "";
   const last = rows[rows.length - 1] ? String(rows[rows.length - 1].date).slice(5).replace("-", "/") : "";
-  return { bars, first, last, minWidth };
+  const firstDate = rows[0] ? String(rows[0].date).slice(0, 10) : null;
+  const lastDate = rows[rows.length - 1] ? String(rows[rows.length - 1].date).slice(0, 10) : null;
+  const empty = rows.length === 0;
+  return { bars, first, last, minWidth, firstDate, lastDate, fallback, monthOnly: !empty && rows.every((d) => String(d.date).startsWith(ym)), empty };
 }
 
 function renderDevices() {
@@ -2143,7 +2202,7 @@ function renderDevices() {
       d.osName || d.platform || "",
       d.stale ? t("stale") : ago
     ].filter(Boolean);
-    return `<div class="row" style="flex-wrap:wrap;${d.stale ? "opacity:.55" : ""}">
+    return `<div class="row${d.stale ? " is-stale" : ""}" style="flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:10px;width:100%">
         <span class="dot ${d.stale ? "bad" : "on"}"></span>
         <div class="nm">${esc(name)}<small>${esc(bits.join(" · "))}</small></div>
@@ -2251,6 +2310,7 @@ function sessionRowHtml(row, max) {
           <span class="session-chevron" aria-hidden="true">⌄</span>
         </div>
         <div class="session-meta"><span class="session-model" title="${esc(row.modelLabel)}">${esc(row.modelLabel)}</span><span class="session-activity">${activity}</span></div>
+    <div class="vals"><div class="tok"><span class="usage-value">${fmtFull(row.tokens)}</span></div>${row.cost === null ? "" : `<div class="cst">${fmtCost(row.cost)}</div>`}</div>
       </summary>
       <div class="session-expanded">
         <div class="session-full-title">${esc(row.name)}</div>
@@ -2260,7 +2320,7 @@ function sessionRowHtml(row, max) {
         <div class="session-id" title="${esc(row.sessionId)}">${esc(row.sessionId)}</div>
       </div>
     </details>
-    <div class="vals"><div class="tok"><span class="usage-value">${fmtFull(row.tokens)}</span></div>${row.cost === null ? "" : `<div class="cst">${fmtCost(row.cost)}</div>`}</div>
+
     <span class="row-bar" style="width:100%"><i style="width:${Math.max(2, (row.tokens / max) * 100)}%;background:${clientColor(row.client)}"></i></span>
   </div>`;
 }
@@ -2292,7 +2352,7 @@ function renderMain() {
   const p = periodOf(state.stats, state.period);
   const tools = sortEntries(entries(p.clients, p.clientCosts), "tools");
   const models = sortEntries(modelEntries(p), "models");
-  if (state.view === "limits") return `${sortBar("limits", ["name", "left"])}<div class="limits-grid">${renderLimits(true)}</div>`;
+  if (state.view === "limits") return `<p class="scope-note">${esc(t("scope.period"))}</p>${sortBar("limits", ["name", "left"])}<div class="limits-grid">${renderLimits(true)}</div>`;
   if (state.view === "tools") return `${sortBar("tools", ["tokens", "cost", "name"])}<div class="list-wrap usage-grid">${renderBars(tools, false, 0, "tools")}</div>`;
   if (state.view === "models") return `${sortBar("models", ["tokens", "cost", "name"])}<div class="list-wrap usage-grid">${renderModelList(models)}</div>`;
   if (state.view === "devices") return `${sortBar("devices", ["tokens", "cost", "sync", "name"])}<div class="list-wrap usage-grid">${renderDevices()}</div>`;
@@ -2300,13 +2360,19 @@ function renderMain() {
   if (state.view === "trends") {
     const tstat = streakAndTime();
     const b = monthBars();
-    return `<div class="sec-h">${esc(t("sec.month"))}</div>
-      <div class="chart-scroll" data-chart-key="${esc(civilYmd().slice(0, 7))}" tabindex="0" role="region" aria-label="${esc(t("sec.month"))}">
+    const rangeText = b.empty ? "" : `${b.firstDate}–${b.lastDate}`;
+    const chartTitle = b.empty ? t("chart.empty") : (b.monthOnly ? t("sec.month") : t("chart.recent"));
+    const chartLabel = rangeText ? `${chartTitle} · ${rangeText}` : chartTitle;
+    const scope = b.empty ? t("scope.chart.empty") : t("scope.chart", { range: rangeText });
+    return `<div class="chart-h"><span>${esc(chartTitle)}</span><span class="range">${esc(rangeText || "—")}</span></div>
+      <p class="scope-note">${esc(scope)}</p>
+      <div class="chart-scroll" data-chart-key="${esc(civilYmd().slice(0, 7))}" tabindex="0" role="region" aria-label="${esc(chartLabel)}">
         <div class="chart-content" style="min-width:${b.minWidth}px">
           <div class="chart">${b.bars || ""}</div>
           <div class="chart-x"><span>${esc(b.first)}</span><span>${esc(b.last)}</span></div>
         </div>
       </div>
+      <div class="tiles-h"><span class="title">${esc(t("trends.history"))}</span><span class="note">${esc(t("trends.history.note"))}</span></div>
       <div class="tiles">
         <div class="tile"><div class="v">${tstat.activeDays}</div><div class="l">${esc(t("tile.activeDays"))}</div></div>
         <div class="tile"><div class="v">${tstat.streak}</div><div class="l">${esc(t("tile.streak"))}</div></div>
@@ -2324,7 +2390,7 @@ function renderMain() {
       </div>`).join("") || `<p class="empty">${esc(t("empty.models"))}</p>`;
   return `<div class="home-grid">
     <div class="home-kpis">
-      <div class="k">TOTAL TOKENS</div>
+      <div class="k">${esc(periodTokensLabel())}</div>
       <div class="big">${fmtFull(p.totalTokens)}</div>
       <div class="cost">${fmtCost(p.costUsd)}</div>
       <div class="asof">${esc(asofText())}</div>
@@ -2338,6 +2404,7 @@ function renderMain() {
 function applyStaticLang() {
   document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
   const set = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+  set("hero-k", periodTokensLabel());
   set("gate-title", t("gate.title"));
   set("gate-lead", t("gate.lead"));
   set("lab-hub", t("gate.hub"));
@@ -2359,8 +2426,19 @@ function applyStaticLang() {
 function fitTotals() {
   for (const el of document.querySelectorAll(".big")) {
     el.style.fontSize = "";
+    if (state.view !== "home" && el.id === "hero-n") continue;
     if (el.clientWidth && el.scrollWidth > el.clientWidth) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * el.clientWidth / el.scrollWidth * 0.98) + "px";
   }
+}
+// Measure the rebuilt selected button, whose bold label can be wider.
+function revealSelectedTab() {
+  const tabs = $("tabs");
+  const selected = tabs && tabs.querySelector("button.on");
+  if (!selected || !tabs.clientWidth) return;
+  const port = tabs.getBoundingClientRect();
+  const item = selected.getBoundingClientRect();
+  if (item.right > port.right) tabs.scrollLeft += item.right - port.right;
+  else if (item.left < port.left) tabs.scrollLeft -= port.left - item.left;
 }
 function paint() {
   const chart = document.querySelector(".chart-scroll");
@@ -2403,6 +2481,7 @@ function paint() {
   fitTotals();
   restoreChartPosition(document.querySelector(".chart-scroll"), state.chartPosition);
   rememberChartPosition(document.querySelector(".chart-scroll"));
+  revealSelectedTab();
 }
 
 async function api(path, cfg = state.cfg) {
@@ -2641,7 +2720,7 @@ $("quota-preview").addEventListener("pointerleave", (e) => {
   else schedulePreviewClose();
 });
 document.addEventListener("keydown", (e) => { state.lastInput = "keyboard"; if (e.key === "Escape") $("quota-preview").hidden = true; });
-window.addEventListener("resize", () => { $("quota-preview").hidden = true; fitTotals(); const chart = document.querySelector(".chart-scroll"); restoreChartPosition(chart, state.chartPosition); rememberChartPosition(chart); });
+window.addEventListener("resize", () => { $("quota-preview").hidden = true; fitTotals(); const chart = document.querySelector(".chart-scroll"); restoreChartPosition(chart, state.chartPosition); rememberChartPosition(chart); revealSelectedTab(); });
 $("dlg-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {

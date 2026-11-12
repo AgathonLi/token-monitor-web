@@ -112,11 +112,12 @@ function resetText({ lang = 'zh', w, summary = false } = {}) {
 }
 
 test('lifecycle: reset and unknown boundary kinds keep the existing reset wording', () => {
+  const reset = { zh: '重置', en: 'Reset' };
   for (const lang of ['zh', 'en']) {
-    assert.equal(resetText({ lang, w: { resetsAt: FUTURE, remainingPercent: 50 } }).text, 'Reset 4h 0m');
-    assert.equal(resetText({ lang, w: { resetsAt: LATER, remainingPercent: 50 } }).text, 'Reset 2d 3h');
-    assert.equal(resetText({ lang, w: { resetsAt: FUTURE, boundaryKind: 'reset', remainingPercent: 50 } }).text, 'Reset 4h 0m');
-    assert.equal(resetText({ lang, w: { resetsAt: FUTURE, boundaryKind: 'legacy', remainingPercent: 50 } }).text, 'Reset 4h 0m');
+    assert.equal(resetText({ lang, w: { resetsAt: FUTURE, remainingPercent: 50 } }).text, `${reset[lang]} 4h 0m`);
+    assert.equal(resetText({ lang, w: { resetsAt: LATER, remainingPercent: 50 } }).text, `${reset[lang]} 2d 3h`);
+    assert.equal(resetText({ lang, w: { resetsAt: FUTURE, boundaryKind: 'reset', remainingPercent: 50 } }).text, `${reset[lang]} 4h 0m`);
+    assert.equal(resetText({ lang, w: { resetsAt: FUTURE, boundaryKind: 'legacy', remainingPercent: 50 } }).text, `${reset[lang]} 4h 0m`);
   }
   assert.equal(resetText({ w: { resetsAt: PAST } }).text, '已到重置时间');
   assert.equal(resetText({ lang: 'en', w: { resetsAt: PAST } }).text, 'Reset due');
@@ -156,7 +157,7 @@ test('lifecycle: credits windows follow the same boundary wording as ordinary wi
   assert.equal(resetText({ w: { ...credits, boundaryKind: 'expiry' } }).text, '到期 4h 0m');
   assert.equal(resetText({ lang: 'en', w: { ...credits, boundaryKind: 'expiry' } }).text, 'Expires 4h 0m');
   assert.equal(resetText({ w: { ...credits, boundaryKind: 'mixed' } }).text, '重置/到期 4h 0m');
-  assert.equal(resetText({ w: credits }).text, 'Reset 4h 0m');
+  assert.equal(resetText({ w: credits }).text, '重置 4h 0m');
   assert.equal(resetText({ w: { ...credits, boundaryKind: 'expiry', resetsAt: PAST } }).text, '已到期');
 });
 
@@ -261,7 +262,7 @@ test('tools: unknown clients fall back safely and values stay intact', () => {
   assert.ok(!rendered.includes('<img'), 'Unknown ids are escaped');
   assert.ok(rendered.includes('&lt;img'));
   assert.ok(rendered.includes('#6b7280'), 'Unknown clients keep the neutral fallback colour');
-  assert.ok(rendered.includes('$1.0000') && rendered.includes('$2.0000'));
+  assert.ok(rendered.includes('$1.00') && rendered.includes('$2.00'));
   assert.equal(run('JSON.stringify(state.history)'), before);
 });
 

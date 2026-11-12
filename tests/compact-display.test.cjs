@@ -29,9 +29,9 @@ test('other models shares the main bar scale and expands to chips, never per-mod
   assert.equal((chips.match(/class="model-chip"/g) || []).length, 2);
   assert.ok(!chips.includes('row-bar'));
   assert.ok(chips.includes('data-model-detail="0"'));
-  assert.ok(chips.includes('$2.0000'));
+  assert.ok(chips.includes('$2.00'));
   assert.ok(group.includes('100'));
-  assert.ok(group.includes('$5.0000'));
+  assert.ok(group.includes('$5.00'));
   assert.ok(group.includes('width:2%'), 'The same minimum visible bar width applies to the aggregate');
   assert.equal(JSON.stringify(list), original);
   const many = Array.from({ length: 60 }, (_, i) => ({ id: 'minor-' + i, tokens: 90, cost: 1, pct: .009 }));
@@ -183,7 +183,7 @@ test('model chip details expose exact tokens, original period share and cost wit
   const { c } = app();
   const rendered = c.modelDetailsHtml({ id: 'tiny', tokens: 123456, cost: 1.2345, pct: .0003 });
   assert.ok(rendered.includes('123,456'));
-  assert.ok(rendered.includes('$1.2345'));
+  assert.ok(rendered.includes('$1.23'));
   assert.ok(rendered.includes('&lt;0.1%'));
   assert.ok(!rendered.includes('row-bar'));
 });
