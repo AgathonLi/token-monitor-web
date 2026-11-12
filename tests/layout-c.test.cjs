@@ -182,7 +182,8 @@ test('layout-c CSS contract: usage grid lifts the 760px cap and caps at two colu
 test('layout-c CSS contract: only direct standalone rows become light cards', () => {
   const card = rule('.list-wrap.usage-grid > .row');
   assert.match(card, /border:\s*1px solid var\(--line\)/);
-  assert.match(card, /border-radius:\s*10px/);
+  assert.match(card, /border-radius:\s*var\(--r-card\)/);
+  assert.match(css, /--r-card:\s*12px/, 'the card role resolves to 12px');
   assert.match(card, /background:\s*var\(--card\)/);
   assert.match(card, /padding:\s*10px 12px/);
   assert.match(rule('.list-wrap.usage-grid > .row:last-child'), /border-bottom:\s*1px solid var\(--line\)/);
@@ -225,7 +226,8 @@ test('layout-c: other models spans both columns and keeps its folding, control a
 
   const shell = rule('.list-wrap.usage-grid > .other-models');
   assert.match(shell, /grid-column:\s*1 \/ -1/);
-  assert.match(shell, /border-radius:\s*10px/);
+  assert.match(shell, /border-radius:\s*var\(--r-card\)/);
+  assert.match(css, /--r-card:\s*12px/, 'the shell shares the 12px card role');
   assert.match(shell, /background:\s*var\(--card\)/);
   const summary = rule('.list-wrap.usage-grid > .other-models > summary');
   assert.match(summary, /border:\s*0/, 'the nested summary is not an independent card');

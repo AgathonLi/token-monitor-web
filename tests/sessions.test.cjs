@@ -413,7 +413,8 @@ test('sessions: the tool strip offers All plus one accessible control per tool',
     'Icon controls are named by their client label');
   assert.ok(rendered.includes('>mystery</button>'), 'A tool without artwork keeps a readable text label');
   assert.ok(rendered.includes(run('ICO_SVG["gemini-cli"]')) === false, 'No borrowed CLI marks appear uninvited');
-  const strip = rendered.slice(rendered.indexOf('id="session-tool-filter"'), rendered.indexOf('class="sort"'));
+  const start = rendered.indexOf('<div id="session-tool-filter"');
+  const strip = rendered.slice(start, rendered.indexOf('</div>', start));
   const controls = (strip.match(/<button[^>]*data-session-client="/g) || []).length;
   assert.equal(controls, 4, 'All plus the three tools, nothing else');
 });
@@ -424,7 +425,8 @@ test('sessions: a tool glyph uses the explicit tools domain, not a model vendor'
     'claude:b': SESSION({ sessionId: 'b', title: 'C' }),
   });
   const rendered = run('renderSessions()');
-  const strip = rendered.slice(rendered.indexOf('id="session-tool-filter"'), rendered.indexOf('class="sort"'));
+  const start = rendered.indexOf('<div id="session-tool-filter"');
+  const strip = rendered.slice(start, rendered.indexOf('</div>', start));
   assert.ok(strip.includes(run('ICO_SVG["gemini-cli"]')), 'Gemini CLI keeps its own mark');
   assert.ok(strip.includes('#1E1E2E'), 'Gemini CLI keeps its client colour');
   assert.ok(!strip.includes(run('ICO_SVG.gemini')), 'The toolbar never borrows the Gemini model mark');

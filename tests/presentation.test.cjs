@@ -19,10 +19,25 @@ function app() {
   return { context, run: s => vm.runInContext(s, context) };
 }
 
-test('subpages have a wrapping compact headline without changing home totals', () => {
+test('subpages share one compact summary type scale instead of inheriting the home number style', () => {
   assert.match(html, /class="headline">\s*<div class="hero">/);
   assert.match(css, /#app:not\(\.view-home\) \.headline\s*\{[^}]*flex-wrap:\s*wrap/);
-  assert.match(css, /#app:not\(\.view-home\) \.hero \.big\s*\{[^}]*font-size:\s*18px/);
+  const hero = css.match(/#app:not\(\.view-home\) \.hero\s*\{([^}]*)\}/)[1];
+  assert.match(hero, /font-family:\s*var\(--font\)/);
+  assert.match(hero, /font-size:\s*14px/);
+  assert.match(hero, /line-height:\s*22px/);
+  assert.match(hero, /letter-spacing:\s*0/);
+  const big = css.match(/#app:not\(\.view-home\) \.hero \.big\s*\{([^}]*)\}/)[1];
+  assert.match(big, /font-size:\s*14px/);
+  assert.match(big, /line-height:\s*22px/);
+  assert.match(big, /letter-spacing:\s*0/);
+  assert.match(big, /font-weight:\s*600/);
+  assert.match(big, /font-family:\s*var\(--font\)/);
+  assert.match(big, /margin:\s*0/);
+  assert.doesNotMatch(big, /var\(--num\)|clamp\(/);
+  const cost = css.match(/#app:not\(\.view-home\) \.hero \.cost\s*\{([^}]*)\}/)[1];
+  assert.match(cost, /font-size:\s*14px/);
+  assert.match(cost, /font-weight:\s*600/);
   assert.match(css, /#app:not\(\.view-home\) \.asof-hero\s*\{[^}]*padding:\s*0/);
   assert.match(css, /\.hero \.big\s*\{[^}]*font-size:\s*clamp/);
   assert.match(script, /fitTotals\(\)[\s\S]*?el.id === "hero-n"[\s\S]*?continue/);

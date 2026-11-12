@@ -92,18 +92,26 @@ test('home totals and the static hero label follow the selected period', () => {
   assert.ok(html.includes('id="hero-k"'), 'the hero label needs a stable id for paint');
 });
 
-// --- 2. Limits scope note --------------------------------------------------
-test('limits explains that the period selector only changes the headline total', () => {
+// --- 2. Limits scope note removal ------------------------------------------
+test('limits omits scope boilerplate without changing its grid or sort controls', () => {
   const expected = {
     zh: '顶部周期只影响顶部总数；额度显示当前配额窗口。',
     en: 'The period selector only changes the headline total; limits show the current quota windows.',
   };
   for (const lang of ['zh', 'en']) {
     const a = app(lang);
-    a.run(`state.stats = { periods: {}, limits: { providers: [] } }; state.period = "month"; state.view = "limits";`);
-    const rendered = a.run('renderMain()');
-    assert.ok(rendered.includes(`<p class="scope-note">${expected[lang]}</p>`), rendered.slice(0, 300));
-    assert.ok(rendered.includes('class="sort"'), 'the limits sort control stays usable');
+    a.run(`state.stats = { periods: {}, limits: { providers: [] } }; state.view = "limits";`);
+    let previous;
+    for (const period of ['today', 'month', 'allTime']) {
+      a.run(`state.period = ${JSON.stringify(period)};`);
+      const rendered = a.run('renderMain()');
+      assert.ok(!rendered.includes('class="scope-note"'), rendered.slice(0, 300));
+      assert.ok(!rendered.includes(expected[lang]), 'the removed sentence must not reappear');
+      assert.ok(rendered.includes('class="sort"'), 'the limits sort control stays usable');
+      assert.ok(rendered.includes('class="limits-grid"'), 'the limits grid remains present');
+      if (previous !== undefined) assert.equal(rendered, previous, 'the period does not alter current quota content');
+      previous = rendered;
+    }
   }
 });
 
