@@ -326,3 +326,161 @@ test('phone hero uses 16px side insets while desktop keeps 28px', () => {
   assert.ok(desktop, 'missing desktop .hero padding rule');
   assert.equal(desktop[1], '8px 28px 4px');
 });
+
+// --- 9. Active-days scope note --------------------------------------------
+const SCOPE_LABELS = {
+  zh: { all: '全历史', year: '近一年窗口', unverified: '范围未确认', rows: '可用日明细' },
+  en: { all: 'All history', year: 'Past-year window', unverified: 'Scope unverified', rows: 'Available daily rows' },
+};
+
+function activityRender(lang, history, view, previewSummary) {
+  const a = app(lang);
+  const stats = { periods: {} };
+  if (previewSummary) stats.historyPreview = { summary: previewSummary };
+  a.run(`state.stats = ${JSON.stringify(stats)};
+    state.history = ${JSON.stringify(history)};
+    state.period = "today"; state.view = ${JSON.stringify(view)};`);
+  return { a, rendered: a.run('renderMain()') };
+}
+
+test('the active-days note reads the same summary value and a real zero in both branches', () => {
+  const history = {
+    daily: [{ date: '2026-11-09', tokens: 5 }, { date: '2026-11-10', tokens: 7 }],
+    summary: { activeDays: 0, currentStreak: 0, peakDayTokens: 0, activeTimeMs: 0, activeDaysComplete: true },
+  };
+  for (const lang of ['zh', 'en']) {
+    const home = activityRender(lang, history, 'home');
+    assert.deepEqual(home.a.json('streakAndTime()'), { activeDays: 0, streak: 0, peak: 0, ms: 0 });
+    assert.ok(home.rendered.includes(lang === 'zh' ? '活跃 0 天 · 全历史' : '0 active days · All history'), home.rendered.slice(0, 700));
+    assert.equal((home.rendered.match(new RegExp(SCOPE_LABELS[lang].all, 'g')) || []).length, 1);
+
+    const trends = activityRender(lang, history, 'trends');
+    assert.ok(trends.rendered.includes(lang === 'zh' ? '<div class="l">活跃天数 · 全历史</div>' : '<div class="l">Active days · All history</div>'), trends.rendered.slice(0, 900));
+    const tiles = trends.rendered.slice(trends.rendered.indexOf('<div class="tiles">'));
+    assert.equal((tiles.match(new RegExp(SCOPE_LABELS[lang].all, 'g')) || []).length, 1);
+    assert.ok(trends.rendered.includes(lang === 'zh' ? '历史活动统计' : 'Historical activity'));
+  }
+});
+
+test('the active-days flag is strict about true, false, missing and malformed values', () => {
+  const cases = [
+    [{ activeDays: 9, activeDaysComplete: true }, 'all'],
+    [{ activeDays: 9, activeDaysComplete: false }, 'year'],
+    [{ activeDays: 9 }, 'unverified'],
+    [{ activeDays: 9, fullHistory: true }, 'unverified'],
+    [{ activeDays: 9, activeDaysComplete: null }, 'unverified'],
+    [{ activeDays: 9, activeDaysComplete: 'true' }, 'unverified'],
+    [{ activeDays: 9, activeDaysComplete: 1 }, 'unverified'],
+  ];
+  for (const lang of ['zh', 'en']) {
+    for (const [summary, expected] of cases) {
+      for (const view of ['home', 'trends']) {
+        const { rendered } = activityRender(lang, { daily: [], summary }, view);
+        const label = SCOPE_LABELS[lang][expected];
+        assert.ok(rendered.includes(label), `${lang} ${view} ${JSON.stringify(summary)} -> ${label}`);
+        if (expected !== 'all') assert.ok(!rendered.includes(SCOPE_LABELS[lang].all), `${lang} ${view} must not claim full history`);
+        if (expected !== 'year') assert.ok(!rendered.includes(SCOPE_LABELS[lang].year), `${lang} ${view} must not claim a year window`);
+      }
+    }
+  }
+});
+
+test('a full history GET wins over the stats preview, which still backs a missing summary', () => {
+  const previewSummary = { activeDays: 3, activeDaysComplete: false };
+  const full = { daily: [{ date: '2026-11-10', tokens: 5 }], summary: { activeDays: 7, activeDaysComplete: true } };
+  const zh = activityRender('zh', full, 'trends', previewSummary);
+  assert.ok(zh.rendered.includes('<div class="v">7</div>'), zh.rendered.slice(0, 800));
+  assert.ok(zh.rendered.includes('全历史'));
+  assert.ok(!zh.rendered.includes('近一年窗口'));
+
+  const previewOnly = activityRender('zh', { daily: [{ date: '2026-11-10', tokens: 5 }], summary: null }, 'trends', previewSummary);
+  assert.ok(previewOnly.rendered.includes('<div class="v">3</div>'), previewOnly.rendered.slice(0, 800));
+  assert.ok(previewOnly.rendered.includes('近一年窗口'));
+  assert.ok(!previewOnly.rendered.includes('全历史'));
+});
+
+test('daily-row fallback is named in both languages even when an unusable summary says full history', () => {
+  for (const lang of ['zh', 'en']) {
+    const history = {
+      daily: [{ date: '2026-11-09', tokens: 5 }, { date: '2026-11-10', tokens: 7 }],
+      summary: { activeDays: null, activeDaysComplete: true },
+    };
+    const home = activityRender(lang, history, 'home');
+    assert.ok(home.rendered.includes(lang === 'zh' ? '活跃 2 天 · 可用日明细' : '2 active days · Available daily rows'), home.rendered.slice(0, 700));
+    assert.ok(!home.rendered.includes(SCOPE_LABELS[lang].all), 'an unusable summary must not claim full history');
+
+    const trends = activityRender(lang, history, 'trends');
+    assert.ok(trends.rendered.includes(lang === 'zh' ? '<div class="l">活跃天数 · 可用日明细</div>' : '<div class="l">Active days · Available daily rows</div>'), trends.rendered.slice(0, 900));
+    const tiles = trends.rendered.slice(trends.rendered.indexOf('<div class="tiles">'));
+    assert.equal((tiles.match(new RegExp(SCOPE_LABELS[lang].rows, 'g')) || []).length, 1, 'only the active-days tile carries the scope');
+  }
+});
+
+// --- 10. Stale quota readings ---------------------------------------------
+function quotaWindow(percent) {
+  return { label: '5 hour', windowMinutes: 300, remainingPercent: percent };
+}
+
+test('two cards for one provider keep their readings and only mark the stale one', () => {
+  const labels = { zh: '读数已过期', en: 'Stale reading' };
+  for (const lang of ['zh', 'en']) {
+    const a = app(lang);
+    const stale = {
+      provider: 'codex', accountLabel: 'Alpha', planLabel: 'Pro', stale: true,
+      updatedAt: '2026-11-09T23:00:00Z', windows: [quotaWindow(80)],
+    };
+    const fresh = {
+      provider: 'codex', accountLabel: 'Beta', planLabel: 'Pro', stale: false,
+      updatedAt: '2026-11-09T23:00:00Z', windows: [quotaWindow(40)],
+    };
+    a.run(`state.stats = { periods: {}, limits: { providers: ${JSON.stringify([stale, fresh])} } };
+      state.period = "today"; state.view = "limits";`);
+    const rendered = a.run('renderMain()');
+    assert.equal((rendered.match(/<article class="prov quota-card">/g) || []).length, 2, 'both cards render');
+    const cards = rendered.split('<article class="prov quota-card">').slice(1);
+    const staleText = lang === 'zh' ? '剩余 80%' : '80% left';
+    const freshText = lang === 'zh' ? '剩余 40%' : '40% left';
+    assert.ok(cards[0].includes('Alpha') && cards[0].includes('Pro') && cards[0].includes(staleText), cards[0]);
+    assert.ok(cards[1].includes('Beta') && cards[1].includes('Pro') && cards[1].includes(freshText), cards[1]);
+    assert.ok(cards[0].includes(labels[lang]), 'the stale card carries the reading marker');
+    assert.ok(!cards[1].includes(labels[lang]), 'a fresh card with the same old timestamp is not marked');
+    assert.equal((rendered.match(new RegExp(labels[lang], 'g')) || []).length, 1);
+    assert.match(cards[0], new RegExp(`<div class="quota-meta"[^>]*>[^<]*</div>\\s*<div class="quota-stale">${labels[lang]}</div>`));
+  }
+});
+
+test('the stale card marker is strict about false, missing, strings and numbers', () => {
+  for (const lang of ['zh', 'en']) {
+    const labels = { zh: '读数已过期', en: 'Stale reading' };
+    const a = app(lang);
+    for (const value of [false, undefined, null, 'true', 1]) {
+      const provider = { provider: 'codex', accountLabel: 'Alpha', updatedAt: '2026-11-09T23:00:00Z', windows: [quotaWindow(80)] };
+      if (value !== undefined) provider.stale = value;
+      const card = a.run(`renderQuotaCard(${JSON.stringify(provider)}, 0)`);
+      assert.ok(!card.includes(labels[lang]), `stale=${JSON.stringify(value)} must not be marked`);
+      assert.ok(card.includes(lang === 'zh' ? '剩余 80%' : '80% left'));
+    }
+  }
+});
+
+test('provider details and preview share the stale marker and keep their readings', () => {
+  const labels = { zh: '读数已过期', en: 'Stale reading' };
+  for (const lang of ['zh', 'en']) {
+    const a = app(lang);
+    const stale = {
+      provider: 'codex', accountLabel: 'Alpha', planLabel: 'Pro', stale: true,
+      updatedAt: '2026-11-09T23:00:00Z', windows: [quotaWindow(80)],
+    };
+    for (const full of [true, false]) {
+      const rendered = a.run(`renderProviderDetails(${JSON.stringify(stale)}, ${full})`);
+      assert.ok(rendered.includes(labels[lang]), `${lang} full=${full} shares the marker`);
+      assert.match(rendered, new RegExp(`<div class="sub">[^<]*${labels[lang]}[^<]*</div>`), rendered.slice(0, 500));
+      assert.ok(rendered.includes(lang === 'zh' ? '更新于 1 小时前' : 'Updated 1h ago'), 'the real updated time stays');
+      assert.ok(rendered.includes(lang === 'zh' ? '剩余 80%' : '80% left'), 'the reading stays');
+    }
+    const fresh = a.run(`renderProviderDetails(${JSON.stringify({ ...stale, stale: false })}, true)`);
+    assert.ok(!fresh.includes(labels[lang]), 'a fresh provider is not marked as stale');
+    const malformed = a.run(`renderProviderDetails(${JSON.stringify({ ...stale, stale: 'true' })}, true)`);
+    assert.ok(!malformed.includes(labels[lang]), 'a string flag is not a stale reading');
+  }
+});

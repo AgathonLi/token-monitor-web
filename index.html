@@ -398,6 +398,7 @@
     .quota-card .prov-name > span:last-child { overflow: hidden; text-overflow: ellipsis; }
     .quota-updated { color: var(--muted); font-size: 11px; white-space: nowrap; flex-shrink: 0; }
     .quota-meta { color: var(--faint); font-size: 11px; line-height: 18px; min-height: 18px; margin: 3px 0 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quota-stale { color: var(--muted); font-size: 11px; line-height: 1.5; margin: -8px 0 12px; overflow-wrap: anywhere; }
     .quota-summary { display: flex; flex-direction: column; gap: 12px; }
     .quota-summary .win { flex-shrink: 0; }
     .quota-summary .bar { height: 6px; }
@@ -748,6 +749,10 @@ const I18N = {
     "tile.streak": "连续天数",
     "tile.activeTime": "活跃时间",
     "tile.peak": "峰值单日",
+    "activeDays.scope.all": "全历史",
+    "activeDays.scope.year": "近一年窗口",
+    "activeDays.scope.unverified": "范围未确认",
+    "activeDays.scope.rows": "可用日明细",
     "sort.tokens": "用量",
     "sort.cost": "成本",
     "sort.name": "名称",
@@ -771,6 +776,7 @@ const I18N = {
     "asof": "数据截至 {time}（{ago}）",
     "asof.unknown": "尚无同步时间",
     "stale": "已过期",
+    "staleReading": "读数已过期",
     "peak": "峰值",
     "activeDays": "活跃 {n} 天",
     "err.unauthorized": "unauthorized：密钥不一致",
@@ -834,6 +840,10 @@ const I18N = {
     "tile.streak": "Streak",
     "tile.activeTime": "Active time",
     "tile.peak": "Peak day",
+    "activeDays.scope.all": "All history",
+    "activeDays.scope.year": "Past-year window",
+    "activeDays.scope.unverified": "Scope unverified",
+    "activeDays.scope.rows": "Available daily rows",
     "sort.tokens": "Tokens",
     "sort.cost": "Cost",
     "sort.name": "Name",
@@ -857,6 +867,7 @@ const I18N = {
     "asof": "As of {time} ({ago})",
     "asof.unknown": "No sync time yet",
     "stale": "stale",
+    "staleReading": "Stale reading",
     "peak": "Peak",
     "activeDays": "{n} active days",
     "err.unauthorized": "unauthorized: secret mismatch",
@@ -1824,6 +1835,7 @@ function renderProviderDetails(p, full = true) {
     if (ago) subBits.push((state.lang === "zh" ? "更新于 " : "Updated ") + ago);
     const auth = authLabel(p);
     if (auth) subBits.push(auth);
+    if (p.stale === true) subBits.push(t("staleReading"));
 
     let winHtml = "";
     let cols = "";
@@ -1941,6 +1953,7 @@ function renderQuotaCard(p, index) {
   return `<article class="prov quota-card">
     <div class="prov-h"><div class="prov-name">${ico(p.provider)}<span>${esc(m.name)}</span></div><span class="quota-updated" title="${esc(p.updatedAt || "")}">${esc(ago)}</span><button type="button" class="quota-info" data-quota-detail="${index}" aria-label="${esc(details)}" aria-haspopup="dialog" aria-controls="quota-dialog"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg></button></div>
     <div class="quota-meta" title="${esc([plan, account].filter(Boolean).join(" · "))}">${esc([plan, account].filter(Boolean).join(" · ")) || "—"}</div>
+    ${p.stale === true ? `<div class="quota-stale">${esc(t("staleReading"))}</div>` : ""}
     <div class="quota-summary">${entries.slice(0, 2).map((e) => renderWin(e.window, e.label, " wide", m, p, true)).join("") || `<p class="empty">${zh ? "暂无额度读数" : "No quota readings"}</p>`}</div>
   </article>`;
 }
@@ -2266,6 +2279,17 @@ function sumNum(value) {
   }
   return null;
 }
+function historySummary() {
+  return (state.history && state.history.summary) || (state.stats && state.stats.historyPreview && state.stats.historyPreview.summary) || {};
+}
+// Hub activeDaysComplete describes the summary's count, not the chart's range.
+function activeDaysScopeLabel() {
+  const sum = historySummary();
+  if (sumNum(sum.activeDays) === null) return t("activeDays.scope.rows");
+  if (sum.activeDaysComplete === true) return t("activeDays.scope.all");
+  if (sum.activeDaysComplete === false) return t("activeDays.scope.year");
+  return t("activeDays.scope.unverified");
+}
 function streakAndTime() {
   const days = dailyList();
   const active = new Set(days.filter((d) => Number(d.tokens) > 0).map((d) => String(d.date).slice(0, 10)));
@@ -2274,7 +2298,7 @@ function streakAndTime() {
   const activeDays = active.size;
   const peak = days.reduce((m, d) => Math.max(m, Number(d.tokens) || 0), 0);
   const ms = days.reduce((s, d) => s + (Number(d.activeTimeMs) || 0), 0);
-  const sum = (state.history && state.history.summary) || (state.stats && state.stats.historyPreview && state.stats.historyPreview.summary) || {};
+  const sum = historySummary();
   // Canonical wire fields win; a real zero is a reading, so only unusable values fall back.
   const pick = (key, fallback) => { const v = sumNum(sum[key]); return v === null ? fallback : v; };
   return {
@@ -2520,7 +2544,7 @@ function renderMain() {
       </div>
       <div class="tiles-h"><span class="title">${esc(t("trends.history"))}</span><span class="note">${esc(t("trends.history.note"))}</span></div>
       <div class="tiles">
-        <div class="tile"><div class="v">${tstat.activeDays}</div><div class="l">${esc(t("tile.activeDays"))}</div></div>
+        <div class="tile"><div class="v">${tstat.activeDays}</div><div class="l">${esc(t("tile.activeDays"))} · ${esc(activeDaysScopeLabel())}</div></div>
         <div class="tile"><div class="v">${tstat.streak}</div><div class="l">${esc(t("tile.streak"))}</div></div>
         <div class="tile"><div class="v">${fmtDur(tstat.ms)}</div><div class="l">${esc(t("tile.activeTime"))}</div></div>
         <div class="tile"><div class="v">${fmtCompact(tstat.peak)}</div><div class="l">${esc(t("tile.peak"))}</div></div>
@@ -2543,7 +2567,7 @@ function renderMain() {
     </div>
     <div class="sec home-limits"><div class="sec-h">${esc(t("sec.limits"))}${sectionLink("limits", "home.limits.all", "home.limits.aria")}</div><div class="home-quota-grid">${renderLimits(false)}</div></div>
     <div class="sec home-models"><div class="sec-h">${esc(t("sec.models"))}${sectionLink("models", "home.models.all", "home.models.aria")}</div>${sortBar("models", ["tokens", "cost", "name"])}${modelRows}</div>
-    <div class="sec home-heat"><div class="sec-h">${esc(t("sec.activity"))} <span>${esc(t("activeDays", { n: tstat.activeDays }))}</span></div>${heatmapHtml()}</div>
+    <div class="sec home-heat"><div class="sec-h">${esc(t("sec.activity"))} <span>${esc(t("activeDays", { n: tstat.activeDays }))} · ${esc(activeDaysScopeLabel())}</span></div>${heatmapHtml()}</div>
   </div>`;
 }
 
